@@ -345,12 +345,12 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 5: MORE (ONLINE ORDERS, CUSTOMERS, ATTENDANCE, LOYALTY, REPAIRS, USED, RETURNS, TRANSFER, PBILLS, STAFF) ==================== -->
+    <!-- ==================== TAB 5: MORE ==================== -->
     <section id="tab-more" class="hidden space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <button onclick="showMoreSubView('online')" id="more-btn-online" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-shipping-fast text-base mb-1"></i><p class="font-extrabold text-xs">Online Orders</p><p class="text-[10px] opacity-80">AI WhatsApp + Courier</p></button>
         <button onclick="showMoreSubView('customers')" id="more-btn-customers" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-address-book text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Customers (<span id="unique-cust-count">0</span>)</p><p class="text-[10px] text-slate-500">Unique List + Excel</p></button>
-        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Calendar + Edit + Leave</p></button>
+        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Visual Calendar + Edit</p></button>
         <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Multi-Card & WhatsApp</p></button>
         <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Repairing</p><p class="text-[10px] text-slate-500">Job Cards</p></button>
         <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Used Phones</p><p class="text-[10px] text-slate-500">IMEI & ID Register</p></button>
@@ -411,11 +411,11 @@
         <div id="unique-customers-list" class="divide-y divide-slate-100 text-xs max-h-[60vh] overflow-y-auto"></div>
       </div>
 
-      <!-- SUBVIEW 3: SHOP GPS + CALENDAR + EDIT + MONTHLY CHHUTTI ATTENDANCE -->
+      <!-- SUBVIEW 3: SHOP GPS + MONTHLY VISUAL CALENDAR GRID ATTENDANCE -->
       <div id="more-sub-attendance" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
           <div>
-            <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-map-marker-alt text-rose-600 mr-1.5"></i>Shop GPS + Live Selfie Attendance</h3>
+            <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-map-marker-alt text-rose-600 mr-1.5"></i>Shop GPS + Monthly Visual Calendar</h3>
             <p class="text-[11px] text-slate-500" id="shop-gps-status">Shop GPS checking...</p>
           </div>
           <button id="set-shop-gps-btn" onclick="captureAndSaveShopGPS()" class="hidden px-3 py-1.5 bg-slate-900 text-amber-300 rounded-xl text-xs font-extrabold">📍 Set Current Shop Location</button>
@@ -435,27 +435,40 @@
           </div>
         </div>
 
-        <!-- STAFF MONTHLY REPORT CARDS (CLICK TO VIEW PRESENT / CHHUTTI / SALARY) -->
-        <div class="bg-slate-50 p-3 rounded-2xl border space-y-2">
-          <div class="flex justify-between items-center">
-            <p class="text-xs font-extrabold text-slate-700">Staff Monthly Chhutti & Salary Hisab (Staff Par Click Karein):</p>
+        <div class="bg-slate-50 p-3 rounded-2xl border space-y-2.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <p class="text-xs font-extrabold text-slate-700">Staff Chunein (Calendar Dekhne Ke Liye):</p>
             <input type="month" id="att-month-picker" onchange="renderAttendanceView()" class="p-1.5 bg-white border rounded-lg text-xs font-bold">
           </div>
           <div id="att-staff-chips" class="flex flex-wrap gap-1.5 text-xs"></div>
           <div id="att-staff-summary-card" class="hidden p-3 bg-white border border-indigo-200 rounded-xl text-xs"></div>
+
+          <div class="pt-1 space-y-1.5">
+            <div class="flex flex-wrap justify-between items-center text-[10px] font-bold text-slate-500">
+              <span>📅 Tareekh Box Par Click Karke Details / Edit Karein:</span>
+              <div class="flex gap-2">
+                <span class="flex items-center gap-1"><i class="w-2.5 h-2.5 rounded bg-emerald-500 inline-block"></i>Present</span>
+                <span class="flex items-center gap-1"><i class="w-2.5 h-2.5 rounded bg-amber-400 inline-block"></i>Half</span>
+                <span class="flex items-center gap-1"><i class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></i>Chhutti</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase pt-1">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div id="att-visual-calendar-grid" class="grid grid-cols-7 gap-1"></div>
+          </div>
         </div>
 
-        <!-- CALENDAR DATE FILTER + ADMIN MANUAL ENTRY -->
         <div class="flex flex-wrap justify-between items-center gap-2 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200 text-xs">
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-amber-900">📅 Date Calendar:</span>
-            <input type="date" id="att-calendar-date" onchange="renderAttendanceView()" class="p-1.5 bg-white border rounded-lg font-bold">
-            <button onclick="document.getElementById('att-calendar-date').value=''; renderAttendanceView();" class="px-2.5 py-1.5 bg-slate-800 text-white rounded-lg font-bold text-[11px]">All Dates</button>
+            <span class="font-extrabold text-amber-900" id="att-selected-date-label">📅 Showing: All Dates</span>
+            <input type="hidden" id="att-calendar-date">
+            <button onclick="document.getElementById('att-calendar-date').value=''; renderAttendanceView();" class="px-2.5 py-1 bg-slate-800 text-white rounded-lg font-bold text-[10px]">Show All</button>
           </div>
           <div id="admin-manual-att-box" class="hidden flex items-center gap-1.5">
             <select id="admin-att-staff" class="p-1.5 bg-white border rounded-lg font-bold"></select>
             <select id="admin-att-status" class="p-1.5 bg-white border rounded-lg font-bold"><option value="Present">Present</option><option value="Half-Day">Half-Day</option><option value="Absent">Absent</option></select>
-            <button onclick="adminMarkManualAttendance()" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold">+ Add</button>
+            <button onclick="adminMarkManualAttendance()" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold">+ Save</button>
           </div>
         </div>
 
@@ -872,7 +885,7 @@
       XLSX.writeFile(wb, `Kirtika_Mobile_Customers_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
-    // ================= 3. SHOP GPS + CALENDAR + EDIT + MONTHLY CHHUTTI ATTENDANCE =================
+    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR GRID ATTENDANCE =================
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3, toRad = x => x * Math.PI / 180;
       const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
@@ -962,6 +975,12 @@
       renderAttendanceView();
     }
 
+    function selectCalendarDay(isoDateStr) {
+      const inp = document.getElementById('att-calendar-date');
+      inp.value = (inp.value === isoDateStr) ? '' : isoDateStr;
+      renderAttendanceView();
+    }
+
     function renderAttendanceView() {
       const isAdmin = currentUser && currentUser.role === 'Admin';
       const brObj = storeData.branches.find(b => b.name === activeBranch);
@@ -971,63 +990,125 @@
       document.getElementById('admin-manual-att-box').classList.toggle('hidden', !isAdmin);
       document.getElementById('admin-att-staff').innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
-      // Staff Monthly Summary Chips & Calculation
       const monthVal = document.getElementById('att-month-picker')?.value || ""; // YYYY-MM
-      document.getElementById('att-staff-chips').innerHTML = storeData.staff.map(s => `
-        <button onclick="selectStaffForMonthlySummary('${s.id}')" class="px-3 py-1.5 rounded-xl font-bold transition ${String(selectedAttStaffId) === String(s.id) ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-indigo-50'}">
-          ${s.name}
-        </button>
-      `).join('');
+      document.getElementById('att-staff-chips').innerHTML =
+        `<button onclick="selectStaffForMonthlySummary(null)" class="px-3 py-1.5 rounded-xl font-bold transition ${!selectedAttStaffId ? 'bg-slate-900 text-white shadow' : 'bg-white border text-slate-700'}">All Staff</button>` +
+        storeData.staff.map(s => `
+          <button onclick="selectStaffForMonthlySummary('${s.id}')" class="px-3 py-1.5 rounded-xl font-bold transition ${String(selectedAttStaffId) === String(s.id) ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-indigo-50'}">
+            ${s.name}
+          </button>
+        `).join('');
 
       const sumCard = document.getElementById('att-staff-summary-card');
-      if (selectedAttStaffId && monthVal) {
-        const stf = storeData.staff.find(s => String(s.id) === String(selectedAttStaffId));
+      const calGrid = document.getElementById('att-visual-calendar-grid');
+      const selectedCalDate = document.getElementById('att-calendar-date')?.value || "";
+
+      if (monthVal) {
         const [yr, mo] = monthVal.split('-');
         const daysInMonth = new Date(Number(yr), Number(mo), 0).getDate();
+        const firstDayOfWeek = new Date(Number(yr), Number(mo) - 1, 1).getDay(); // 0=Sun
         const now = new Date();
-        const elapsedDays = (Number(yr) === now.getFullYear() && Number(mo) === (now.getMonth() + 1)) ? now.getDate() : daysInMonth;
+        const isCurrentMonth = (Number(yr) === now.getFullYear() && Number(mo) === (now.getMonth() + 1));
+        const elapsedDays = isCurrentMonth ? now.getDate() : (new Date(Number(yr), Number(mo) - 1, 1) > now ? 0 : daysInMonth);
 
         const monthLogs = storeData.attendance.filter(a => {
-          if (String(a.staffId) !== String(selectedAttStaffId)) return false;
           const parts = String(a.date).split('/');
           return parts.length === 3 && parts[1] === mo && parts[2] === yr;
         });
 
-        const presentCount = monthLogs.filter(a => a.status === 'Present').length;
-        const halfDayCount = monthLogs.filter(a => a.status === 'Half-Day').length;
-        const explicitAbsent = monthLogs.filter(a => a.status === 'Absent').length;
-        const totalMarked = presentCount + halfDayCount + explicitAbsent;
-        const chhuttiCount = explicitAbsent + Math.max(0, elapsedDays - totalMarked);
-        const payableDays = presentCount + (halfDayCount * 0.5);
-        const perDaySalary = stf && stf.salary ? (stf.salary / 30) : 0;
-        const estSalary = Math.round(payableDays * perDaySalary);
+        if (selectedAttStaffId) {
+          const stf = storeData.staff.find(s => String(s.id) === String(selectedAttStaffId));
+          const stfLogs = monthLogs.filter(a => String(a.staffId) === String(selectedAttStaffId));
+          const presentCount = stfLogs.filter(a => a.status === 'Present').length;
+          const halfDayCount = stfLogs.filter(a => a.status === 'Half-Day').length;
+          const explicitAbsent = stfLogs.filter(a => a.status === 'Absent').length;
+          const chhuttiCount = explicitAbsent + Math.max(0, elapsedDays - (presentCount + halfDayCount + explicitAbsent));
+          const payableDays = presentCount + (halfDayCount * 0.5);
+          const estSalary = stf && stf.salary ? Math.round(payableDays * (stf.salary / 30)) : 0;
 
-        sumCard.classList.remove('hidden');
-        sumCard.innerHTML = `
-          <div class="flex justify-between items-center border-b pb-1.5 mb-2">
-            <span class="font-extrabold text-indigo-900">${stf?.name} — ${mo}/${yr} Attendance Summary</span>
-            <button onclick="selectStaffForMonthlySummary('${stf?.id}')" class="text-slate-400 font-bold">✕</button>
-          </div>
-          <div class="grid grid-cols-4 gap-2 text-center">
-            <div class="p-2 bg-emerald-50 rounded-lg"><p class="text-[10px] text-emerald-700 font-bold">Present</p><p class="text-sm font-black text-emerald-900">${presentCount}</p></div>
-            <div class="p-2 bg-amber-50 rounded-lg"><p class="text-[10px] text-amber-700 font-bold">Half-Day</p><p class="text-sm font-black text-amber-900">${halfDayCount}</p></div>
-            <div class="p-2 bg-red-50 rounded-lg"><p class="text-[10px] text-red-700 font-bold">Chhuttiyan</p><p class="text-sm font-black text-red-900">${chhuttiCount}</p></div>
-            <div class="p-2 bg-slate-900 text-white rounded-lg"><p class="text-[10px] text-slate-300 font-bold">Est. Salary</p><p class="text-sm font-black text-amber-300">₹${estSalary}</p></div>
-          </div>
-        `;
-      } else {
-        sumCard.classList.add('hidden');
+          sumCard.classList.remove('hidden');
+          sumCard.innerHTML = `
+            <div class="flex justify-between items-center border-b pb-1.5 mb-2">
+              <span class="font-extrabold text-indigo-900">${stf?.name} — ${mo}/${yr} Hisab</span>
+              <button onclick="selectStaffForMonthlySummary(null)" class="text-slate-400 font-bold">✕</button>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="p-2 bg-emerald-50 rounded-lg"><p class="text-[10px] text-emerald-700 font-bold">Present</p><p class="text-sm font-black text-emerald-900">${presentCount}</p></div>
+              <div class="p-2 bg-amber-50 rounded-lg"><p class="text-[10px] text-amber-700 font-bold">Half-Day</p><p class="text-sm font-black text-amber-900">${halfDayCount}</p></div>
+              <div class="p-2 bg-rose-50 rounded-lg"><p class="text-[10px] text-rose-700 font-bold">Chhuttiyan</p><p class="text-sm font-black text-rose-900">${chhuttiCount}</p></div>
+              <div class="p-2 bg-slate-900 text-white rounded-lg"><p class="text-[10px] text-slate-300 font-bold">Est. Salary</p><p class="text-sm font-black text-amber-300">₹${estSalary}</p></div>
+            </div>
+          `;
+        } else {
+          sumCard.classList.add('hidden');
+        }
+
+        let gridHtml = "";
+        for (let blank = 0; blank < firstDayOfWeek; blank++) {
+          gridHtml += `<div class="h-14 rounded-xl bg-slate-100/50"></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dd = String(d).padStart(2, '0');
+          const ddmmyyyy = `${dd}/${mo}/${yr}`;
+          const isoStr = `${yr}-${mo}-${dd}`;
+          const dayLogs = monthLogs.filter(a => String(a.date) === ddmmyyyy);
+          const isFuture = d > elapsedDays;
+          const isSelected = selectedCalDate === isoStr;
+
+          let boxClass = "bg-white border-slate-200 text-slate-700";
+          let badgeHtml = "";
+
+          if (selectedAttStaffId) {
+            const log = dayLogs.find(a => String(a.staffId) === String(selectedAttStaffId));
+            if (log) {
+              if (log.status === 'Present') { boxClass = "bg-emerald-500 border-emerald-600 text-white"; badgeHtml = `<span class="text-[9px] font-black">P</span>`; }
+              else if (log.status === 'Half-Day') { boxClass = "bg-amber-400 border-amber-500 text-slate-950"; badgeHtml = `<span class="text-[9px] font-black">HD</span>`; }
+              else { boxClass = "bg-rose-500 border-rose-600 text-white"; badgeHtml = `<span class="text-[9px] font-black">Leave</span>`; }
+            } else if (!isFuture) {
+              boxClass = "bg-rose-100 border-rose-300 text-rose-800";
+              badgeHtml = `<span class="text-[8px] font-extrabold">Chhutti</span>`;
+            } else {
+              boxClass = "bg-slate-50 border-slate-100 text-slate-300";
+            }
+          } else {
+            const pCnt = dayLogs.filter(a => a.status === 'Present').length;
+            const hCnt = dayLogs.filter(a => a.status === 'Half-Day').length;
+            const aCnt = dayLogs.filter(a => a.status === 'Absent').length;
+            if (pCnt || hCnt || aCnt) {
+              boxClass = "bg-emerald-50 border-emerald-300 text-slate-800";
+              badgeHtml = `<div class="flex justify-center gap-0.5 text-[8px] font-black">${pCnt ? `<span class="px-1 bg-emerald-600 text-white rounded">${pCnt}P</span>` : ''}${hCnt ? `<span class="px-1 bg-amber-400 text-slate-950 rounded">${hCnt}H</span>` : ''}${aCnt ? `<span class="px-1 bg-rose-600 text-white rounded">${aCnt}A</span>` : ''}</div>`;
+            } else if (!isFuture) {
+              boxClass = "bg-rose-50/70 border-rose-200 text-rose-400";
+              badgeHtml = `<span class="text-[8px]">0</span>`;
+            } else {
+              boxClass = "bg-slate-50 border-slate-100 text-slate-300";
+            }
+          }
+
+          gridHtml += `
+            <div onclick="selectCalendarDay('${isoStr}')" class="h-14 p-1 rounded-xl border ${boxClass} ${isSelected ? 'ring-2 ring-indigo-600 scale-105' : ''} cursor-pointer flex flex-col justify-between items-center transition select-none">
+              <span class="text-[11px] font-black leading-none">${d}</span>
+              ${badgeHtml}
+            </div>
+          `;
+        }
+        calGrid.innerHTML = gridHtml;
       }
 
-      // Calendar Date Filter
-      const calVal = document.getElementById('att-calendar-date')?.value || ""; // YYYY-MM-DD
       let filterDateStr = "";
-      if (calVal) {
-        const [y, m, d] = calVal.split('-');
+      if (selectedCalDate) {
+        const [y, m, d] = selectedCalDate.split('-');
         filterDateStr = `${d}/${m}/${y}`;
       }
+      document.getElementById('att-selected-date-label').innerText = filterDateStr ? `📅 Date: ${filterDateStr}` : `📅 Showing: All Dates`;
 
-      const visibleLogs = storeData.attendance.filter(a => (!filterDateStr || String(a.date) === filterDateStr));
+      const visibleLogs = storeData.attendance.filter(a => {
+        if (filterDateStr && String(a.date) !== filterDateStr) return false;
+        if (selectedAttStaffId && String(a.staffId) !== String(selectedAttStaffId)) return false;
+        return true;
+      });
+
       document.getElementById('attendance-log-list').innerHTML = visibleLogs.length ? visibleLogs.map(a => `
         <div class="py-2.5 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5">
@@ -1049,7 +1130,7 @@
             ` : `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold ${a.status === 'Present' ? 'bg-emerald-100 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700')}">${a.status}</span>`}
           </div>
         </div>
-      `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance record nahi mila.` : 'Abhi koi attendance record nahi hai.'}</p>`;
+      `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance entry nahi hai (Upar + Save se add kar sakte hain).` : 'Abhi koi attendance record nahi hai.'}</p>`;
     }
 
     // ================= 4. MULTI-CARD VIP LOYALTY PROGRAM =================
