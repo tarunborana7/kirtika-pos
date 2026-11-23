@@ -115,7 +115,7 @@
           <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
         </div>
 
-        <!-- BILLING CART (DIRECT AMOUNT + PHOTO ITEM + ADDRESS) -->
+        <!-- BILLING CART -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 h-fit sticky top-20">
           <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2.5">
             <h3 class="font-extrabold text-slate-800 text-sm"><i class="fas fa-shopping-bag text-indigo-600 mr-1.5"></i>Bill (<span id="cart-mode-badge" class="text-indigo-600">Retail</span>)</h3>
@@ -125,7 +125,6 @@
             </div>
           </div>
 
-          <!-- DIRECT AMOUNT BILLING BAR -->
           <div class="flex gap-1.5 mb-2.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
             <input type="text" id="quick-amt-name" placeholder="Item / Service (Optional)" class="flex-1 p-1.5 bg-white border rounded-lg text-xs">
             <input type="number" id="quick-amt-price" onkeydown="if(event.key==='Enter') addDirectAmountToCart()" placeholder="Amount ₹ *" class="w-24 p-1.5 bg-white border rounded-lg text-xs font-black text-indigo-700">
@@ -143,7 +142,6 @@
             </div>
             <input type="text" id="cust-address" placeholder="Customer Address / Gaon / City (Optional)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
 
-            <!-- CUSTOMER HISTORY + MULTI-CARD VIP LOYALTY BANNER -->
             <div id="cust-history-banner" class="hidden bg-indigo-50 border border-indigo-200 p-2 rounded-lg space-y-1 text-[11px]">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-indigo-800" id="cust-history-summary">Purane 0 Bills</span>
@@ -347,21 +345,74 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 5: MORE ==================== -->
+    <!-- ==================== TAB 5: MORE (ONLINE ORDERS, CUSTOMERS, ATTENDANCE, LOYALTY, REPAIRS, USED, RETURNS, TRANSFER, PBILLS, STAFF) ==================== -->
     <section id="tab-more" class="hidden space-y-4">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-map-marker-alt text-base mb-1"></i><p class="font-extrabold text-xs">GPS Attendance</p><p class="text-[10px] opacity-80">Shop Location + Selfie</p></button>
-        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty Cards</p><p class="text-[10px] text-slate-500">Multi-Card & WhatsApp</p></button>
-        <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Mobile Repairing</p><p class="text-[10px] text-slate-500">Job Cards & WhatsApp</p></button>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <button onclick="showMoreSubView('online')" id="more-btn-online" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-shipping-fast text-base mb-1"></i><p class="font-extrabold text-xs">Online Orders</p><p class="text-[10px] opacity-80">AI WhatsApp + Courier</p></button>
+        <button onclick="showMoreSubView('customers')" id="more-btn-customers" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-address-book text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Customers (<span id="unique-cust-count">0</span>)</p><p class="text-[10px] text-slate-500">Unique List + Excel</p></button>
+        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Calendar + Edit + Leave</p></button>
+        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Multi-Card & WhatsApp</p></button>
+        <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Repairing</p><p class="text-[10px] text-slate-500">Job Cards</p></button>
         <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Used Phones</p><p class="text-[10px] text-slate-500">IMEI & ID Register</p></button>
         <button onclick="showMoreSubView('returns')" id="more-btn-returns" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-undo-alt text-amber-600 text-base mb-1"></i><p class="font-extrabold text-xs">Return Box</p><p class="text-[10px] text-slate-500">Supplier Warranty</p></button>
         <button onclick="showMoreSubView('transfer')" id="more-btn-transfer" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-exchange-alt text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Stock Transfer</p><p class="text-[10px] text-slate-500">Main ↔ Branch 2</p></button>
-        <button onclick="showMoreSubView('pbills')" id="more-btn-pbills" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-file-invoice text-violet-600 text-base mb-1"></i><p class="font-extrabold text-xs">Purchase Bills (<span id="saved-pb-count">0</span>)</p><p class="text-[10px] text-slate-500">Open, Edit & Delete</p></button>
-        <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-users-cog text-slate-700 text-base mb-1"></i><p class="font-extrabold text-xs">Staff & Admin PIN</p><p class="text-[10px] text-slate-500">Name, PIN & Salary</p></button>
+        <button onclick="showMoreSubView('pbills')" id="more-btn-pbills" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-file-invoice text-violet-600 text-base mb-1"></i><p class="font-extrabold text-xs">Purchase Bills (<span id="saved-pb-count">0</span>)</p><p class="text-[10px] text-slate-500">Open & Edit</p></button>
+        <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-users-cog text-slate-700 text-base mb-1"></i><p class="font-extrabold text-xs">Staff & PIN</p><p class="text-[10px] text-slate-500">Name, PIN & Salary</p></button>
       </div>
 
-      <!-- SUBVIEW: SHOP GPS + LIVE SELFIE ATTENDANCE -->
-      <div id="more-sub-attendance" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+      <!-- SUBVIEW 1: ONLINE ORDERS WITH AI WHATSAPP MESSAGE / SCREENSHOT AUTO-FILL -->
+      <div id="more-sub-online" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3.5 rounded-2xl space-y-2.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">AI Auto-Fill Order</span>
+              <h3 class="font-extrabold text-sm mt-0.5">WhatsApp Message Paste Karein Ya Screenshot Daalein</h3>
+            </div>
+            <label class="px-3 py-1.5 bg-white text-emerald-800 rounded-xl text-xs font-extrabold cursor-pointer shadow flex items-center gap-1.5">
+              <i class="fas fa-image"></i> Screenshot Scan
+              <input type="file" accept="image/*" class="hidden" onchange="aiParseOnlineScreenshot(event)">
+            </label>
+          </div>
+          <div class="flex gap-2">
+            <textarea id="ai-online-msg-input" rows="2" placeholder="Customer ka WhatsApp address/order message yahan paste karein..." class="flex-1 p-2 rounded-xl text-xs text-slate-900 bg-white/95 focus:outline-none"></textarea>
+            <button onclick="aiParseOnlineMessage()" id="ai-online-btn" class="px-3.5 bg-slate-900 text-amber-300 rounded-xl font-extrabold text-xs shrink-0"><i class="fas fa-magic mr-1"></i>AI Fill</button>
+          </div>
+        </div>
+
+        <h4 class="font-extrabold text-xs uppercase text-slate-600 pt-1">Online Order Details (Verify & Save):</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <select id="onl-platform" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Instagram">Instagram</option><option value="WhatsApp">WhatsApp</option><option value="Website">Website / Other</option></select>
+          <input type="text" id="onl-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+          <input type="tel" id="onl-phone" placeholder="Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="onl-address" placeholder="Full Shipping Address & Pincode *" class="p-2.5 bg-slate-50 border rounded-xl text-xs sm:col-span-2">
+          <input type="text" id="onl-items" placeholder="Ordered Items *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="number" id="onl-amount" placeholder="Order Amount (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-black text-indigo-700">
+          <select id="onl-pay" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Prepaid (UPI)">Prepaid (UPI)</option><option value="COD">Cash on Delivery (COD)</option></select>
+          <input type="text" id="onl-courier" placeholder="Courier / Shiprocket (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="onl-awb" placeholder="Tracking / AWB No. (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono">
+        </div>
+        <button onclick="saveNewOnlineOrder()" id="save-onl-btn" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Online Order Save Karein</button>
+
+        <div id="online-orders-list" class="space-y-2.5 text-xs pt-2"></div>
+      </div>
+
+      <!-- SUBVIEW 2: UNIQUE CUSTOMERS DIRECTORY + EXCEL EXPORT -->
+      <div id="more-sub-customers" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
+          <div>
+            <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-address-book text-emerald-600 mr-1.5"></i>Unique Customers Directory (<span id="cust-dir-total">0</span>)</h3>
+            <p class="text-[11px] text-slate-500">Sabhi Retail, Wholesale & Online customers (bina duplicate ke)</p>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="cust-dir-search" oninput="renderUniqueCustomersView()" placeholder="Name / Phone / City..." class="p-2 bg-slate-100 rounded-xl text-xs w-36">
+            <button onclick="exportCustomersExcel()" class="px-3 py-2 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow-sm"><i class="fas fa-file-excel mr-1"></i>Excel Download</button>
+          </div>
+        </div>
+        <div id="unique-customers-list" class="divide-y divide-slate-100 text-xs max-h-[60vh] overflow-y-auto"></div>
+      </div>
+
+      <!-- SUBVIEW 3: SHOP GPS + CALENDAR + EDIT + MONTHLY CHHUTTI ATTENDANCE -->
+      <div id="more-sub-attendance" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
           <div>
             <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-map-marker-alt text-rose-600 mr-1.5"></i>Shop GPS + Live Selfie Attendance</h3>
@@ -384,28 +435,40 @@
           </div>
         </div>
 
-        <div id="admin-manual-att-box" class="hidden p-3 bg-slate-50 border rounded-xl space-y-2 text-xs">
-          <p class="font-bold text-slate-700">Admin Manual Override (Kisi Bhi Staff Ki Attendance):</p>
-          <div class="flex gap-2">
-            <select id="admin-att-staff" class="flex-1 p-2 bg-white border rounded-lg font-bold"></select>
-            <select id="admin-att-status" class="p-2 bg-white border rounded-lg font-bold"><option value="Present">Present</option><option value="Half-Day">Half-Day</option><option value="Absent">Absent</option></select>
-            <button onclick="adminMarkManualAttendance()" class="px-3 py-2 bg-indigo-600 text-white rounded-lg font-bold">Save</button>
+        <!-- STAFF MONTHLY REPORT CARDS (CLICK TO VIEW PRESENT / CHHUTTI / SALARY) -->
+        <div class="bg-slate-50 p-3 rounded-2xl border space-y-2">
+          <div class="flex justify-between items-center">
+            <p class="text-xs font-extrabold text-slate-700">Staff Monthly Chhutti & Salary Hisab (Staff Par Click Karein):</p>
+            <input type="month" id="att-month-picker" onchange="renderAttendanceView()" class="p-1.5 bg-white border rounded-lg text-xs font-bold">
+          </div>
+          <div id="att-staff-chips" class="flex flex-wrap gap-1.5 text-xs"></div>
+          <div id="att-staff-summary-card" class="hidden p-3 bg-white border border-indigo-200 rounded-xl text-xs"></div>
+        </div>
+
+        <!-- CALENDAR DATE FILTER + ADMIN MANUAL ENTRY -->
+        <div class="flex flex-wrap justify-between items-center gap-2 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-amber-900">📅 Date Calendar:</span>
+            <input type="date" id="att-calendar-date" onchange="renderAttendanceView()" class="p-1.5 bg-white border rounded-lg font-bold">
+            <button onclick="document.getElementById('att-calendar-date').value=''; renderAttendanceView();" class="px-2.5 py-1.5 bg-slate-800 text-white rounded-lg font-bold text-[11px]">All Dates</button>
+          </div>
+          <div id="admin-manual-att-box" class="hidden flex items-center gap-1.5">
+            <select id="admin-att-staff" class="p-1.5 bg-white border rounded-lg font-bold"></select>
+            <select id="admin-att-status" class="p-1.5 bg-white border rounded-lg font-bold"><option value="Present">Present</option><option value="Half-Day">Half-Day</option><option value="Absent">Absent</option></select>
+            <button onclick="adminMarkManualAttendance()" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold">+ Add</button>
           </div>
         </div>
 
-        <h4 class="font-extrabold text-xs uppercase text-slate-500 pt-1">Attendance & Selfie Register (Photo Par Click Karke Bada Dekhein)</h4>
         <div id="attendance-log-list" class="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto"></div>
       </div>
 
-      <!-- SUBVIEW: MULTI-CARD VIP LOYALTY PROGRAM -->
+      <!-- SUBVIEW 4: MULTI-CARD VIP LOYALTY PROGRAM -->
       <div id="more-sub-loyalty" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3">
         <h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards (Multiple Offers & Tiers)</h3>
-        
         <label class="flex items-center gap-2 p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 cursor-pointer">
           <input type="checkbox" id="loy-overlap-toggle" checked onchange="saveLoyaltyOverlapPref(); renderLoyaltyView();" class="w-4 h-4 accent-indigo-600">
           <span>₹1000+ bill ko ₹500 wale card mein bhi count karein (Uncheck karne par ₹500–₹999 aur ₹1000+ alag-alag count honge)</span>
         </label>
-
         <div id="admin-loyalty-rule-box" class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2 text-xs">
           <p class="font-extrabold text-amber-900">+ Naya Loyalty Card / Offer Banayein (Admin):</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -417,7 +480,6 @@
           <button onclick="saveLoyaltyRuleSettings()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Card Tier Add Karein</button>
           <div id="loyalty-rules-list" class="space-y-1.5 pt-2 border-t border-amber-200/70"></div>
         </div>
-        <h4 class="font-extrabold text-xs uppercase text-slate-500">Customers Cards Progress</h4>
         <div id="loyalty-customers-list" class="space-y-2.5 text-xs"></div>
       </div>
 
@@ -431,7 +493,7 @@
     </section>
   </main>
 
-  <!-- ALL MODALS (INCLUDING SELFIE VIEWER MODAL) -->
+  <!-- ALL MODALS -->
   <div id="selfie-viewer-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3 text-center"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="sv-title">Staff Selfie</h3><button onclick="document.getElementById('selfie-viewer-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><img id="sv-img" class="w-full max-h-80 object-cover rounded-2xl border shadow"><p id="sv-meta" class="text-xs font-bold text-slate-600"></p></div></div>
   <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-amber-800"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards</h3><button onclick="document.getElementById('loyalty-card-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div><span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Card Chunein:</span><div id="loyalty-card-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div></div><div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div><div class="grid grid-cols-2 gap-2"><button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Card</button><button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift()" class="hidden py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset)</button></div></div></div>
   <div id="udhar-jama-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-emerald-800"><i class="fas fa-hand-holding-usd mr-1.5"></i>Udhar Jama / Adjust</h3><button onclick="document.getElementById('udhar-jama-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="jama-inv-id"><div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs"><p class="font-bold text-slate-800" id="jama-cust-label">Customer</p><p class="text-red-700 font-black text-sm mt-0.5">Baaki Udhar: ₹<span id="jama-due-amount">0</span></p></div><input type="number" id="jama-recv-input" placeholder="Kitne Rupaye Jama Kiye? (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-black text-emerald-700"><select id="jama-mode-select" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Cash">Cash Mein Aaye</option><option value="UPI">UPI / Online Aaye</option></select><button onclick="submitUdharJama()" id="jama-submit-btn" class="w-full py-3 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ Jama Save Karein</button></div></div>
@@ -489,12 +551,13 @@
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
 
-    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
+    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
     let currentUser = null, activeBranch = "Main Branch", cart = [], heldBills = [], currentPriceMode = 'Retail', selectedCategory = 'All';
     let showLowStockOnly = false, salesPeriodFilter = 'all', staffSalesFilter = 'All', lastReceipt = null, currentBillTheme = 'thermal', currentBarcodeProd = null;
     let aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" }, isSavingAIItems = false;
     let activeLoyaltyCardData = null, activeCustomerCardsList = [];
     let loyaltyOverlapEnabled = localStorage.getItem('km_loy_overlap') !== 'false';
+    let selectedAttStaffId = null;
 
     let hwPrefs = JSON.parse(localStorage.getItem('km_hw_prefs') || '{"receiptSize":"80mm","barcodeSize":"thermal_50x25"}');
     let scanTargetField = null, zxingCodeReader = null, activeVideoStream = null, nativeDetectorLoop = false, torchOn = false;
@@ -526,6 +589,10 @@
       document.getElementById('hw-barcode-size').value = hwPrefs.barcodeSize || 'thermal_50x25';
       const ovChk = document.getElementById('loy-overlap-toggle');
       if (ovChk) ovChk.checked = loyaltyOverlapEnabled;
+      const now = new Date();
+      const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const mPicker = document.getElementById('att-month-picker');
+      if (mPicker) mPicker.value = monthStr;
       loadDataFromServer();
     };
 
@@ -546,7 +613,7 @@
       try {
         const res = await fetch(GOOGLE_API_URL);
         const data = await res.json();
-        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [], ...data };
+        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [], ...data };
         if (!storeData.branches.length) storeData.branches = [{ id: "BR-1", name: "Main Branch", address: "Madhuban, Jodhpur", phone: "8209618586", lat: null, lng: null }];
         const brOpts = storeData.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
         document.getElementById('login-branch-select').innerHTML = brOpts;
@@ -562,6 +629,7 @@
 
     function branchProducts() { return storeData.products.filter(p => (p.branch || "Main Branch") === activeBranch); }
     function branchInvoices() { return storeData.invoices.filter(i => (i.branch || "Main Branch") === activeBranch); }
+    function branchOnlineOrders() { return (storeData.onlineOrders || []).filter(o => (o.branch || "Main Branch") === activeBranch); }
     function branchRepairs() { return storeData.repairs.filter(r => (r.branch || "Main Branch") === activeBranch); }
     function branchUsed() { return storeData.usedPhones.filter(u => (u.branch || "Main Branch") === activeBranch); }
     function branchExpenses() { return storeData.expenses.filter(e => (e.branch || "Main Branch") === activeBranch); }
@@ -581,7 +649,8 @@
       document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch);
       document.getElementById('saved-pb-count').innerText = branchPurchaseBills().length;
       renderCategories(); renderPosProducts(); renderInventoryList(); renderTransferDropdowns();
-      renderInvoicesList(); renderRepairsList(); renderReturnsBoxList(); renderUsedPhonesList();
+      renderInvoicesList(); renderOnlineOrdersList(); renderUniqueCustomersView();
+      renderRepairsList(); renderReturnsBoxList(); renderUsedPhonesList();
       renderPurchaseBillsList(); renderExpensesList(); renderStaffList(); renderAttendanceView(); renderLoyaltyView();
     }
 
@@ -611,7 +680,199 @@
       reader.readAsDataURL(file);
     }
 
-    // ================= SHOP GPS + LIVE SELFIE ATTENDANCE + FULL SELFIE VIEWER =================
+    // ================= 1. ONLINE ORDERS + AI WHATSAPP MESSAGE / SCREENSHOT SCANNER =================
+    function fillOnlineOrderFormFromAI(res) {
+      if (res.platform) {
+        const sel = document.getElementById('onl-platform');
+        if ([...sel.options].some(o => o.value.toLowerCase() === res.platform.toLowerCase())) sel.value = res.platform;
+        else sel.value = "WhatsApp";
+      }
+      if (res.customer) document.getElementById('onl-cust').value = res.customer;
+      if (res.phone) document.getElementById('onl-phone').value = String(res.phone).replace(/\D/g, '').slice(-10);
+      if (res.address) document.getElementById('onl-address').value = res.address;
+      if (res.items) document.getElementById('onl-items').value = res.items;
+      if (res.amount) document.getElementById('onl-amount').value = Number(res.amount);
+      if (res.paymentStatus) {
+        document.getElementById('onl-pay').value = res.paymentStatus.toLowerCase().includes('cod') ? 'COD' : 'Prepaid (UPI)';
+      }
+    }
+
+    async function aiParseOnlineMessage() {
+      const txt = document.getElementById('ai-online-msg-input').value.trim();
+      if (!txt) { alert("Pehle WhatsApp message paste karein!"); return; }
+      const btn = document.getElementById('ai-online-btn');
+      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+      try {
+        const res = await callSheetAPI("parseOnlineOrderWithAI", { text: txt }, "AI Extracting Address...");
+        fillOnlineOrderFormFromAI(res);
+        document.getElementById('ai-online-msg-input').value = '';
+        alert("✅ AI ne Customer Name, Phone aur Address bhar diya hai! Check karke Save dabaye.");
+      } catch (err) { alert("Error: " + err.message); }
+      finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-magic mr-1"></i>AI Fill`; }
+    }
+
+    function aiParseOnlineScreenshot(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const res = await callSheetAPI("parseOnlineOrderWithAI", { image: e.target.result }, "AI Reading Screenshot...");
+          fillOnlineOrderFormFromAI(res);
+          alert("✅ Screenshot se details extract ho gayi hain! Verify karke Save karein.");
+        } catch (err) { alert("Error: " + err.message); }
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    }
+
+    async function saveNewOnlineOrder() {
+      const customer = document.getElementById('onl-cust').value.trim();
+      const phone = document.getElementById('onl-phone').value.trim();
+      const amount = Number(document.getElementById('onl-amount').value || 0);
+      if (!customer || !phone || !amount) { alert("Customer Name, Phone aur Amount zaroori hai!"); return; }
+
+      const btn = document.getElementById('save-onl-btn'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
+      try {
+        storeData = await callSheetAPI("saveOnlineOrder", {
+          platform: document.getElementById('onl-platform').value,
+          customer, phone,
+          address: document.getElementById('onl-address').value.trim(),
+          items: document.getElementById('onl-items').value.trim() || "Online Gadget Order",
+          amount,
+          paymentStatus: document.getElementById('onl-pay').value,
+          courier: document.getElementById('onl-courier').value.trim(),
+          trackingNo: document.getElementById('onl-awb').value.trim(),
+          branch: activeBranch
+        }, "Saving Online Order...");
+        ['onl-cust', 'onl-phone', 'onl-address', 'onl-items', 'onl-amount', 'onl-courier', 'onl-awb'].forEach(id => document.getElementById(id).value = '');
+        renderAllViews(); alert("✅ Online Order Save Ho Gaya!");
+      } finally { btn.disabled = false; btn.innerText = "+ Online Order Save Karein"; }
+    }
+
+    async function updateOnlineOrderStatus(id, status) {
+      let courier, trackingNo;
+      if (status === 'Dispatched') {
+        const ord = branchOnlineOrders().find(x => String(x.id) === String(id));
+        courier = prompt("Courier Partner Name (e.g. Delhivery, DTDC, Shiprocket):", ord?.courier || "Shiprocket") ?? ord?.courier;
+        trackingNo = prompt("Tracking / AWB Number daalein:", ord?.trackingNo || "") ?? ord?.trackingNo;
+      }
+      storeData = await callSheetAPI("updateOnlineOrder", { id, status, courier, trackingNo }, "Updating Order...");
+      renderOnlineOrdersList();
+    }
+
+    function sendOnlineTrackingWhatsApp(id) {
+      const o = branchOnlineOrders().find(x => String(x.id) === String(id)); if (!o) return;
+      const trackLine = o.trackingNo ? `%0A*Courier:* ${o.courier || 'Courier'}%0A*Tracking ID:* ${o.trackingNo}` : '';
+      const msg = `*📦 KIRTIKA MOBILE - ONLINE ORDER UPDATE*%0A*Order ID:* ${o.id}%0A*Customer:* ${o.customer}%0A*Items:* ${o.items}%0A*Amount:* ₹${o.amount} (${o.paymentStatus})%0A*Status:* *${o.status}*${trackLine}%0A%0AThank you for shopping with Kirtika Mobile, Jodhpur!`;
+      const ph = '91' + String(o.phone).replace(/\D/g, '').slice(-10);
+      window.open(`https://wa.me/${ph}?text=${msg}`, '_blank');
+    }
+
+    async function deleteOnlineOrderItem(id) {
+      if (!confirm("Is online order ko delete karein?")) return;
+      storeData = await callSheetAPI("deleteOnlineOrder", id, "Deleting Order...");
+      renderAllViews();
+    }
+
+    function renderOnlineOrdersList() {
+      const list = branchOnlineOrders();
+      document.getElementById('online-orders-list').innerHTML = list.length ? list.map(o => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-2">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold text-[10px]">${o.platform}</span>
+              <p class="font-bold text-slate-800 truncate">${o.customer} <span class="text-slate-500 font-mono">(${o.phone})</span></p>
+            </div>
+            <p class="text-[11px] text-slate-700 font-semibold mt-0.5">${o.items} • <b class="text-emerald-700">₹${o.amount}</b> (${o.paymentStatus})</p>
+            ${o.address ? `<p class="text-[10px] text-slate-500 truncate"><i class="fas fa-map-marker-alt text-rose-500 mr-1"></i>${o.address}</p>` : ''}
+            <p class="text-[10px] text-slate-400 mt-0.5">${o.date} ${o.trackingNo ? `• <b>${o.courier}: ${o.trackingNo}</b>` : ''}</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <select onchange="updateOnlineOrderStatus('${o.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white">
+              <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Packed" ${o.status === 'Packed' ? 'selected' : ''}>Packed</option>
+              <option value="Dispatched" ${o.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+            <button onclick="sendOnlineTrackingWhatsApp('${o.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-xs"><i class="fab fa-whatsapp"></i></button>
+            <button onclick="deleteOnlineOrderItem('${o.id}')" class="p-1.5 text-red-400"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('') : `<p class="text-center text-slate-400 py-6">Abhi koi online order save nahi hai.</p>`;
+    }
+
+    // ================= 2. UNIQUE CUSTOMERS DIRECTORY (NO DUPLICATES + EXCEL EXPORT) =================
+    function getUniqueCustomersList() {
+      const map = {};
+      const addRecord = (name, phone, address, amount, source, date) => {
+        const cleanPh = String(phone || "").replace(/\D/g, '').slice(-10);
+        const cleanName = String(name || "Walk-in Customer").trim();
+        if (!cleanPh && cleanName.toLowerCase() === "walk-in customer") return;
+        const key = cleanPh.length >= 8 ? cleanPh : ("NAME_" + cleanName.toLowerCase());
+        if (!map[key]) {
+          map[key] = { name: cleanName, phone: cleanPh || "--", address: address || "", totalOrders: 0, totalSpent: 0, lastVisit: date || "", sources: new Set() };
+        }
+        if (cleanName && cleanName.toLowerCase() !== "walk-in customer") map[key].name = cleanName;
+        if (address && address.length > map[key].address.length) map[key].address = address;
+        map[key].totalOrders += 1;
+        map[key].totalSpent += Number(amount || 0);
+        if (source) map[key].sources.add(source);
+      };
+
+      storeData.invoices.forEach(inv => {
+        if (inv.status === 'Returned') return;
+        let extractedAddr = "";
+        if (inv.note && inv.note.includes("Addr:")) {
+          extractedAddr = inv.note.split("Addr:")[1].split("|")[0].trim();
+        }
+        addRecord(inv.customer, inv.phone, extractedAddr, inv.total, "Store", inv.date);
+      });
+      (storeData.onlineOrders || []).forEach(o => {
+        addRecord(o.customer, o.phone, o.address, o.amount, "Online", o.date);
+      });
+
+      return Object.values(map).map(c => ({ ...c, sourceLabel: Array.from(c.sources).join(" + ") })).sort((a, b) => b.totalSpent - a.totalSpent);
+    }
+
+    function renderUniqueCustomersView() {
+      const allCust = getUniqueCustomersList();
+      document.getElementById('unique-cust-count').innerText = allCust.length;
+      document.getElementById('cust-dir-total').innerText = allCust.length;
+      const q = (document.getElementById('cust-dir-search')?.value || "").toLowerCase().trim();
+      const filtered = allCust.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.address.toLowerCase().includes(q));
+
+      document.getElementById('unique-customers-list').innerHTML = filtered.length ? filtered.map(c => `
+        <div class="py-2.5 flex justify-between items-center gap-2">
+          <div class="min-w-0">
+            <p class="font-bold text-slate-800">${c.name} <span class="text-indigo-600 font-mono text-[11px]">${c.phone !== '--' ? `(${c.phone})` : ''}</span> <span class="text-[9px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">${c.sourceLabel}</span></p>
+            ${c.address ? `<p class="text-[10px] text-slate-500 truncate"><i class="fas fa-map-marker-alt text-rose-400 mr-1"></i>${c.address}</p>` : ''}
+            <p class="text-[10px] text-slate-400">Orders/Bills: <b>${c.totalOrders}</b> • Total Kharidari: <b class="text-emerald-700">₹${c.totalSpent}</b></p>
+          </div>
+          ${c.phone !== '--' ? `<a href="https://wa.me/91${c.phone}" target="_blank" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-bold text-[11px] shrink-0"><i class="fab fa-whatsapp mr-1"></i>Chat</a>` : ''}
+        </div>
+      `).join('') : `<p class="text-center text-slate-400 py-6">Koi customer record nahi mila.</p>`;
+    }
+
+    function exportCustomersExcel() {
+      const list = getUniqueCustomersList();
+      if (!list.length) { alert("Download karne ke liye koi customer data nahi hai!"); return; }
+      const rows = list.map((c, idx) => ({
+        "S.No": idx + 1,
+        "Customer Name": c.name,
+        "Mobile Number": c.phone,
+        "Address": c.address || "Not Provided",
+        "Total Bills": c.totalOrders,
+        "Total Spent (INR)": c.totalSpent,
+        "Channel": c.sourceLabel,
+        "Last Visit": c.lastVisit
+      }));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Customers");
+      XLSX.writeFile(wb, `Kirtika_Mobile_Customers_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+
+    // ================= 3. SHOP GPS + CALENDAR + EDIT + MONTHLY CHHUTTI ATTENDANCE =================
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3, toRad = x => x * Math.PI / 180;
       const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
@@ -631,9 +892,7 @@
       }, err => { hideGlobalLoader(); alert("GPS Permission Allow karein: " + err.message); }, { enableHighAccuracy: true });
     }
 
-    function captureAttendanceSelfie(event) {
-      compressImageToInput(event, 'att-selfie-data', 'att-selfie-label', 'att-selfie-preview');
-    }
+    function captureAttendanceSelfie(event) { compressImageToInput(event, 'att-selfie-data', 'att-selfie-label', 'att-selfie-preview'); }
 
     function viewAttendanceSelfie(attId) {
       const rec = storeData.attendance.find(x => String(x.id) === String(attId));
@@ -677,8 +936,30 @@
     async function adminMarkManualAttendance() {
       const sel = document.getElementById('admin-att-staff');
       const staffId = sel.value, staffName = sel.options[sel.selectedIndex]?.text || "Staff", status = document.getElementById('admin-att-status').value;
-      storeData = await callSheetAPI("markStaffAttendance", { staffId, staffName, status, distance: "Admin Override", selfie: "", branch: activeBranch }, "Saving Attendance...");
-      renderAttendanceView(); alert("✅ Attendance Updated!");
+      const calDate = document.getElementById('att-calendar-date').value;
+      let targetDateStr = "";
+      if (calDate) {
+        const [y, m, d] = calDate.split('-');
+        targetDateStr = `${d}/${m}/${y}`;
+      }
+      storeData = await callSheetAPI("markStaffAttendance", { staffId, staffName, status, date: targetDateStr, distance: "Admin Entry", selfie: "", branch: activeBranch }, "Saving Attendance...");
+      renderAttendanceView(); alert("✅ Attendance Saved!");
+    }
+
+    async function adminChangeAttendanceStatus(attId, newStatus) {
+      storeData = await callSheetAPI("updateAttendanceRecord", { id: attId, status: newStatus }, "Updating Status...");
+      renderAttendanceView();
+    }
+
+    async function adminDeleteAttendance(attId) {
+      if (!confirm("Is attendance record ko delete karein?")) return;
+      storeData = await callSheetAPI("deleteAttendanceRecord", attId, "Deleting...");
+      renderAttendanceView();
+    }
+
+    function selectStaffForMonthlySummary(staffId) {
+      selectedAttStaffId = (selectedAttStaffId === staffId) ? null : staffId;
+      renderAttendanceView();
     }
 
     function renderAttendanceView() {
@@ -690,7 +971,64 @@
       document.getElementById('admin-manual-att-box').classList.toggle('hidden', !isAdmin);
       document.getElementById('admin-att-staff').innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
-      document.getElementById('attendance-log-list').innerHTML = storeData.attendance.map(a => `
+      // Staff Monthly Summary Chips & Calculation
+      const monthVal = document.getElementById('att-month-picker')?.value || ""; // YYYY-MM
+      document.getElementById('att-staff-chips').innerHTML = storeData.staff.map(s => `
+        <button onclick="selectStaffForMonthlySummary('${s.id}')" class="px-3 py-1.5 rounded-xl font-bold transition ${String(selectedAttStaffId) === String(s.id) ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-indigo-50'}">
+          ${s.name}
+        </button>
+      `).join('');
+
+      const sumCard = document.getElementById('att-staff-summary-card');
+      if (selectedAttStaffId && monthVal) {
+        const stf = storeData.staff.find(s => String(s.id) === String(selectedAttStaffId));
+        const [yr, mo] = monthVal.split('-');
+        const daysInMonth = new Date(Number(yr), Number(mo), 0).getDate();
+        const now = new Date();
+        const elapsedDays = (Number(yr) === now.getFullYear() && Number(mo) === (now.getMonth() + 1)) ? now.getDate() : daysInMonth;
+
+        const monthLogs = storeData.attendance.filter(a => {
+          if (String(a.staffId) !== String(selectedAttStaffId)) return false;
+          const parts = String(a.date).split('/');
+          return parts.length === 3 && parts[1] === mo && parts[2] === yr;
+        });
+
+        const presentCount = monthLogs.filter(a => a.status === 'Present').length;
+        const halfDayCount = monthLogs.filter(a => a.status === 'Half-Day').length;
+        const explicitAbsent = monthLogs.filter(a => a.status === 'Absent').length;
+        const totalMarked = presentCount + halfDayCount + explicitAbsent;
+        const chhuttiCount = explicitAbsent + Math.max(0, elapsedDays - totalMarked);
+        const payableDays = presentCount + (halfDayCount * 0.5);
+        const perDaySalary = stf && stf.salary ? (stf.salary / 30) : 0;
+        const estSalary = Math.round(payableDays * perDaySalary);
+
+        sumCard.classList.remove('hidden');
+        sumCard.innerHTML = `
+          <div class="flex justify-between items-center border-b pb-1.5 mb-2">
+            <span class="font-extrabold text-indigo-900">${stf?.name} — ${mo}/${yr} Attendance Summary</span>
+            <button onclick="selectStaffForMonthlySummary('${stf?.id}')" class="text-slate-400 font-bold">✕</button>
+          </div>
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="p-2 bg-emerald-50 rounded-lg"><p class="text-[10px] text-emerald-700 font-bold">Present</p><p class="text-sm font-black text-emerald-900">${presentCount}</p></div>
+            <div class="p-2 bg-amber-50 rounded-lg"><p class="text-[10px] text-amber-700 font-bold">Half-Day</p><p class="text-sm font-black text-amber-900">${halfDayCount}</p></div>
+            <div class="p-2 bg-red-50 rounded-lg"><p class="text-[10px] text-red-700 font-bold">Chhuttiyan</p><p class="text-sm font-black text-red-900">${chhuttiCount}</p></div>
+            <div class="p-2 bg-slate-900 text-white rounded-lg"><p class="text-[10px] text-slate-300 font-bold">Est. Salary</p><p class="text-sm font-black text-amber-300">₹${estSalary}</p></div>
+          </div>
+        `;
+      } else {
+        sumCard.classList.add('hidden');
+      }
+
+      // Calendar Date Filter
+      const calVal = document.getElementById('att-calendar-date')?.value || ""; // YYYY-MM-DD
+      let filterDateStr = "";
+      if (calVal) {
+        const [y, m, d] = calVal.split('-');
+        filterDateStr = `${d}/${m}/${y}`;
+      }
+
+      const visibleLogs = storeData.attendance.filter(a => (!filterDateStr || String(a.date) === filterDateStr));
+      document.getElementById('attendance-log-list').innerHTML = visibleLogs.length ? visibleLogs.map(a => `
         <div class="py-2.5 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5">
             ${a.selfie ? `<img onclick="viewAttendanceSelfie('${a.id}')" src="${a.selfie}" class="w-11 h-11 rounded-xl object-cover border-2 border-indigo-200 cursor-pointer shadow-sm" title="Click to enlarge">` : `<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-user"></i></div>`}
@@ -700,14 +1038,21 @@
             </div>
           </div>
           <div class="flex items-center gap-1.5">
-            ${a.selfie ? `<button onclick="viewAttendanceSelfie('${a.id}')" class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold"><i class="fas fa-eye mr-0.5"></i>Selfie</button>` : ''}
-            <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold ${a.status === 'Present' ? 'bg-emerald-100 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700')}">${a.status}</span>
+            ${a.selfie ? `<button onclick="viewAttendanceSelfie('${a.id}')" class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold"><i class="fas fa-eye"></i></button>` : ''}
+            ${isAdmin ? `
+              <select onchange="adminChangeAttendanceStatus('${a.id}', this.value)" class="p-1 rounded-lg text-[10px] font-extrabold border ${a.status === 'Present' ? 'bg-emerald-50 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-50 text-amber-800' : 'bg-red-50 text-red-700')}">
+                <option value="Present" ${a.status === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Half-Day" ${a.status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
+                <option value="Absent" ${a.status === 'Absent' ? 'selected' : ''}>Absent</option>
+              </select>
+              <button onclick="adminDeleteAttendance('${a.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>
+            ` : `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold ${a.status === 'Present' ? 'bg-emerald-100 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700')}">${a.status}</span>`}
           </div>
         </div>
-      `).join('') || `<p class="text-center text-slate-400 py-4">Abhi koi attendance record nahi hai.</p>`;
+      `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance record nahi mila.` : 'Abhi koi attendance record nahi hai.'}</p>`;
     }
 
-    // ================= MULTI-CARD VIP LOYALTY PROGRAM (FIXED RESET + SLAB TOGGLE) =================
+    // ================= 4. MULTI-CARD VIP LOYALTY PROGRAM =================
     function saveLoyaltyOverlapPref() {
       loyaltyOverlapEnabled = document.getElementById('loy-overlap-toggle').checked;
       localStorage.setItem('km_loy_overlap', loyaltyOverlapEnabled ? 'true' : 'false');
@@ -724,7 +1069,7 @@
         : [];
       const realName = custBills[0]?.customer || custName;
 
-      return rules.map((rule, rIdx) => {
+      return rules.map(rule => {
         const nextHigherMin = !loyaltyOverlapEnabled
           ? (rules.find(r => r.minSpend > rule.minSpend)?.minSpend || Infinity)
           : Infinity;
@@ -922,7 +1267,7 @@
 
     // ================= TABS & MORE SUBVIEWS =================
     function switchTab(tab) { ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => { document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab); const btn = document.getElementById('nav-' + t); if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); } }); }
-    function showMoreSubView(sub) { ['attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; }); }
+    function showMoreSubView(sub) { ['online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; }); }
 
     // ================= TRANSFER, HOLD, SCANNER & AI =================
     function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
@@ -1053,7 +1398,7 @@
       finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Bill Save & Print Karein`; }
     }
 
-    // ================= 8 BILL TEMPLATES (WITH CUSTOMER ADDRESS + 2 A4 INVOICES) =================
+    // ================= 8 BILL TEMPLATES =================
     function showReceiptModal(invId, dateStr, sale) { lastReceipt = { invId, dateStr, ...sale }; document.getElementById('receipt-modal').classList.remove('hidden'); document.getElementById('receipt-modal').classList.add('flex'); renderReceiptTheme(); }
     function setBillTheme(theme) {
       currentBillTheme = theme;
