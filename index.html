@@ -130,12 +130,12 @@
               <input type="text" id="cust-name" placeholder="Customer / Party Name" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
             </div>
 
-            <!-- CUSTOMER HISTORY + VIP LOYALTY STAMP BANNER -->
+            <!-- CUSTOMER HISTORY + MULTI-CARD VIP LOYALTY BANNER -->
             <div id="cust-history-banner" class="hidden bg-indigo-50 border border-indigo-200 p-2 rounded-lg space-y-1 text-[11px]">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-indigo-800" id="cust-history-summary">Purane 0 Bills</span>
                 <div class="flex gap-1">
-                  <button onclick="openLoyaltyCardForCurrentCust()" class="px-2 py-0.5 bg-amber-500 text-white rounded font-bold text-[10px]">🏆 VIP Card</button>
+                  <button onclick="openLoyaltyCardForCurrentCust()" class="px-2 py-0.5 bg-amber-500 text-white rounded font-bold text-[10px]">🏆 VIP Cards</button>
                   <button onclick="openCustomerHistoryModal()" class="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold text-[10px]">History</button>
                 </div>
               </div>
@@ -243,7 +243,7 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 3: SALES (WITH CLICKABLE STAFF FILTER & DAY-END REPORT) ==================== -->
+    <!-- ==================== TAB 3: SALES ==================== -->
     <section id="tab-invoices" class="hidden space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div onclick="setSalesPeriodFilter('today')" class="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-3.5 rounded-2xl shadow-sm cursor-pointer">
@@ -335,11 +335,11 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 5: MORE (GPS ATTENDANCE, VIP LOYALTY, REPAIRS, USED PHONES, RETURNS, TRANSFER, PBILLS, STAFF) ==================== -->
+    <!-- ==================== TAB 5: MORE ==================== -->
     <section id="tab-more" class="hidden space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-map-marker-alt text-base mb-1"></i><p class="font-extrabold text-xs">GPS Attendance</p><p class="text-[10px] opacity-80">Shop Location + Selfie</p></button>
-        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty Card</p><p class="text-[10px] text-slate-500">3-Visit Gift & WhatsApp</p></button>
+        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty Cards</p><p class="text-[10px] text-slate-500">Multi-Card & WhatsApp</p></button>
         <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Mobile Repairing</p><p class="text-[10px] text-slate-500">Job Cards & WhatsApp</p></button>
         <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Used Phones</p><p class="text-[10px] text-slate-500">IMEI & ID Register</p></button>
         <button onclick="showMoreSubView('returns')" id="more-btn-returns" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-undo-alt text-amber-600 text-base mb-1"></i><p class="font-extrabold text-xs">Return Box</p><p class="text-[10px] text-slate-500">Supplier Warranty</p></button>
@@ -385,23 +385,25 @@
         <div id="attendance-log-list" class="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto"></div>
       </div>
 
-      <!-- SUBVIEW: VIP LOYALTY STAMP CARD -->
+      <!-- SUBVIEW: MULTI-CARD VIP LOYALTY PROGRAM -->
       <div id="more-sub-loyalty" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3">
-        <h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Stamp Card (Repeat Customer Offer)</h3>
+        <h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards (Multiple Offers & Tiers)</h3>
         <div id="admin-loyalty-rule-box" class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2 text-xs">
-          <p class="font-extrabold text-amber-900">Offer Rule Set Karein (Admin):</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div><span class="text-[10px] font-bold text-slate-500">Min Spend / Visit (₹)</span><input type="number" id="loy-min-spend" class="w-full p-2 bg-white border rounded-lg font-bold"></div>
-            <div><span class="text-[10px] font-bold text-slate-500">Kitni Visits Par Gift?</span><input type="number" id="loy-target-visits" class="w-full p-2 bg-white border rounded-lg font-bold"></div>
-            <div><span class="text-[10px] font-bold text-slate-500">Free Gift Ka Naam</span><input type="text" id="loy-gift-name" class="w-full p-2 bg-white border rounded-lg font-bold"></div>
+          <p class="font-extrabold text-amber-900">+ Naya Loyalty Card / Offer Banayein (Admin):</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="loy-card-title" placeholder="Card Naam (e.g. Silver ₹500×3)" class="p-2 bg-white border rounded-lg font-bold">
+            <input type="text" id="loy-gift-name" placeholder="Free Gift (e.g. Free Neckband)" class="p-2 bg-white border rounded-lg font-bold">
+            <input type="number" id="loy-min-spend" placeholder="Min Bill Amount (e.g. 500)" class="p-2 bg-white border rounded-lg font-bold">
+            <input type="number" id="loy-target-visits" placeholder="Kitni Visits? (e.g. 3 ya 6)" class="p-2 bg-white border rounded-lg font-bold">
           </div>
-          <button onclick="saveLoyaltyRuleSettings()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">Rule Save Karein</button>
+          <button onclick="saveLoyaltyRuleSettings()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Card Tier Add Karein</button>
+          <div id="loyalty-rules-list" class="space-y-1.5 pt-2 border-t border-amber-200/70"></div>
         </div>
-        <h4 class="font-extrabold text-xs uppercase text-slate-500">Customers Stamp Progress (WhatsApp Card Bhejein)</h4>
-        <div id="loyalty-customers-list" class="space-y-2 text-xs"></div>
+        <h4 class="font-extrabold text-xs uppercase text-slate-500">Customers Cards Progress (Ek Customer Ko 2–3 Cards Bhi Bhej Sakte Hain)</h4>
+        <div id="loyalty-customers-list" class="space-y-2.5 text-xs"></div>
       </div>
 
-      <!-- REPAIRS, USED PHONES, RETURNS, TRANSFER, PBILLS & STAFF -->
+      <!-- SUBVIEWS: REPAIRS, USED PHONES, RETURNS, TRANSFER, PBILLS & STAFF -->
       <div id="more-sub-repairs" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-tools text-indigo-600 mr-1.5"></i>Mobile Repairing Job Card</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="rep-phone" placeholder="WhatsApp Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-model" placeholder="Mobile Model *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-fault" placeholder="Problem / Fault *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-estimate" placeholder="Total Repair Charge (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-advance" placeholder="Advance Paid (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addRepairJob()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button><div id="repairs-list" class="space-y-2 text-xs pt-2"></div></div>
       <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:col-span-2"></div><button onclick="addUsedPhone()" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Register Mein Save Karein</button><div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div></div>
       <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3"><h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty Return Box</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"><input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-prod" placeholder="Defective Item *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-issue" placeholder="Problem" class="p-2 bg-slate-50 border rounded-xl text-xs sm:col-span-2"></div><button onclick="addSupplierReturn()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Box Mein Daalein</button><div id="returns-box-list" class="space-y-2 text-xs pt-1"></div></div>
@@ -411,8 +413,8 @@
     </section>
   </main>
 
-  <!-- ALL MODALS (LOYALTY CARD, UDHAR JAMA, PBILLS, STAFF EDIT, QUICK PHOTO, SOLD PHOTOS, EDIT INV, EDIT PROD, HARDWARE, AI, BRANCH, HELD, BACKUP, SCANNER, BARCODE, HISTORY & 8-TEMPLATE RECEIPT) -->
-  <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-amber-800"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Stamp Card</h3><button onclick="document.getElementById('loyalty-card-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div><div class="grid grid-cols-2 gap-2"><button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Card</button><button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift()" class="hidden py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset)</button></div></div></div>
+  <!-- ALL MODALS -->
+  <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-amber-800"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards</h3><button onclick="document.getElementById('loyalty-card-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div><span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Card Chunein (Switch Cards):</span><div id="loyalty-card-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div></div><div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div><div class="grid grid-cols-2 gap-2"><button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Card</button><button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift()" class="hidden py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset)</button></div></div></div>
   <div id="udhar-jama-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-emerald-800"><i class="fas fa-hand-holding-usd mr-1.5"></i>Udhar Jama / Adjust</h3><button onclick="document.getElementById('udhar-jama-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="jama-inv-id"><div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs"><p class="font-bold text-slate-800" id="jama-cust-label">Customer</p><p class="text-red-700 font-black text-sm mt-0.5">Baaki Udhar: ₹<span id="jama-due-amount">0</span></p></div><input type="number" id="jama-recv-input" placeholder="Kitne Rupaye Jama Kiye? (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-black text-emerald-700"><select id="jama-mode-select" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Cash">Cash Mein Aaye</option><option value="UPI">UPI / Online Aaye</option></select><button onclick="submitUdharJama()" id="jama-submit-btn" class="w-full py-3 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ Jama Save Karein</button></div></div>
   <div id="view-pb-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="vpb-title">Purchase Bill</h3><button onclick="document.getElementById('view-pb-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="vpb-content" class="max-h-[70vh] overflow-y-auto space-y-3 text-xs"></div></div></div>
   <div id="edit-pb-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Purchase Bill Edit</h3><button onclick="document.getElementById('edit-pb-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-pb-id"><input type="text" id="edit-pb-supplier" placeholder="Supplier Name" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="edit-pb-billno" placeholder="Supplier Bill No." class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="edit-pb-total" placeholder="Total Amount (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-black"><button onclick="saveEditedPurchaseBill()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Update</button></div></div>
@@ -432,7 +434,7 @@
   <div id="barcode-gen-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-barcode text-indigo-600 mr-1.5"></i>Barcode Stickers</h3><button onclick="closeBarcodeGenModal()" class="text-slate-400 font-bold text-sm">✕</button></div><div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl text-xs"><span class="font-bold">Count:</span><select id="barcode-qty-select" onchange="renderBarcodeStickers()" class="p-1.5 bg-white border rounded-lg font-bold"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option><option value="12">12</option><option value="24">24</option></select></div><div id="barcode-print-area" class="max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-2 gap-3 text-center"></div><div class="grid grid-cols-2 gap-2"><button onclick="printSection('barcode-print-area')" class="py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Print</button><button onclick="closeBarcodeGenModal()" class="py-2.5 bg-slate-200 rounded-xl font-bold text-xs">Close</button></div></div></div>
   <div id="cust-history-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm" id="cust-hist-title">Purchase History</h3><button onclick="document.getElementById('cust-history-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="cust-hist-list" class="max-h-80 overflow-y-auto space-y-2 text-xs"></div></div></div>
 
-  <!-- 8-TEMPLATE RECEIPT MODAL (INCLUDING 2 FULL A4 SIZE INVOICES) -->
+  <!-- 8-TEMPLATE RECEIPT MODAL -->
   <div id="receipt-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full p-4 shadow-2xl space-y-3">
       <div class="space-y-1">
@@ -457,7 +459,7 @@
     </div>
   </div>
 
-  <!-- CLEAN 5-TAB BOTTOM NAVIGATION BAR -->
+  <!-- BOTTOM NAVIGATION BAR -->
   <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-30 flex justify-around py-2 shadow-lg">
     <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center text-indigo-600 font-bold text-[11px]"><i class="fas fa-cash-register text-base mb-0.5"></i><span>Billing</span></button>
     <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-boxes text-base mb-0.5"></i><span>Stock</span></button>
@@ -468,11 +470,11 @@
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
 
-    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRule: { minSpend: 500, targetVisits: 3, giftName: "Free Gift" }, loyaltyClaims: [] };
+    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
     let currentUser = null, activeBranch = "Main Branch", cart = [], heldBills = [], currentPriceMode = 'Retail', selectedCategory = 'All';
     let showLowStockOnly = false, salesPeriodFilter = 'all', staffSalesFilter = 'All', lastReceipt = null, currentBillTheme = 'thermal', currentBarcodeProd = null;
     let aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" }, isSavingAIItems = false;
-    let activeLoyaltyCardData = null;
+    let activeLoyaltyCardData = null, activeCustomerCardsList = [];
 
     let hwPrefs = JSON.parse(localStorage.getItem('km_hw_prefs') || '{"receiptSize":"80mm","barcodeSize":"thermal_50x25"}');
     let scanTargetField = null, zxingCodeReader = null, activeVideoStream = null, nativeDetectorLoop = false, torchOn = false;
@@ -509,7 +511,7 @@
       try {
         const res = await fetch(GOOGLE_API_URL);
         const data = await res.json();
-        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRule: { minSpend: 500, targetVisits: 3, giftName: "Free Gift" }, loyaltyClaims: [], ...data };
+        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [], ...data };
         if (!storeData.branches.length) storeData.branches = [{ id: "BR-1", name: "Main Branch", address: "Madhuban, Jodhpur", phone: "8209618586", lat: null, lng: null }];
         const brOpts = storeData.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
         document.getElementById('login-branch-select').innerHTML = brOpts;
@@ -654,46 +656,80 @@
       `).join('') || `<p class="text-center text-slate-400 py-4">Abhi koi attendance record nahi hai.</p>`;
     }
 
-    // ================= VIP LOYALTY STAMP CARD =================
-    function getCustomerLoyaltyProgress(phone, custName = "Customer") {
+    // ================= MULTI-CARD VIP LOYALTY PROGRAM =================
+    function getCustomerAllLoyaltyCards(phone, custName = "Customer") {
       const cleanPhone = String(phone || "").replace(/\D/g, '').slice(-10);
-      const rule = storeData.loyaltyRule || { minSpend: 500, targetVisits: 3, giftName: "Free Gift" };
-      if (cleanPhone.length < 5) return { phone: cleanPhone, name: custName, qualifyingBills: 0, claimedCount: 0, currentStamps: 0, targetVisits: rule.targetVisits, minSpend: rule.minSpend, giftName: rule.giftName, unlocked: false };
+      const rules = (storeData.loyaltyRules && storeData.loyaltyRules.length)
+        ? storeData.loyaltyRules
+        : [{ id: "RULE-1", title: "Silver Card (₹500 × 3)", minSpend: 500, targetVisits: 3, giftName: "Free Gift" }];
 
-      const qualBills = storeData.invoices.filter(inv => inv.status !== 'Returned' && String(inv.phone).replace(/\D/g, '').endsWith(cleanPhone) && Number(inv.total || 0) >= rule.minSpend);
-      const claims = storeData.loyaltyClaims.filter(c => String(c.phone).replace(/\D/g, '').endsWith(cleanPhone));
-      const usedStamps = claims.length * rule.targetVisits;
-      const currentStamps = Math.max(0, qualBills.length - usedStamps);
-      const unlocked = currentStamps >= rule.targetVisits;
-      return { phone: cleanPhone, name: qualBills[0]?.customer || custName, qualifyingBills: qualBills.length, claimedCount: claims.length, currentStamps: Math.min(currentStamps, rule.targetVisits), targetVisits: rule.targetVisits, minSpend: rule.minSpend, giftName: rule.giftName, unlocked };
+      const custBills = cleanPhone.length >= 5
+        ? storeData.invoices.filter(inv => inv.status !== 'Returned' && String(inv.phone).replace(/\D/g, '').endsWith(cleanPhone))
+        : [];
+      const realName = custBills[0]?.customer || custName;
+
+      return rules.map(rule => {
+        const qualBills = custBills.filter(inv => Number(inv.total || 0) >= rule.minSpend);
+        const claims = storeData.loyaltyClaims.filter(c => String(c.phone).replace(/\D/g, '').endsWith(cleanPhone) && String(c.ruleId || "RULE-1") === String(rule.id));
+        const usedStamps = claims.length * rule.targetVisits;
+        const currentStamps = Math.max(0, qualBills.length - usedStamps);
+        const unlocked = cleanPhone.length >= 5 && currentStamps >= rule.targetVisits;
+
+        return {
+          ruleId: rule.id, title: rule.title, phone: cleanPhone, name: realName,
+          minSpend: rule.minSpend, targetVisits: rule.targetVisits, giftName: rule.giftName,
+          currentStamps: Math.min(currentStamps, rule.targetVisits), unlocked
+        };
+      });
     }
 
     async function saveLoyaltyRuleSettings() {
-      storeData = await callSheetAPI("saveLoyaltyRule", {
-        minSpend: Number(document.getElementById('loy-min-spend').value || 500),
-        targetVisits: Number(document.getElementById('loy-target-visits').value || 3),
-        giftName: document.getElementById('loy-gift-name').value.trim() || "Free Gift"
-      });
-      renderLoyaltyView(); alert("✅ Loyalty Offer Rule Save Ho Gaya!");
+      const title = document.getElementById('loy-card-title').value.trim();
+      const giftName = document.getElementById('loy-gift-name').value.trim();
+      const minSpend = Number(document.getElementById('loy-min-spend').value || 0);
+      const targetVisits = Number(document.getElementById('loy-target-visits').value || 0);
+      if (!title || !giftName || !minSpend || !targetVisits) { alert("Saari details bharein!"); return; }
+
+      storeData = await callSheetAPI("saveLoyaltyRule", { title, minSpend, targetVisits, giftName });
+      ['loy-card-title', 'loy-gift-name', 'loy-min-spend', 'loy-target-visits'].forEach(id => document.getElementById(id).value = '');
+      renderLoyaltyView(); alert("✅ Naya Loyalty Card Add Ho Gaya!");
     }
 
-    function openLoyaltyCardModal(phone, name) {
-      const info = getCustomerLoyaltyProgress(phone, name);
-      activeLoyaltyCardData = info;
+    async function deleteLoyaltyRuleItem(ruleId) {
+      if (!confirm("Is loyalty card rule ko delete karein?")) return;
+      storeData = await callSheetAPI("deleteLoyaltyRule", ruleId);
+      renderLoyaltyView();
+    }
+
+    function openLoyaltyCardModal(phone, name, selectedRuleId = null) {
+      activeCustomerCardsList = getCustomerAllLoyaltyCards(phone, name);
+      if (!activeCustomerCardsList.length) return;
+      const activeCard = selectedRuleId
+        ? (activeCustomerCardsList.find(c => String(c.ruleId) === String(selectedRuleId)) || activeCustomerCardsList[0])
+        : activeCustomerCardsList[0];
+
+      document.getElementById('loyalty-card-tabs').innerHTML = activeCustomerCardsList.map(c => `
+        <button onclick="openLoyaltyCardModal('${c.phone}', '${c.name.replace(/'/g, '')}', '${c.ruleId}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap ${String(c.ruleId) === String(activeCard.ruleId) ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-700'}">
+          ${c.title} (${c.currentStamps}/${c.targetVisits})
+        </button>
+      `).join('');
+
+      activeLoyaltyCardData = activeCard;
       let stampsHtml = "";
-      for (let i = 1; i <= info.targetVisits; i++) {
-        const done = i <= info.currentStamps;
-        stampsHtml += `<div class="p-2.5 rounded-xl border text-center ${done ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/5 border-white/15 text-slate-400'}"><i class="fas ${done ? 'fa-check-circle text-lg' : 'fa-circle text-lg opacity-30'}"></i><p class="text-[10px] font-bold mt-1">Visit ${i}</p></div>`;
+      for (let i = 1; i <= activeCard.targetVisits; i++) {
+        const done = i <= activeCard.currentStamps;
+        stampsHtml += `<div class="p-2 rounded-xl border text-center ${done ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/5 border-white/15 text-slate-400'}"><i class="fas ${done ? 'fa-check-circle text-base' : 'fa-circle text-base opacity-30'}"></i><p class="text-[10px] font-bold mt-0.5">Visit ${i}</p></div>`;
       }
+
       document.getElementById('loyalty-card-preview').innerHTML = `
-        <div class="flex justify-between items-center"><span class="text-[10px] font-black tracking-widest uppercase text-amber-400">KIRTIKA MOBILE VIP CARD</span><span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">${info.currentStamps}/${info.targetVisits} Stamps</span></div>
-        <div><h4 class="text-base font-black">${info.name}</h4><p class="text-xs text-slate-300 font-mono">+91 ${info.phone}</p></div>
+        <div class="flex justify-between items-center"><span class="text-[10px] font-black uppercase text-amber-400">${activeCard.title}</span><span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">${activeCard.currentStamps}/${activeCard.targetVisits} Stamps</span></div>
+        <div><h4 class="text-base font-black">${activeCard.name}</h4><p class="text-xs text-slate-300 font-mono">+91 ${activeCard.phone}</p></div>
         <div class="grid grid-cols-3 gap-2">${stampsHtml}</div>
-        <div class="p-2.5 rounded-xl ${info.unlocked ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-amber-200'} text-center text-xs font-extrabold">
-          ${info.unlocked ? `🎉 CONGRATS! FREE GIFT UNLOCKED: ${info.giftName}` : `₹${info.minSpend}+ ki ${info.targetVisits} kharidari par FREE: ${info.giftName}`}
+        <div class="p-2.5 rounded-xl ${activeCard.unlocked ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-amber-200'} text-center text-xs font-extrabold">
+          ${activeCard.unlocked ? `🎉 UNLOCKED: ${activeCard.giftName}` : `₹${activeCard.minSpend}+ ki ${activeCard.targetVisits} visits par FREE: ${activeCard.giftName}`}
         </div>
       `;
-      document.getElementById('claim-gift-btn').classList.toggle('hidden', !info.unlocked);
+      document.getElementById('claim-gift-btn').classList.toggle('hidden', !activeCard.unlocked);
       document.getElementById('loyalty-card-modal').classList.remove('hidden');
       document.getElementById('loyalty-card-modal').classList.add('flex');
     }
@@ -707,24 +743,34 @@
       const d = activeLoyaltyCardData;
       let stampLines = "";
       for (let i = 1; i <= d.targetVisits; i++) stampLines += (i <= d.currentStamps ? `✅ Visit ${i}: COMPLETED%0A` : `⬜ Visit ${i}: Pending%0A`);
-      const statusMsg = d.unlocked ? `🎉 *BADHAI HO! Aapka FREE GIFT (${d.giftName}) unlock ho gaya hai!* Agli visit par dukaan se apna gift zaroor lein.` : `Bas *${d.targetVisits - d.currentStamps} aur visit* (₹${d.minSpend}+ bill) par aapko milega *FREE ${d.giftName}*!`;
-      const msg = `*🏆 KIRTIKA MOBILE - VIP LOYALTY CARD*%0A*Customer:* ${d.name}%0A*Progress:* ${d.currentStamps}/${d.targetVisits} Stamps%0A%0A${stampLines}%0A${statusMsg}%0A%0A📍 Kirtika Mobile, Madhuban Jodhpur (8209618586)`;
+      const statusMsg = d.unlocked
+        ? `🎉 *BADHAI HO! Aapka FREE GIFT (${d.giftName}) unlock ho gaya hai!*`
+        : `Bas *${d.targetVisits - d.currentStamps} aur visit* (₹${d.minSpend}+ bill) par aapko milega *FREE ${d.giftName}*!`;
+      const msg = `*🏆 KIRTIKA MOBILE - ${d.title.toUpperCase()}*%0A*Customer:* ${d.name}%0A*Progress:* ${d.currentStamps}/${d.targetVisits} Stamps%0A%0A${stampLines}%0A${statusMsg}%0A%0A📍 Kirtika Mobile, Madhuban Jodhpur (8209618586)`;
       window.open(`https://wa.me/91${d.phone}?text=${msg}`, '_blank');
     }
 
     async function claimCustomerLoyaltyGift() {
       if (!activeLoyaltyCardData || !confirm(`Kya aapne ${activeLoyaltyCardData.name} ko "${activeLoyaltyCardData.giftName}" gift de diya hai?`)) return;
-      storeData = await callSheetAPI("claimLoyaltyGift", { phone: activeLoyaltyCardData.phone, customer: activeLoyaltyCardData.name, gift: activeLoyaltyCardData.giftName, staff: currentUser ? currentUser.name : "Admin", branch: activeBranch });
+      storeData = await callSheetAPI("claimLoyaltyGift", {
+        phone: activeLoyaltyCardData.phone, customer: activeLoyaltyCardData.name,
+        gift: activeLoyaltyCardData.giftName, ruleId: activeLoyaltyCardData.ruleId,
+        staff: currentUser ? currentUser.name : "Admin", branch: activeBranch
+      });
       document.getElementById('loyalty-card-modal').classList.add('hidden');
-      renderAllViews(); alert("🎁 Gift Claimed & Customer ka naya stamp cycle shuru ho gaya!");
+      renderAllViews(); alert("🎁 Gift Claimed & Is Card Ka Naya Cycle Shuru Ho Gaya!");
     }
 
     function renderLoyaltyView() {
-      const rule = storeData.loyaltyRule || { minSpend: 500, targetVisits: 3, giftName: "Free Gift" };
-      document.getElementById('loy-min-spend').value = rule.minSpend;
-      document.getElementById('loy-target-visits').value = rule.targetVisits;
-      document.getElementById('loy-gift-name').value = rule.giftName;
-      document.getElementById('admin-loyalty-rule-box').classList.toggle('hidden', !(currentUser && currentUser.role === 'Admin'));
+      const isAdmin = currentUser && currentUser.role === 'Admin';
+      document.getElementById('admin-loyalty-rule-box').classList.toggle('hidden', !isAdmin);
+      const rules = storeData.loyaltyRules || [];
+      document.getElementById('loyalty-rules-list').innerHTML = rules.map(r => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-lg border">
+          <div><p class="font-bold text-slate-800">${r.title}</p><p class="text-[10px] text-slate-500">Min ₹${r.minSpend} × ${r.targetVisits} Visits → 🎁 <b>${r.giftName}</b></p></div>
+          <button onclick="deleteLoyaltyRuleItem('${r.id}')" class="text-red-500 p-1"><i class="fas fa-trash"></i></button>
+        </div>
+      `).join('');
 
       const custMap = {};
       storeData.invoices.forEach(inv => {
@@ -733,9 +779,19 @@
       });
       const phones = Object.keys(custMap);
       document.getElementById('loyalty-customers-list').innerHTML = phones.length ? phones.map(ph => {
-        const info = getCustomerLoyaltyProgress(ph, custMap[ph]);
-        return `<div class="p-3 bg-slate-50 rounded-xl border ${info.unlocked ? 'border-amber-400 bg-amber-50/50' : ''} flex justify-between items-center"><div><p class="font-bold text-slate-800">${info.name} <span class="text-[10px] text-slate-400">(${ph})</span></p><p class="text-[11px] font-extrabold ${info.unlocked ? 'text-amber-700' : 'text-indigo-600'}">Stamps: ${info.currentStamps}/${info.targetVisits} ${info.unlocked ? '• 🎉 GIFT READY!' : ''}</p></div><button onclick="openLoyaltyCardModal('${ph}', '${info.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-slate-900 text-amber-300 rounded-lg font-bold text-[11px]">Open Card</button></div>`;
-      }).join('') : `<p class="text-center text-slate-400 py-4">Mobile number ke saath bill banate hi customers yahan dikhenge.</p>`;
+        const cards = getCustomerAllLoyaltyCards(ph, custMap[ph]);
+        return `
+          <div class="p-3 bg-slate-50 rounded-xl border space-y-2">
+            <div class="flex justify-between items-center">
+              <p class="font-bold text-slate-800">${custMap[ph]} <span class="text-[10px] text-slate-400">(${ph})</span></p>
+              <button onclick="openLoyaltyCardModal('${ph}', '${custMap[ph].replace(/'/g, '')}')" class="px-2.5 py-1 bg-slate-900 text-amber-300 rounded-lg font-bold text-[10px]">Cards Dekhein</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${cards.map(c => `<button onclick="openLoyaltyCardModal('${ph}', '${c.name.replace(/'/g, '')}', '${c.ruleId}')" class="px-2 py-1 rounded-lg text-[10px] font-bold border ${c.unlocked ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-white text-indigo-700'}">${c.title}: ${c.currentStamps}/${c.targetVisits} ${c.unlocked ? '🎁' : ''}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join('') : `<p class="text-center text-slate-400 py-4">Mobile number ke saath bill banate hi customers ke cards yahan dikhenge.</p>`;
     }
 
     // ================= SPLIT PAYMENT, UDHAR JAMA & DAY-END REPORT =================
@@ -836,7 +892,7 @@
       } catch (err) { out.innerText = "Error: " + err.message; }
     }
 
-    // ================= AUTH, POS, STOCK, SALES (CLICKABLE STAFF FILTER) & 8 BILL TEMPLATES =================
+    // ================= AUTH, POS, STOCK, SALES & 8 BILL TEMPLATES =================
     function attemptLogin() {
       const staffId = document.getElementById('login-staff-select').value, pin = document.getElementById('login-pin').value.trim();
       activeBranch = document.getElementById('login-branch-select').value || "Main Branch"; document.getElementById('header-branch-select').value = activeBranch;
@@ -858,12 +914,12 @@
       const phone = document.getElementById('cust-phone').value.replace(/\D/g, ''), banner = document.getElementById('cust-history-banner');
       if (phone.length < 5) { banner.classList.add('hidden'); return; }
       const matches = storeData.invoices.filter(inv => String(inv.phone).replace(/\D/g, '').includes(phone));
-      const loy = getCustomerLoyaltyProgress(phone, document.getElementById('cust-name').value || "Customer");
+      const cards = getCustomerAllLoyaltyCards(phone, document.getElementById('cust-name').value || "Customer");
       if (matches.length > 0 || phone.length >= 10) {
         if (matches.length > 0 && !document.getElementById('cust-name').value.trim()) document.getElementById('cust-name').value = matches[0].customer;
         const totalDue = matches.reduce((s, x) => s + Number(x.udharDue || 0), 0);
         document.getElementById('cust-history-summary').innerText = `Purane ${matches.length} Bills ${totalDue > 0 ? `• Baaki: ₹${totalDue}` : ''}`;
-        document.getElementById('cust-loyalty-status').innerText = loy.unlocked ? `🎉 VIP GIFT UNLOCKED: ${loy.giftName}!` : `🏆 VIP Stamp: ${loy.currentStamps}/${loy.targetVisits} (₹${loy.minSpend}+ bill par 1 stamp)`;
+        document.getElementById('cust-loyalty-status').innerText = cards.map(c => `${c.title}: ${c.currentStamps}/${c.targetVisits}${c.unlocked ? ' 🎁' : ''}`).join(' | ');
         banner.classList.remove('hidden');
       } else banner.classList.add('hidden');
     }
