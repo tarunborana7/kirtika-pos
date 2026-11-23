@@ -14,10 +14,7 @@
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; -webkit-tap-highlight-color: transparent; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    @keyframes scanline {
-      0%, 100% { top: 12%; }
-      50% { top: 86%; }
-    }
+    @keyframes scanline { 0%, 100% { top: 12%; } 50% { top: 86%; } }
     .laser-line { animation: scanline 1.5s ease-in-out infinite; }
     @media print {
       body * { visibility: hidden; }
@@ -33,20 +30,24 @@
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center">
       <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-3 shadow-lg">KM</div>
       <h1 class="text-xl font-extrabold text-slate-900">Kirtika Mobile</h1>
-      <p class="text-xs text-slate-500 mb-5">The TB Store • Madhuban, Jodhpur</p>
+      <p class="text-xs text-slate-500 mb-5">The TB Store • Smart ERP & POS</p>
       
       <div id="login-loading" class="py-6 text-indigo-600 font-semibold text-sm">
         <i class="fas fa-spinner fa-spin mr-2"></i> Store Data Load Ho Raha Hai...
       </div>
 
-      <div id="login-form" class="hidden space-y-4">
+      <div id="login-form" class="hidden space-y-3.5">
         <div class="text-left">
-          <label class="text-xs font-bold text-slate-500 uppercase">Staff / Admin Chunein</label>
-          <select id="login-staff-select" class="w-full mt-1 p-3 bg-slate-100 rounded-xl font-semibold text-slate-800 border border-slate-200"></select>
+          <label class="text-[11px] font-bold text-slate-500 uppercase">Branch / Shop Chunein</label>
+          <select id="login-branch-select" class="w-full mt-1 p-2.5 bg-indigo-50 rounded-xl font-bold text-indigo-900 border border-indigo-200 text-sm"></select>
         </div>
         <div class="text-left">
-          <label class="text-xs font-bold text-slate-500 uppercase">4-Digit PIN Daalein</label>
-          <input type="password" id="login-pin" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="new-password" class="w-full mt-1 p-3 bg-slate-100 rounded-xl text-center text-2xl tracking-widest font-bold text-slate-900 border border-slate-200">
+          <label class="text-[11px] font-bold text-slate-500 uppercase">Staff / Admin Chunein</label>
+          <select id="login-staff-select" class="w-full mt-1 p-2.5 bg-slate-100 rounded-xl font-semibold text-slate-800 border border-slate-200 text-sm"></select>
+        </div>
+        <div class="text-left">
+          <label class="text-[11px] font-bold text-slate-500 uppercase">4-Digit PIN Daalein</label>
+          <input type="password" id="login-pin" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="new-password" class="w-full mt-1 p-2.5 bg-slate-100 rounded-xl text-center text-2xl tracking-widest font-bold text-slate-900 border border-slate-200">
         </div>
         <button onclick="attemptLogin()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
           Store Open Karein <i class="fas fa-arrow-right ml-1"></i>
@@ -57,22 +58,32 @@
 
   <!-- HEADER -->
   <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-    <div class="max-w-6xl mx-auto px-3 py-2.5 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2">
-        <div class="w-9 h-9 bg-indigo-500 rounded-xl flex items-center justify-center font-black text-sm text-white shadow">KM</div>
+        <div class="w-8 h-8 bg-indigo-500 rounded-xl flex items-center justify-center font-black text-xs text-white shadow">KM</div>
         <div>
-          <h2 class="font-bold text-sm leading-tight text-white">Kirtika Mobile</h2>
-          <p class="text-[10px] text-slate-400" id="header-staff-info">Staff: --</p>
+          <div class="flex items-center gap-1">
+            <select id="header-branch-select" onchange="switchActiveBranch(this.value)" class="bg-slate-800 text-amber-300 font-extrabold text-xs px-2 py-0.5 rounded-lg border border-slate-700 focus:outline-none"></select>
+            <button onclick="openAddBranchModal()" class="px-1.5 py-0.5 bg-indigo-600 text-white rounded text-[10px] font-bold" title="Nayi Branch Add Karein">+Shop</button>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5" id="header-staff-info">Staff: --</p>
         </div>
       </div>
+
       <div class="flex items-center gap-1.5">
+        <button onclick="openAICopilotModal()" class="px-2.5 py-1.5 bg-violet-600 text-white rounded-lg text-[11px] font-bold shadow flex items-center gap-1">
+          <i class="fas fa-robot"></i><span>AI</span>
+        </button>
+        <button onclick="openHardwareModal()" class="px-2 py-1.5 bg-slate-800 text-cyan-300 border border-slate-700 rounded-lg text-[11px] font-bold" title="Printer & Scanner Setup">
+          <i class="fas fa-print"></i>
+        </button>
         <button onclick="openBackupModal()" class="px-2.5 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-[11px] font-bold">
           <i class="fas fa-file-export mr-1"></i>Backup
         </button>
         <button onclick="loadDataFromServer()" class="p-2 bg-slate-800 rounded-lg text-xs text-slate-300" title="Sync Sheet">
           <i class="fas fa-sync-alt" id="sync-icon"></i>
         </button>
-        <button onclick="logout()" class="px-2.5 py-1.5 bg-red-500/20 text-red-300 rounded-lg text-[11px] font-bold">Lock</button>
+        <button onclick="logout()" class="px-2 py-1.5 bg-red-500/20 text-red-300 rounded-lg text-[11px] font-bold">Lock</button>
       </div>
     </div>
   </header>
@@ -80,24 +91,38 @@
   <!-- MAIN CONTENT -->
   <main class="max-w-6xl mx-auto p-3 md:p-5">
     
-    <!-- TAB 1: BILLING -->
+    <!-- ==================== TAB 1: BILLING ==================== -->
     <section id="tab-pos" class="space-y-3">
       <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 space-y-2.5">
         <div class="flex gap-2">
           <div class="relative flex-1">
             <i class="fas fa-search absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-            <input type="text" id="pos-search" oninput="renderPosProducts()" placeholder="Item naam ya barcode likhein..." class="w-full pl-9 pr-3 py-2.5 bg-slate-100 text-slate-800 rounded-xl text-sm font-medium focus:outline-none">
+            <input type="text" id="pos-search" oninput="renderPosProducts()" onkeydown="handleScannerGunEnter(event)" placeholder="Item naam likhein ya scanner gun se scan karein..." class="w-full pl-9 pr-3 py-2.5 bg-slate-100 text-slate-800 rounded-xl text-sm font-medium focus:outline-none">
           </div>
-          <button onclick="openUltraFastScanner('pos-search')" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm active:scale-95">
-            <i class="fas fa-bolt text-amber-300"></i> <span>Scan</span>
+          <button onclick="openUltraFastScanner('pos-search')" class="px-3.5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm">
+            <i class="fas fa-camera text-amber-300"></i> <span>Cam</span>
+          </button>
+          <button onclick="togglePCRemoteListener()" id="pc-remote-btn" class="px-3 py-2.5 bg-slate-800 text-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5" title="Bina webcam PC par mobile se scan karein">
+            <i class="fas fa-mobile-alt text-emerald-400"></i> <span class="hidden sm:inline">PC Link</span>
           </button>
         </div>
 
-        <div class="flex items-center justify-between bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-          <span class="text-[11px] font-bold text-slate-500">Billing Rate Mode:</span>
-          <div class="flex bg-slate-200 p-0.5 rounded-lg">
-            <button onclick="setPriceMode('Retail')" id="mode-btn-Retail" class="px-3 py-1 rounded-md text-xs font-extrabold bg-white text-indigo-700 shadow-sm">Retail</button>
-            <button onclick="setPriceMode('Wholesale')" id="mode-btn-Wholesale" class="px-3 py-1 rounded-md text-xs font-bold text-slate-600">B2B Wholesale</button>
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold text-slate-500">Rate:</span>
+            <div class="flex bg-slate-200 p-0.5 rounded-lg">
+              <button onclick="setPriceMode('Retail')" id="mode-btn-Retail" class="px-2.5 py-1 rounded-md text-xs font-extrabold bg-white text-indigo-700 shadow-sm">Retail</button>
+              <button onclick="setPriceMode('Wholesale')" id="mode-btn-Wholesale" class="px-2.5 py-1 rounded-md text-xs font-bold text-slate-600">Wholesale</button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button onclick="holdCurrentBill()" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-[11px] font-bold">
+              <i class="fas fa-pause mr-1"></i>Hold
+            </button>
+            <button onclick="openHeldBillsModal()" id="held-bills-btn" class="hidden px-2.5 py-1 bg-amber-500 text-white rounded-lg text-[11px] font-black">
+              Held (<span id="held-count">0</span>)
+            </button>
           </div>
         </div>
       </div>
@@ -109,16 +134,22 @@
           <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
         </div>
 
+        <!-- BILLING CART -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 h-fit sticky top-20">
           <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
             <h3 class="font-extrabold text-slate-800 text-sm">
               <i class="fas fa-shopping-bag text-indigo-600 mr-1.5"></i>Bill (<span id="cart-mode-badge" class="text-indigo-600">Retail</span>)
             </h3>
-            <button onclick="clearCart()" class="text-xs text-red-500 font-semibold">Clear</button>
+            <div class="flex items-center gap-2">
+              <button onclick="openQuickPhotoCartModal()" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-extrabold">
+                <i class="fas fa-camera mr-1"></i>+ Photo Item
+              </button>
+              <button onclick="clearCart()" class="text-xs text-red-500 font-semibold">Clear</button>
+            </div>
           </div>
 
-          <div id="cart-items" class="space-y-2 max-h-60 overflow-y-auto mb-3 text-sm">
-            <p class="text-center text-slate-400 py-6 text-xs">Cart khaali hai. Item select ya scan karein.</p>
+          <div id="cart-items" class="space-y-2 max-h-64 overflow-y-auto mb-3 text-sm">
+            <p class="text-center text-slate-400 py-6 text-xs">Cart khaali hai. Item select karein ya "+ Photo Item" se photo+price daalein.</p>
           </div>
 
           <div class="space-y-2 border-t border-slate-100 pt-3 text-sm">
@@ -129,7 +160,7 @@
 
             <div id="cust-history-banner" class="hidden bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-lg flex justify-between items-center text-[11px]">
               <span class="font-bold text-indigo-800" id="cust-history-summary">Purane 0 Bills</span>
-              <button onclick="openCustomerHistoryModal()" class="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold text-[10px]">History Dekhein</button>
+              <button onclick="openCustomerHistoryModal()" class="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold text-[10px]">History</button>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
@@ -140,7 +171,10 @@
               </select>
               <input type="number" id="bill-discount" oninput="updateCartTotals()" placeholder="Extra Discount (₹)" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
             </div>
-            <input type="text" id="bill-note" placeholder="IMEI / Serial No. / Warranty Note" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="bill-note" placeholder="IMEI / Warranty Note" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+              <input type="text" id="bill-custom-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2 bg-amber-50/70 border border-amber-200 rounded-lg text-xs">
+            </div>
 
             <div class="bg-slate-900 text-white p-3 rounded-xl space-y-1 mt-2">
               <div class="flex justify-between text-[11px] text-slate-400">
@@ -161,14 +195,14 @@
       </div>
     </section>
 
-    <!-- TAB 2: STOCK -->
+    <!-- ==================== TAB 2: STOCK ==================== -->
     <section id="tab-inventory" class="hidden space-y-4">
       <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4 rounded-2xl shadow-md">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">AI Smart Stock</span>
-            <h3 class="font-extrabold text-base mt-1">Purchase Bill Photo Se Stock Add Karein</h3>
-            <p class="text-xs text-indigo-100">Bill ki photo upload karein, AI items nikaal dega.</p>
+            <h3 class="font-extrabold text-base mt-1">Purchase Bill Photo Se Stock Add & Bill Save Karein</h3>
+            <p class="text-xs text-indigo-100">Bill photo scan karke items edit & save karein.</p>
           </div>
           <label class="bg-white text-indigo-700 px-3.5 py-2.5 rounded-xl font-extrabold text-xs shadow cursor-pointer flex items-center gap-1.5">
             <i class="fas fa-magic"></i> Scan Bill
@@ -176,22 +210,18 @@
           </label>
         </div>
         <div id="ai-scan-status" class="hidden mt-3 bg-black/25 p-2.5 rounded-xl text-xs font-medium"></div>
-        <div id="ai-extracted-box" class="hidden mt-3 bg-white text-slate-800 p-3 rounded-xl space-y-2"></div>
+        <div id="ai-extracted-box" class="hidden mt-3 bg-white text-slate-800 p-3.5 rounded-xl space-y-2.5 shadow-lg"></div>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-plus-circle text-indigo-600 mr-1"></i>Naya Product Add Karein</h3>
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-plus-circle text-indigo-600 mr-1"></i>Naya Product Add Karein (<span class="text-indigo-600 active-branch-label">Main Branch</span>)</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
           <input type="text" id="prod-name" placeholder="Product Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
           <input type="text" id="prod-cat" placeholder="Category (e.g. Charger, Cover)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
           <div class="flex gap-1">
             <input type="text" id="prod-barcode" placeholder="Barcode *" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-            <button onclick="generateRandomBarcode('prod-barcode')" class="px-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold" title="Auto Generate Barcode">
-              <i class="fas fa-magic"></i>
-            </button>
-            <button onclick="openUltraFastScanner('prod-barcode')" class="px-2.5 bg-slate-800 text-white rounded-xl text-xs" title="Scan Product Barcode">
-              <i class="fas fa-camera"></i>
-            </button>
+            <button onclick="generateRandomBarcode('prod-barcode')" class="px-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold" title="Auto Generate Barcode"><i class="fas fa-magic"></i></button>
+            <button onclick="openUltraFastScanner('prod-barcode')" class="px-2.5 bg-slate-800 text-white rounded-xl text-xs" title="Scan Product Barcode"><i class="fas fa-camera"></i></button>
           </div>
           <input type="number" id="prod-cost" placeholder="Purchase / Cost Price (₹) [Admin]" class="p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl text-xs">
           <input type="number" id="prod-mrp" placeholder="MRP (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
@@ -204,9 +234,7 @@
           </label>
           <input type="hidden" id="prod-image-data">
         </div>
-        <button onclick="addNewProduct()" id="add-prod-btn" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">
-          + Inventory Mein Save Karein
-        </button>
+        <button onclick="addNewProduct()" id="add-prod-btn" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Inventory Mein Save Karein</button>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -221,7 +249,7 @@
       </div>
     </section>
 
-    <!-- TAB 3: SALES -->
+    <!-- ==================== TAB 3: SALES ==================== -->
     <section id="tab-invoices" class="hidden space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div onclick="setSalesPeriodFilter('today')" class="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-3.5 rounded-2xl shadow-sm cursor-pointer">
@@ -241,27 +269,30 @@
         </div>
       </div>
 
+      <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
+        <h3 class="font-extrabold text-xs uppercase text-emerald-800"><i class="fas fa-cash-register mr-1.5"></i>Daily Galla / Cash Drawer Tally (Aaj)</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div>
+            <span class="text-[10px] text-slate-400 font-bold">Opening Cash (₹)</span>
+            <input type="number" id="galla-opening" oninput="updateGallaTally()" placeholder="0" class="w-full p-2 bg-slate-50 border rounded-xl font-bold">
+          </div>
+          <div class="p-2 bg-emerald-50 rounded-xl"><span class="text-[10px] text-emerald-700 font-bold block">+ Aaj Cash Sale</span><b class="text-sm text-emerald-900">₹<span id="galla-cash-in">0</span></b></div>
+          <div class="p-2 bg-red-50 rounded-xl"><span class="text-[10px] text-red-700 font-bold block">- Aaj Kharcha</span><b class="text-sm text-red-900">₹<span id="galla-exp-out">0</span></b></div>
+          <div class="p-2 bg-slate-900 text-white rounded-xl"><span class="text-[10px] text-slate-300 font-bold block">= Galla Cash</span><b class="text-sm text-amber-300">₹<span id="galla-expected">0</span></b></div>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
+        <h3 class="font-extrabold text-xs uppercase text-slate-600"><i class="fas fa-user-check text-indigo-600 mr-1.5"></i>Staff-Wise Sales Performance</h3>
+        <div id="staff-sales-breakdown" class="flex flex-wrap gap-2 text-xs"></div>
+      </div>
+
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-        <div class="bg-white p-3 rounded-2xl border border-slate-200">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">Period Sales</p>
-          <p class="text-base font-black text-slate-900 mt-0.5">₹<span id="stat-total-sales">0</span></p>
-        </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">UPI / Online</p>
-          <p class="text-base font-black text-indigo-600 mt-0.5">₹<span id="stat-total-upi">0</span></p>
-        </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">Cash Sales</p>
-          <p class="text-base font-black text-emerald-600 mt-0.5">₹<span id="stat-total-cash">0</span></p>
-        </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">Pending Udhar</p>
-          <p class="text-base font-black text-red-600 mt-0.5">₹<span id="stat-total-udhar">0</span></p>
-        </div>
-        <div id="admin-profit-card" class="bg-amber-50 p-3 rounded-2xl border border-amber-200">
-          <p class="text-[10px] text-amber-800 font-bold uppercase">Net Profit (Admin)</p>
-          <p class="text-base font-black text-amber-900 mt-0.5">₹<span id="stat-net-profit">0</span></p>
-        </div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">Period Sales</p><p class="text-base font-black text-slate-900 mt-0.5">₹<span id="stat-total-sales">0</span></p></div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">UPI / Online</p><p class="text-base font-black text-indigo-600 mt-0.5">₹<span id="stat-total-upi">0</span></p></div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">Cash Sales</p><p class="text-base font-black text-emerald-600 mt-0.5">₹<span id="stat-total-cash">0</span></p></div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">Pending Udhar</p><p class="text-base font-black text-red-600 mt-0.5">₹<span id="stat-total-udhar">0</span></p></div>
+        <div id="admin-profit-card" class="bg-amber-50 p-3 rounded-2xl border border-amber-200"><p class="text-[10px] text-amber-800 font-bold uppercase">Net Profit (Admin)</p><p class="text-base font-black text-amber-900 mt-0.5">₹<span id="stat-net-profit">0</span></p></div>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
@@ -276,10 +307,7 @@
           <h3 class="font-extrabold text-sm">Bills & Invoices (<span id="stat-total-bills">0</span>)</h3>
           <div class="flex gap-2">
             <select id="inv-mode-filter" onchange="renderInvoicesList()" class="p-2 bg-slate-100 rounded-lg text-xs font-semibold">
-              <option value="All">All Modes</option>
-              <option value="UPI">UPI</option>
-              <option value="Cash">Cash</option>
-              <option value="Udhar">Udhar</option>
+              <option value="All">All Modes</option><option value="UPI">UPI</option><option value="Cash">Cash</option><option value="Udhar">Udhar</option>
             </select>
             <input type="text" id="inv-list-search" oninput="renderInvoicesList()" placeholder="Name / Phone / Bill..." class="p-2 bg-slate-100 rounded-lg text-xs w-36">
           </div>
@@ -288,54 +316,11 @@
       </div>
     </section>
 
-    <!-- TAB 4: REPAIRS -->
-    <section id="tab-repairs" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-tools text-indigo-600 mr-1.5"></i>Naya Repair Job Card Banayein</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-          <input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="tel" id="rep-phone" placeholder="WhatsApp Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="rep-model" placeholder="Mobile Model (e.g. Redmi Note 11) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="rep-fault" placeholder="Problem / Fault (e.g. Display, Charging) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="number" id="rep-estimate" placeholder="Total Repair Charge (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="number" id="rep-advance" placeholder="Advance Paid (₹)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-        </div>
-        <button onclick="addRepairJob()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button>
-      </div>
-
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm">Active & Completed Repairs (<span id="rep-count">0</span>)</h3>
-        <div id="repairs-list" class="space-y-2.5 text-xs"></div>
-      </div>
-    </section>
-
-    <!-- TAB 5: USED PHONES -->
-    <section id="tab-used" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Purchase Register</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-          <input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-          <input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-          <input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. (Police Verification) *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:col-span-2">
-        </div>
-        <button onclick="addUsedPhone()" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Purchase Register Mein Save Karein</button>
-      </div>
-
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm">Second-Hand Stock & Sold History (<span id="used-count">0</span>)</h3>
-        <div id="used-phones-list" class="space-y-2.5 text-xs"></div>
-      </div>
-    </section>
-
-    <!-- TAB 6: EXPENSES & STAFF -->
+    <!-- ==================== TAB 4: EXPENSE ==================== -->
     <section id="tab-expenses" class="hidden space-y-4">
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center">
-          <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-wallet text-red-500 mr-1.5"></i>Daily Expense Manager (Dukaan Kharche)</h3>
+          <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-wallet text-red-500 mr-1.5"></i>Daily Expense Manager</h3>
           <span class="text-xs font-black text-red-600">Total Expenses: ₹<span id="stat-total-expenses">0</span></span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -353,61 +338,175 @@
         <button onclick="addExpenseEntry()" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Kharcha Save Karein</button>
         <div id="expenses-list" class="divide-y divide-slate-100 text-xs pt-2"></div>
       </div>
+    </section>
 
-      <div id="admin-staff-panel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h3 class="font-extrabold text-sm">Staff & Manager Access</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <input type="text" id="stf-name" placeholder="Staff Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="tel" id="stf-pin" maxlength="4" placeholder="4-Digit PIN *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-          <select id="stf-role" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold">
-            <option value="Staff">Staff</option>
-            <option value="Manager">Manager</option>
-            <option value="Admin">Admin</option>
-          </select>
+    <!-- ==================== TAB 5: MORE (REPAIR, USED PHONES, SUPPLIER RETURN, TRANSFER, PURCHASE BILLS, STAFF) ==================== -->
+    <section id="tab-more" class="hidden space-y-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+        <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm">
+          <i class="fas fa-tools text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Mobile Repairing</p>
+          <p class="text-[10px] opacity-80">Job Cards & WhatsApp</p>
+        </button>
+        <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm">
+          <i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Used Phones</p>
+          <p class="text-[10px] text-slate-500">IMEI & ID Register</p>
+        </button>
+        <button onclick="showMoreSubView('returns')" id="more-btn-returns" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm">
+          <i class="fas fa-undo-alt text-amber-600 text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Supplier Return Box</p>
+          <p class="text-[10px] text-slate-500">Warranty Replacement</p>
+        </button>
+        <button onclick="showMoreSubView('transfer')" id="more-btn-transfer" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm">
+          <i class="fas fa-exchange-alt text-indigo-600 text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Branch Stock Transfer</p>
+          <p class="text-[10px] text-slate-500">Main ↔ Branch 2</p>
+        </button>
+        <button onclick="showMoreSubView('pbills')" id="more-btn-pbills" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm">
+          <i class="fas fa-file-invoice text-violet-600 text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Purchase Bills (<span id="saved-pb-count">0</span>)</p>
+          <p class="text-[10px] text-slate-500">Saved Supplier Bills</p>
+        </button>
+        <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm">
+          <i class="fas fa-users-cog text-slate-700 text-base mb-1"></i>
+          <p class="font-extrabold text-xs">Staff & Access</p>
+          <p class="text-[10px] text-slate-500">PIN & Manager Roles</p>
+        </button>
+      </div>
+
+      <!-- SUBVIEW 1: REPAIRS -->
+      <div id="more-sub-repairs" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-tools text-indigo-600 mr-1.5"></i>Mobile Repairing Job Card</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="tel" id="rep-phone" placeholder="WhatsApp Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="text" id="rep-model" placeholder="Mobile Model *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="text" id="rep-fault" placeholder="Problem / Fault *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="number" id="rep-estimate" placeholder="Total Repair Charge (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="number" id="rep-advance" placeholder="Advance Paid (₹)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
         </div>
-        <button onclick="addStaffMember()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Staff Save Karein</button>
-        <div id="staff-list-box" class="divide-y divide-slate-100 text-xs"></div>
+        <button onclick="addRepairJob()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button>
+        <div id="repairs-list" class="space-y-2 text-xs pt-2"></div>
+      </div>
+
+      <!-- SUBVIEW 2: USED PHONES -->
+      <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+          <input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+          <input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. (Police Verification) *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:col-span-2">
+        </div>
+        <button onclick="addUsedPhone()" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Purchase Register Mein Save Karein</button>
+        <div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div>
+      </div>
+
+      <!-- SUBVIEW 3: SUPPLIER RETURN BOX -->
+      <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty / Defective Replacement Box</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs">
+          <input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="ret-prod" placeholder="Defective Item (e.g. 20W Charger) *" class="p-2 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor Name *" class="p-2 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="ret-issue" placeholder="Problem (e.g. Dead / Not Charging)" class="p-2 bg-slate-50 border rounded-xl text-xs sm:col-span-2">
+        </div>
+        <button onclick="addSupplierReturn()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Replacement Box Mein Daalein</button>
+        <div id="returns-box-list" class="space-y-2 text-xs pt-1"></div>
+      </div>
+
+      <!-- SUBVIEW 4: STOCK TRANSFER -->
+      <div id="more-sub-transfer" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-indigo-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-indigo-900"><i class="fas fa-exchange-alt text-indigo-600 mr-1.5"></i>Stock Transfer (<span class="active-branch-label">Main Branch</span> Se Doosri Branch Bhejein)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+          <select id="trf-prod-select" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold sm:col-span-2"></select>
+          <select id="trf-to-branch" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-indigo-700"></select>
+          <div class="flex gap-1.5">
+            <input type="number" id="trf-qty" placeholder="Qty" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+            <button onclick="executeBranchTransfer()" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Transfer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBVIEW 5: SAVED PURCHASE BILLS -->
+      <div id="more-sub-pbills" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-invoice text-violet-600 mr-1.5"></i>Saved Supplier Purchase Bills</h3>
+        <div id="purchase-bills-list" class="space-y-2 text-xs"></div>
+      </div>
+
+      <!-- SUBVIEW 6: STAFF MANAGEMENT -->
+      <div id="more-sub-staff" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div id="admin-staff-panel" class="space-y-3">
+          <h3 class="font-extrabold text-sm">Staff & Manager Access</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <input type="text" id="stf-name" placeholder="Staff Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+            <input type="tel" id="stf-pin" maxlength="4" placeholder="4-Digit PIN *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+            <select id="stf-role" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold">
+              <option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option>
+            </select>
+          </div>
+          <button onclick="addStaffMember()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Staff Save Karein</button>
+          <div id="staff-list-box" class="divide-y divide-slate-100 text-xs"></div>
+        </div>
       </div>
     </section>
   </main>
 
-  <!-- ==================== EXCEL (.XLSX) & PDF BACKUP MODAL (PERIOD FILTER) ==================== -->
-  <div id="backup-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+  <!-- ==================== QUICK PHOTO + PRICE CART ITEM MODAL (NO INVENTORY ENTRY) ==================== -->
+  <div id="quick-photo-cart-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-export text-emerald-600 mr-1.5"></i>Excel & PDF Backup Export</h3>
-        <button onclick="document.getElementById('backup-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+        <h3 class="font-extrabold text-sm text-indigo-800"><i class="fas fa-camera mr-1.5"></i>Quick Photo Item (Sirf Cart Mein)</h3>
+        <button onclick="closeQuickPhotoCartModal()" class="text-slate-400 font-bold">✕</button>
       </div>
+      <p class="text-[11px] text-slate-500">Inventory mein add nahi hoga—sirf bill aur sales history mein photo save hogi.</p>
+      
+      <label class="block p-3 bg-indigo-50 border-2 border-dashed border-indigo-300 rounded-xl text-center cursor-pointer">
+        <img id="qp-preview-img" class="hidden w-28 h-28 object-cover rounded-xl mx-auto mb-2 border shadow">
+        <span id="qp-photo-text" class="text-xs font-extrabold text-indigo-700"><i class="fas fa-camera mr-1"></i>Item Ki Photo Khinchein / Chunein</span>
+        <input type="file" accept="image/*" capture="environment" class="hidden" onchange="compressQuickCartPhoto(event)">
+      </label>
+      <input type="hidden" id="qp-image-data">
 
-      <div class="space-y-1">
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Time Period Chunein:</label>
-        <select id="backup-period-select" class="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-800">
-          <option value="1m">Last 1 Month (Pichhle 30 Din)</option>
-          <option value="6m">Last 6 Months (Pichhle 6 Mahine)</option>
-          <option value="1y">Last 1 Year (Pichhla 1 Saal)</option>
-          <option value="lifetime" selected>Lifetime (Poora Data)</option>
-        </select>
+      <input type="text" id="qp-name" placeholder="Item Naam (Optional - e.g. Fancy Cover)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" id="qp-price" placeholder="Selling Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-black text-indigo-700">
+        <input type="number" id="qp-qty" value="1" placeholder="Qty" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
       </div>
-
-      <div class="space-y-2 pt-1">
-        <button onclick="exportExcelBackup()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow">
-          <i class="fas fa-file-excel text-sm"></i> Excel File (.xlsx) Download Karein
-        </button>
-        <button onclick="exportPDFBackup()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow">
-          <i class="fas fa-file-pdf text-sm"></i> PDF Report (.pdf) Download Karein
-        </button>
-      </div>
+      <button onclick="addQuickPhotoItemToCart()" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow">
+        + Cart Mein Add Karein
+      </button>
     </div>
   </div>
 
-  <!-- ==================== ADMIN-ONLY EDIT INVOICE MODAL ==================== -->
+  <!-- ==================== VIEW SOLD BILL PHOTOS MODAL ==================== -->
+  <div id="view-bill-photos-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm text-slate-800" id="vbp-title">Sold Item Photos</h3>
+        <button onclick="document.getElementById('view-bill-photos-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <div id="vbp-grid" class="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN-ONLY EDIT INVOICE MODAL (WITH DATE & TIME EDIT) ==================== -->
   <div id="edit-inv-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-2.5 shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-sm text-slate-800">✏️ Bill Edit Karein (Admin Only)</h3>
+        <h3 class="font-extrabold text-sm text-slate-800">✏️ Bill & Date/Time Edit (Admin Only)</h3>
         <button onclick="document.getElementById('edit-inv-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
       </div>
       <input type="hidden" id="edit-inv-id">
+      <div>
+        <label class="text-[10px] font-bold text-amber-700 uppercase">Bill Date & Time (dd/mm/yyyy hh:mm AM/PM)</label>
+        <input type="text" id="edit-inv-date" class="w-full p-2 bg-amber-50 border border-amber-200 rounded-xl text-xs font-mono font-bold">
+      </div>
       <div>
         <label class="text-[10px] font-bold text-slate-400 uppercase">Customer Name</label>
         <input type="text" id="edit-inv-cust" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold">
@@ -443,23 +542,120 @@
     </div>
   </div>
 
-  <!-- ==================== HIGH-SPEED ZXING + NATIVE ZOOM BARCODE SCANNER ==================== -->
+  <!-- HARDWARE SETTINGS MODAL -->
+  <div id="hardware-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-print text-indigo-600 mr-1.5"></i>Printer & Scanner Hardware Setup</h3>
+        <button onclick="document.getElementById('hardware-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border space-y-1.5">
+          <p class="font-extrabold">1. Thermal Bill Printer Paper Size</p>
+          <select id="hw-receipt-size" onchange="saveHardwarePrefs()" class="w-full p-2 bg-white border rounded-lg font-bold">
+            <option value="58mm">58mm (2-Inch Portable Bluetooth Printer)</option>
+            <option value="80mm" selected>80mm (3-Inch Counter Thermal Printer)</option>
+            <option value="A4">A4 / A5 Regular Laser Printer</option>
+          </select>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-xl border space-y-1.5">
+          <p class="font-extrabold">2. Barcode Label Printer Format</p>
+          <select id="hw-barcode-size" onchange="saveHardwarePrefs()" class="w-full p-2 bg-white border rounded-lg font-bold">
+            <option value="thermal_50x25" selected>50mm × 25mm (Thermal Barcode Roll Printer)</option>
+            <option value="a4_grid">A4 Sticker Sheet (Grid)</option>
+          </select>
+        </div>
+        <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-200 space-y-1.5">
+          <p class="font-extrabold text-indigo-900">3. USB / Bluetooth Barcode Scanner Gun</p>
+          <button onclick="focusScannerGunInput()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Scanner Gun Ready Karein</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTIONAL AI COPILOT MODAL -->
+  <div id="ai-copilot-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm text-violet-800"><i class="fas fa-robot text-violet-600 mr-1.5"></i>Kirtika AI Assistant (Voice & Chat)</h3>
+        <button onclick="document.getElementById('ai-copilot-modal').classList.add('hidden')" class="text-slate-400 font-bold text-base">✕</button>
+      </div>
+      <div class="flex flex-wrap gap-1.5 text-[10px]">
+        <button onclick="sendAICopilotPrompt('Aaj kitni total sale hui aur kaunse items bike?')" class="px-2.5 py-1 bg-violet-50 text-violet-700 rounded-full font-bold">📊 Aaj Ki Report</button>
+        <button onclick="sendAICopilotPrompt('Mere sabhi products ki WhatsApp Wholesale Rate List Catalog bana kar do')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full font-bold">📋 Wholesale Catalog</button>
+        <button onclick="sendAICopilotPrompt('Customers ko VIP, Regular aur Inactive groups me segment karke WhatsApp offer likho')" class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full font-bold">👥 Customer Segments</button>
+      </div>
+      <div id="ai-copilot-output" class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-700 max-h-60 overflow-y-auto whitespace-pre-line">
+        Bol kar ya likh kar kuch bhi kahein:
+        • "2 Type-C cable aur 1 20W charger Ramesh ke naam UPI me bill bana do"
+        • "Aaj 150 rupaye chai nashta kharcha likh do"
+        • "Aaj kitne AirPods bike?"
+      </div>
+      <div class="flex gap-2">
+        <button onclick="startVoiceRecognition()" id="ai-mic-btn" class="px-3.5 py-2.5 bg-rose-600 text-white rounded-xl font-bold text-xs"><i class="fas fa-microphone"></i></button>
+        <input type="text" id="ai-copilot-input" placeholder="Bol kar ya yahan likh kar command dein..." class="flex-1 p-2.5 bg-slate-100 rounded-xl text-xs">
+        <button onclick="sendAICopilotPrompt()" class="px-4 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD NEW SHOP / BRANCH MODAL -->
+  <div id="add-branch-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm">🏪 Nayi Branch / Doosri Shop Add Karein</h3>
+        <button onclick="document.getElementById('add-branch-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <input type="text" id="br-name" placeholder="Shop / Branch Name *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+      <input type="text" id="br-addr" placeholder="Address" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+      <input type="tel" id="br-phone" placeholder="Mobile Number" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+      <button onclick="createNewBranch()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Shop Save Karein</button>
+    </div>
+  </div>
+
+  <!-- HELD BILLS MODAL -->
+  <div id="held-bills-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm">⏸️ Held / Parked Bills</h3>
+        <button onclick="document.getElementById('held-bills-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <div id="held-bills-list" class="space-y-2 text-xs max-h-72 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- EXCEL & PDF BACKUP MODAL -->
+  <div id="backup-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-export text-emerald-600 mr-1.5"></i>Excel & PDF Backup Export</h3>
+        <button onclick="document.getElementById('backup-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <select id="backup-period-select" class="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-800">
+        <option value="1m">Last 1 Month (Pichhle 30 Din)</option>
+        <option value="6m">Last 6 Months (Pichhle 6 Mahine)</option>
+        <option value="1y">Last 1 Year (Pichhla 1 Saal)</option>
+        <option value="lifetime" selected>Lifetime (Poora Data)</option>
+      </select>
+      <div class="space-y-2 pt-1">
+        <button onclick="exportExcelBackup()" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fas fa-file-excel text-sm"></i> Excel File (.xlsx) Download Karein</button>
+        <button onclick="exportPDFBackup()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fas fa-file-pdf text-sm"></i> PDF Report (.pdf) Download Karein</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIGH-SPEED SCANNER WITH MOBILE-TO-PC BRIDGE -->
   <div id="live-scanner-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex-col items-center justify-center p-4">
     <div class="w-full max-w-md bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
       <div class="p-3.5 flex justify-between items-center border-b border-slate-800 text-white">
-        <span class="font-extrabold text-sm flex items-center gap-1.5">
-          <i class="fas fa-bolt text-amber-400"></i> Fast Barcode Scanner
-        </span>
-        <div class="flex items-center gap-2">
-          <button onclick="toggleScannerTorch()" id="torch-btn" class="px-2.5 py-1 bg-slate-800 text-amber-300 rounded-xl text-xs font-bold">
-            <i class="fas fa-lightbulb mr-1"></i>Torch
-          </button>
+        <span class="font-extrabold text-sm flex items-center gap-1.5"><i class="fas fa-bolt text-amber-400"></i> Scanner</span>
+        <div class="flex items-center gap-1.5">
+          <button onclick="toggleMobileSendToPC()" id="mobile-send-pc-btn" class="px-2.5 py-1 bg-slate-800 text-cyan-300 rounded-xl text-[11px] font-bold"><i class="fas fa-desktop mr-1"></i>Send to PC: OFF</button>
+          <button onclick="toggleScannerTorch()" id="torch-btn" class="px-2.5 py-1 bg-slate-800 text-amber-300 rounded-xl text-xs font-bold"><i class="fas fa-lightbulb"></i></button>
           <button onclick="closeUltraFastScanner()" class="px-3 py-1 bg-red-500/20 text-red-400 rounded-xl text-xs font-bold">Close</button>
         </div>
       </div>
-
-      <!-- Video Viewport with True Scale Zoom -->
-      <div class="relative w-full bg-black h-[300px] overflow-hidden flex items-center justify-center">
+      <div class="relative w-full bg-black h-[290px] overflow-hidden flex items-center justify-center">
         <video id="zxing-scanner-video" class="w-full h-full object-cover origin-center transition-transform duration-150" style="transform: scale(1);" playsinline muted autoplay></video>
         <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div class="w-[84%] h-28 border-2 border-emerald-400 rounded-2xl relative shadow-[0_0_0_9999px_rgba(0,0,0,0.45)] overflow-hidden">
@@ -467,8 +663,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Working Zoom Controls -->
       <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-2 text-xs text-white">
         <span class="text-slate-400 font-bold">Zoom (<span id="zoom-level-label">1.0x</span>):</span>
         <div class="flex gap-1.5">
@@ -478,10 +672,7 @@
         </div>
         <input type="range" id="scanner-zoom-slider" min="1" max="3.5" step="0.25" value="1" oninput="setScannerZoom(this.value)" class="w-24 accent-indigo-500">
       </div>
-
-      <div class="p-3 text-center text-xs text-slate-300 bg-slate-950" id="live-scan-feedback">
-        Chhote barcode ke liye 2x ya 3x Zoom dabayein
-      </div>
+      <div class="p-3 text-center text-xs text-slate-300 bg-slate-950" id="live-scan-feedback">Barcode ko green laser box mein rakhein</div>
     </div>
   </div>
 
@@ -527,7 +718,8 @@
       <input type="text" id="edit-prod-cat" placeholder="Category" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
       <div class="flex gap-1.5">
         <input type="text" id="edit-prod-barcode" placeholder="Barcode" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-mono">
-        <button onclick="generateRandomBarcode('edit-prod-barcode')" class="px-3 bg-amber-500 text-white rounded-xl text-xs font-bold"><i class="fas fa-magic"></i></button>
+        <button onclick="generateRandomBarcode('edit-prod-barcode')" class="px-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold"><i class="fas fa-magic"></i></button>
+        <button onclick="openUltraFastScanner('edit-prod-barcode')" class="px-2.5 bg-slate-800 text-white rounded-xl text-xs"><i class="fas fa-camera"></i></button>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <input type="number" id="edit-prod-cost" placeholder="Cost Price" class="p-2 bg-amber-50 border rounded-xl text-xs">
@@ -564,22 +756,23 @@
     </div>
   </div>
 
-  <!-- 6-TAB BOTTOM NAVIGATION BAR -->
+  <!-- ==================== CLEAN 5-TAB BOTTOM NAVIGATION BAR ==================== -->
   <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-30 flex justify-around py-2 shadow-lg">
     <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center text-indigo-600 font-bold text-[11px]"><i class="fas fa-cash-register text-base mb-0.5"></i><span>Billing</span></button>
     <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-boxes text-base mb-0.5"></i><span>Stock</span></button>
     <button onclick="switchTab('invoices')" id="nav-invoices" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-chart-line text-base mb-0.5"></i><span>Sales</span></button>
-    <button onclick="switchTab('repairs')" id="nav-repairs" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-tools text-base mb-0.5"></i><span>Repair</span></button>
-    <button onclick="switchTab('used')" id="nav-used" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-mobile-alt text-base mb-0.5"></i><span>Used Phn</span></button>
     <button onclick="switchTab('expenses')" id="nav-expenses" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-wallet text-base mb-0.5"></i><span>Expense</span></button>
+    <button onclick="switchTab('more')" id="nav-more" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-th-large text-base mb-0.5"></i><span>More</span></button>
   </nav>
 
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
 
-    let storeData = { staff: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [] };
+    let storeData = { staff: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [] };
     let currentUser = null;
+    let activeBranch = "Main Branch";
     let cart = [];
+    let heldBills = [];
     let currentPriceMode = 'Retail';
     let selectedCategory = 'All';
     let showLowStockOnly = false;
@@ -587,15 +780,17 @@
     let lastReceipt = null;
     let currentBillTheme = 'thermal';
     let currentBarcodeProd = null;
-    let aiParsedTempItems = [];
+    let aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" };
 
-    // Scanner state
+    let hwPrefs = JSON.parse(localStorage.getItem('km_hw_prefs') || '{"receiptSize":"80mm","barcodeSize":"thermal_50x25"}');
     let scanTargetField = null;
     let zxingCodeReader = null;
     let activeVideoStream = null;
     let nativeDetectorLoop = false;
     let torchOn = false;
-    let currentZoomLevel = 1;
+    let mobileSendToPC = false;
+    let pcPollInterval = null;
+    let lastProcessedRemoteId = "";
     let lastScannedCode = "";
     let lastScanTime = 0;
 
@@ -612,8 +807,30 @@
 
     window.onload = function() {
       document.getElementById('login-pin').value = '';
+      document.getElementById('hw-receipt-size').value = hwPrefs.receiptSize || '80mm';
+      document.getElementById('hw-barcode-size').value = hwPrefs.barcodeSize || 'thermal_50x25';
       loadDataFromServer();
     };
+
+    function openHardwareModal() { document.getElementById('hardware-modal').classList.remove('hidden'); document.getElementById('hardware-modal').classList.add('flex'); }
+    function saveHardwarePrefs() {
+      hwPrefs = { receiptSize: document.getElementById('hw-receipt-size').value, barcodeSize: document.getElementById('hw-barcode-size').value };
+      localStorage.setItem('km_hw_prefs', JSON.stringify(hwPrefs));
+    }
+    function focusScannerGunInput() {
+      document.getElementById('hardware-modal').classList.add('hidden');
+      switchTab('pos');
+      const box = document.getElementById('pos-search'); box.value = ''; box.focus();
+      alert("✅ USB / Bluetooth Scanner Gun Ready!");
+    }
+    function handleScannerGunEnter(e) {
+      if (e.key === 'Enter') {
+        const code = e.target.value.trim();
+        if (!code) return;
+        const exactProd = branchProducts().find(p => String(p.barcode).trim() === code);
+        if (exactProd) { playBeepAndVibrate(); addToCart(exactProd.id); e.target.value = ''; renderPosProducts(); }
+      }
+    }
 
     async function loadDataFromServer() {
       const syncIcon = document.getElementById('sync-icon');
@@ -621,9 +838,15 @@
       try {
         const res = await fetch(GOOGLE_API_URL);
         const data = await res.json();
-        storeData = { staff: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], ...data };
-        const sel = document.getElementById('login-staff-select');
-        sel.innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+        storeData = { staff: [], branches: [], products: [], invoices: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], ...data };
+        if (!storeData.branches.length) storeData.branches = [{ id: "BR-1", name: "Main Branch", address: "Madhuban, Jodhpur", phone: "8209618586" }];
+
+        const brOpts = storeData.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+        document.getElementById('login-branch-select').innerHTML = brOpts;
+        document.getElementById('header-branch-select').innerHTML = brOpts;
+        document.getElementById('header-branch-select').value = activeBranch;
+
+        document.getElementById('login-staff-select').innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
         document.getElementById('login-loading').classList.add('hidden');
         document.getElementById('login-form').classList.remove('hidden');
         renderAllViews();
@@ -634,10 +857,35 @@
       }
     }
 
+    function branchProducts() { return storeData.products.filter(p => (p.branch || "Main Branch") === activeBranch); }
+    function branchInvoices() { return storeData.invoices.filter(i => (i.branch || "Main Branch") === activeBranch); }
+    function branchRepairs() { return storeData.repairs.filter(r => (r.branch || "Main Branch") === activeBranch); }
+    function branchUsed() { return storeData.usedPhones.filter(u => (u.branch || "Main Branch") === activeBranch); }
+    function branchExpenses() { return storeData.expenses.filter(e => (e.branch || "Main Branch") === activeBranch); }
+    function branchReturns() { return storeData.returnsBox.filter(r => (r.branch || "Main Branch") === activeBranch); }
+    function branchPurchaseBills() { return storeData.purchaseBills.filter(pb => (pb.branch || "Main Branch") === activeBranch); }
+
+    function switchActiveBranch(brName) {
+      activeBranch = brName; cart = [];
+      document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch);
+      renderCart(); renderAllViews();
+    }
+
+    function openAddBranchModal() { document.getElementById('add-branch-modal').classList.remove('hidden'); document.getElementById('add-branch-modal').classList.add('flex'); }
+    async function createNewBranch() {
+      const name = document.getElementById('br-name').value.trim();
+      if (!name) { alert("Branch ka naam daalein!"); return; }
+      storeData = await callSheetAPI("saveBranch", { name, address: document.getElementById('br-addr').value.trim(), phone: document.getElementById('br-phone').value.trim() });
+      document.getElementById('br-name').value = ''; document.getElementById('add-branch-modal').classList.add('hidden');
+      activeBranch = name; await loadDataFromServer();
+    }
+
     function renderAllViews() {
-      renderCategories(); renderPosProducts(); renderInventoryList();
-      renderInvoicesList(); renderRepairsList(); renderUsedPhonesList();
-      renderExpensesList(); renderStaffList();
+      document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch);
+      document.getElementById('saved-pb-count').innerText = branchPurchaseBills().length;
+      renderCategories(); renderPosProducts(); renderInventoryList(); renderTransferDropdowns();
+      renderInvoicesList(); renderRepairsList(); renderReturnsBoxList(); renderUsedPhonesList();
+      renderPurchaseBillsList(); renderExpensesList(); renderStaffList();
     }
 
     function printSection(elementId) {
@@ -646,155 +894,198 @@
       if (target) { target.classList.add('print-target'); window.print(); }
     }
 
-    // ================= EXCEL (.XLSX) & PDF BACKUP WITH PERIOD FILTER =================
-    function openBackupModal() {
-      document.getElementById('backup-modal').classList.remove('hidden');
-      document.getElementById('backup-modal').classList.add('flex');
+    // ================= CART-ONLY QUICK PHOTO + PRICE ITEM (NO INVENTORY ENTRY) =================
+    function openQuickPhotoCartModal() {
+      document.getElementById('qp-image-data').value = '';
+      document.getElementById('qp-name').value = '';
+      document.getElementById('qp-price').value = '';
+      document.getElementById('qp-qty').value = '1';
+      document.getElementById('qp-preview-img').classList.add('hidden');
+      document.getElementById('qp-photo-text').innerHTML = `<i class="fas fa-camera mr-1"></i>Item Ki Photo Khinchein / Chunein`;
+      document.getElementById('quick-photo-cart-modal').classList.remove('hidden');
+      document.getElementById('quick-photo-cart-modal').classList.add('flex');
     }
 
-    function getFilteredBackupData() {
-      const period = document.getElementById('backup-period-select').value;
-      const now = new Date();
-      let cutoff = null;
-      let label = "Lifetime";
+    function closeQuickPhotoCartModal() { document.getElementById('quick-photo-cart-modal').classList.add('hidden'); }
 
-      if (period === '1m') { cutoff = new Date(now.getTime() - 30 * 86400000); label = "Last_1_Month"; }
-      else if (period === '6m') { cutoff = new Date(now.getTime() - 182 * 86400000); label = "Last_6_Months"; }
-      else if (period === '1y') { cutoff = new Date(now.getTime() - 365 * 86400000); label = "Last_1_Year"; }
-
-      const filterByDate = (arr, field) => {
-        if (!cutoff) return arr;
-        return arr.filter(item => {
-          const d = parseIndianInvoiceDate(item[field]);
-          return d && d >= cutoff;
-        });
+    function compressQuickCartPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const max = 240;
+          let w = img.width, h = img.height;
+          if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
+          document.getElementById('qp-image-data').value = dataUrl;
+          const prev = document.getElementById('qp-preview-img');
+          prev.src = dataUrl; prev.classList.remove('hidden');
+          document.getElementById('qp-photo-text').innerText = "✅ Photo Ready";
+        };
+        img.src = e.target.result;
       };
-
-      return {
-        label,
-        invoices: filterByDate(storeData.invoices, 'date'),
-        expenses: filterByDate(storeData.expenses, 'date'),
-        repairs: filterByDate(storeData.repairs, 'date'),
-        usedPhones: filterByDate(storeData.usedPhones, 'buyDate'),
-        products: storeData.products
-      };
+      reader.readAsDataURL(file);
     }
 
-    function exportExcelBackup() {
-      const data = getFilteredBackupData();
-      const wb = XLSX.utils.book_new();
+    function addQuickPhotoItemToCart() {
+      const price = Number(document.getElementById('qp-price').value || 0);
+      const qty = Math.max(1, Number(document.getElementById('qp-qty').value || 1));
+      const imgData = document.getElementById('qp-image-data').value;
+      const name = document.getElementById('qp-name').value.trim() || "Photo Item";
+      if (!price) { alert("Selling Price (₹) daalein!"); return; }
 
-      const salesRows = data.invoices.map(i => ({
-        "Bill ID": i.id, "Date": i.date, "Staff": i.staff, "Customer": i.customer,
-        "Phone": i.phone, "Mode": i.priceMode, "Items": i.items, "Discount": i.discount,
-        "Total Amount": i.total, "Profit": i.profit, "Payment": i.paymentMode, "Status": i.status
-      }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(salesRows.length ? salesRows : [{ Note: "No bills in selected period" }]), "Sales_Bills");
-
-      const stockRows = data.products.map(p => ({
-        "ID": p.id, "Product Name": p.name, "Category": p.category, "Barcode": p.barcode,
-        "Cost Price": p.costPrice, "MRP": p.mrp, "Retail Price": p.price,
-        "Wholesale Price": p.wholesalePrice, "Current Stock": p.stock
-      }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(stockRows.length ? stockRows : [{ Note: "No products" }]), "Current_Stock");
-
-      const expRows = data.expenses.map(e => ({
-        "ID": e.id, "Date": e.date, "Category": e.category, "Amount": e.amount, "Note": e.note, "Staff": e.staff
-      }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(expRows.length ? expRows : [{ Note: "No expenses" }]), "Expenses");
-
-      const repRows = data.repairs.map(r => ({
-        "Job ID": r.id, "Date": r.date, "Customer": r.customer, "Phone": r.phone,
-        "Model": r.deviceModel, "Fault": r.fault, "Estimate": r.estimate, "Advance": r.advance, "Status": r.status
-      }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(repRows.length ? repRows : [{ Note: "No repairs" }]), "Repairs");
-
-      const usedRows = data.usedPhones.map(u => ({
-        "ID": u.id, "Buy Date": u.buyDate, "Model": u.model, "IMEI 1": u.imei1,
-        "Buy Price": u.buyPrice, "Seller": u.sellerName, "Seller Phone": u.sellerPhone,
-        "ID Proof": u.sellerIDProof, "Status": u.status, "Sell Price": u.sellPrice
-      }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(usedRows.length ? usedRows : [{ Note: "No used phones" }]), "Used_Phones");
-
-      const today = new Date().toISOString().slice(0, 10);
-      XLSX.writeFile(wb, `Kirtika_Mobile_${data.label}_${today}.xlsx`);
-      document.getElementById('backup-modal').classList.add('hidden');
-    }
-
-    function exportPDFBackup() {
-      const data = getFilteredBackupData();
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      doc.setFontSize(16);
-      doc.text("KIRTIKA MOBILE - THE TB STORE", 14, 16);
-      doc.setFontSize(10);
-      doc.text(`Madhuban, Jodhpur (8209618586) | Report: ${data.label.replace(/_/g, ' ')}`, 14, 22);
-
-      const totalSales = data.invoices.filter(x => x.status !== 'Returned').reduce((s, x) => s + Number(x.total || 0), 0);
-      const totalExp = data.expenses.reduce((s, x) => s + Number(x.amount || 0), 0);
-      doc.text(`Total Bills: ${data.invoices.length} | Total Sales: Rs.${totalSales} | Total Expenses: Rs.${totalExp}`, 14, 28);
-
-      doc.autoTable({
-        startY: 34,
-        head: [['Bill ID', 'Date', 'Customer', 'Items', 'Mode', 'Total (Rs)']],
-        body: data.invoices.map(i => [i.id, i.date, i.customer, i.items, i.paymentMode, i.total]),
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [79, 70, 229] }
+      cart.push({
+        id: "CUSTOM-" + Date.now(), name: name, mrp: price, price: price,
+        costPrice: 0, image: imgData, qty: qty, isCustom: true
       });
-
-      const finalY = doc.lastAutoTable.finalY + 10;
-      doc.setFontSize(11);
-      doc.text("Current Stock Summary", 14, finalY);
-      doc.autoTable({
-        startY: finalY + 4,
-        head: [['Product Name', 'Category', 'Barcode', 'Retail (Rs)', 'Stock']],
-        body: data.products.map(p => [p.name, p.category, p.barcode, p.price, p.stock]),
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [15, 23, 42] }
-      });
-
-      const today = new Date().toISOString().slice(0, 10);
-      doc.save(`Kirtika_Mobile_Report_${data.label}_${today}.pdf`);
-      document.getElementById('backup-modal').classList.add('hidden');
+      closeQuickPhotoCartModal();
+      renderCart();
     }
 
-    // ================= DUAL-ENGINE FAST SCANNER + TRUE ZOOM =================
+    function viewSoldBillPhotos(invId) {
+      const inv = storeData.invoices.find(x => String(x.id) === String(invId));
+      if (!inv) return;
+      const photoItems = (inv.cart || []).filter(c => c.image);
+      document.getElementById('vbp-title').innerText = `${inv.id} — Sold Item Photos (${photoItems.length})`;
+      document.getElementById('vbp-grid').innerHTML = photoItems.length ? photoItems.map(c => `
+        <div class="border rounded-xl p-2 bg-slate-50 text-center space-y-1">
+          <img src="${c.image}" class="w-full h-32 object-cover rounded-lg border">
+          <p class="font-bold text-xs text-slate-800">${c.name}</p>
+          <p class="text-[11px] font-black text-indigo-600">₹${c.price} × ${c.qty}</p>
+        </div>
+      `).join('') : `<p class="col-span-full text-center text-slate-400 py-6 text-xs">Is bill mein koi photo attached nahi hai.</p>`;
+      document.getElementById('view-bill-photos-modal').classList.remove('hidden');
+      document.getElementById('view-bill-photos-modal').classList.add('flex');
+    }
+
+    // ================= TABS & MORE SUBVIEWS =================
+    function switchTab(tab) {
+      ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('nav-' + t);
+        if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); }
+      });
+    }
+
+    function showMoreSubView(sub) {
+      ['repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => {
+        document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub);
+        const btn = document.getElementById('more-btn-' + s);
+        if (btn) {
+          btn.className = (s === sub)
+            ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"
+            : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm";
+        }
+      });
+    }
+
+    // ================= TRANSFER, HOLD, PC-MOBILE BRIDGE & SCANNER =================
+    function renderTransferDropdowns() {
+      const prods = branchProducts();
+      document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`;
+      const otherBranches = storeData.branches.filter(b => b.name !== activeBranch);
+      document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`;
+    }
+
+    async function executeBranchTransfer() {
+      const productId = document.getElementById('trf-prod-select').value;
+      const toBranch = document.getElementById('trf-to-branch').value;
+      const qty = Number(document.getElementById('trf-qty').value || 0);
+      if (!productId || !toBranch || qty <= 0) { alert("Product, Target Branch aur Qty chunein!"); return; }
+      try {
+        storeData = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" });
+        document.getElementById('trf-qty').value = '';
+        renderAllViews();
+        alert(`✅ ${qty} pcs successfully ${toBranch} mein transfer ho gaye!`);
+      } catch (e) { alert(e.message); }
+    }
+
+    function holdCurrentBill() {
+      if (!cart.length) { alert("Cart khaali hai!"); return; }
+      heldBills.push({ id: "HOLD-" + (heldBills.length + 1), customer: document.getElementById('cust-name').value.trim() || "Walk-in Customer", phone: document.getElementById('cust-phone').value.trim(), cart: JSON.parse(JSON.stringify(cart)), time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) });
+      cart = []; document.getElementById('cust-name').value = ''; document.getElementById('cust-phone').value = '';
+      renderCart(); updateHeldBillsBadge();
+    }
+    function updateHeldBillsBadge() {
+      const btn = document.getElementById('held-bills-btn');
+      document.getElementById('held-count').innerText = heldBills.length;
+      btn.classList.toggle('hidden', heldBills.length === 0);
+    }
+    function openHeldBillsModal() {
+      document.getElementById('held-bills-list').innerHTML = heldBills.map((h, idx) => `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl flex justify-between items-center"><div><p class="font-bold">${h.customer} (${h.time})</p><p class="text-[11px] text-slate-600">${h.cart.length} Items</p></div><button onclick="resumeHeldBill(${idx})" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-xs">Resume</button></div>`).join('');
+      document.getElementById('held-bills-modal').classList.remove('hidden'); document.getElementById('held-bills-modal').classList.add('flex');
+    }
+    function resumeHeldBill(idx) {
+      const h = heldBills.splice(idx, 1)[0]; cart = h.cart;
+      document.getElementById('cust-name').value = h.customer === "Walk-in Customer" ? "" : h.customer;
+      document.getElementById('cust-phone').value = h.phone;
+      renderCart(); updateHeldBillsBadge(); document.getElementById('held-bills-modal').classList.add('hidden');
+    }
+
+    function togglePCRemoteListener() {
+      const btn = document.getElementById('pc-remote-btn');
+      if (pcPollInterval) { clearInterval(pcPollInterval); pcPollInterval = null; btn.className = "px-3 py-2.5 bg-slate-800 text-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5"; return; }
+      btn.className = "px-3 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 animate-pulse";
+      alert("✅ PC Remote Listener ON! Mobile par Cam > 'Send to PC: ON' karein.");
+      pcPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${GOOGLE_API_URL}?pollScan=1&branch=${encodeURIComponent(activeBranch)}`);
+          const data = await res.json();
+          if (data.scan && data.scan.id !== lastProcessedRemoteId && (Date.now() - data.scan.ts) < 15000) {
+            lastProcessedRemoteId = data.scan.id;
+            const exactProd = branchProducts().find(p => String(p.barcode).trim() === String(data.scan.barcode).trim());
+            if (exactProd) { playBeepAndVibrate(); addToCart(exactProd.id); }
+          }
+        } catch (e) {}
+      }, 2200);
+    }
+
+    function toggleMobileSendToPC() {
+      mobileSendToPC = !mobileSendToPC;
+      const btn = document.getElementById('mobile-send-pc-btn');
+      btn.innerHTML = `<i class="fas fa-desktop mr-1"></i>Send to PC: ${mobileSendToPC ? 'ON' : 'OFF'}`;
+      btn.className = mobileSendToPC ? "px-2.5 py-1 bg-emerald-500 text-slate-950 rounded-xl text-[11px] font-black" : "px-2.5 py-1 bg-slate-800 text-cyan-300 rounded-xl text-[11px] font-bold";
+    }
+
     function playBeepAndVibrate() {
       try { if (navigator.vibrate) navigator.vibrate(75); } catch (e) {}
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(1400, ctx.currentTime);
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.type = "sine"; osc.frequency.setValueAtTime(1400, ctx.currentTime);
         gain.gain.setValueAtTime(0.28, ctx.currentTime);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1);
       } catch (e) {}
     }
 
-    function handleDetectedBarcode(decodedText) {
+    async function handleDetectedBarcode(decodedText) {
       const cleanCode = String(decodedText).trim();
       if (!cleanCode) return;
       const now = Date.now();
       if (cleanCode === lastScannedCode && (now - lastScanTime) < 1500) return;
-      lastScannedCode = cleanCode;
-      lastScanTime = now;
+      lastScannedCode = cleanCode; lastScanTime = now;
       playBeepAndVibrate();
 
+      if (mobileSendToPC) {
+        document.getElementById('live-scan-feedback').innerHTML = `<span class="text-cyan-400 font-bold">📡 Sent to PC: ${cleanCode}</span>`;
+        callSheetAPI("pushRemoteScan", { barcode: cleanCode, branch: activeBranch }).catch(() => {});
+        return;
+      }
+
       if (scanTargetField === 'pos-search') {
-        const exactProd = storeData.products.find(p => String(p.barcode).trim() === cleanCode);
+        const exactProd = branchProducts().find(p => String(p.barcode).trim() === cleanCode);
         if (exactProd) {
           addToCart(exactProd.id);
           const activePrice = currentPriceMode === 'Wholesale' ? (exactProd.wholesalePrice || exactProd.price) : exactProd.price;
           document.getElementById('live-scan-feedback').innerHTML = `<span class="text-emerald-400 font-bold">✅ Added: ${exactProd.name} (₹${activePrice})</span>`;
         } else {
           closeUltraFastScanner();
-          document.getElementById('pos-search').value = cleanCode;
-          renderPosProducts();
+          document.getElementById('pos-search').value = cleanCode; renderPosProducts();
           alert(`Barcode ${cleanCode} stock mein nahi mila.`);
         }
       } else {
@@ -804,108 +1095,52 @@
     }
 
     async function openUltraFastScanner(targetId) {
-      scanTargetField = targetId;
-      torchOn = false;
-      currentZoomLevel = 1;
+      scanTargetField = targetId; torchOn = false;
       document.getElementById('scanner-zoom-slider').value = 1;
       document.getElementById('zoom-level-label').innerText = "1.0x";
       updateZoomButtonUI(1);
-
       const modal = document.getElementById('live-scanner-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      document.getElementById('live-scan-feedback').innerText = "Barcode ko green laser box mein rakhein...";
-
+      modal.classList.remove('hidden'); modal.classList.add('flex');
       const videoEl = document.getElementById('zxing-scanner-video');
       videoEl.style.transform = "scale(1)";
-
       try {
-        // Engine 1: ZXing Continuous Video Decoder (Best for small 1D product barcodes)
         zxingCodeReader = new ZXing.BrowserMultiFormatReader();
-        await zxingCodeReader.decodeFromConstraints(
-          {
-            video: {
-              facingMode: { ideal: "environment" },
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
-            }
-          },
-          'zxing-scanner-video',
-          (result, err) => {
-            if (result && result.text) {
-              handleDetectedBarcode(result.text);
-            }
-          }
-        );
-
-        // Save active stream reference for Zoom & Torch
-        setTimeout(() => {
-          if (videoEl.srcObject) {
-            activeVideoStream = videoEl.srcObject;
-            startNativeDetectorParallel(videoEl);
-          }
-        }, 400);
-      } catch (err) {
-        document.getElementById('live-scan-feedback').innerText = "Camera permission allow karein: " + err;
-      }
+        await zxingCodeReader.decodeFromConstraints({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } }, 'zxing-scanner-video', (result) => { if (result && result.text) handleDetectedBarcode(result.text); });
+        setTimeout(() => { if (videoEl.srcObject) { activeVideoStream = videoEl.srcObject; startNativeDetectorParallel(videoEl); } }, 400);
+      } catch (err) { document.getElementById('live-scan-feedback').innerText = "Camera permission allow karein: " + err; }
     }
 
     function startNativeDetectorParallel(videoEl) {
       if (!('BarcodeDetector' in window)) return;
       nativeDetectorLoop = true;
-      const detector = new BarcodeDetector({
-        formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'itf', 'qr_code']
-      });
+      const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'itf', 'qr_code'] });
       const loop = async () => {
         if (!nativeDetectorLoop) return;
-        try {
-          if (videoEl.readyState >= 2) {
-            const codes = await detector.detect(videoEl);
-            if (codes.length > 0 && codes[0].rawValue) {
-              handleDetectedBarcode(codes[0].rawValue);
-            }
-          }
-        } catch (e) {}
+        try { if (videoEl.readyState >= 2) { const codes = await detector.detect(videoEl); if (codes.length > 0 && codes[0].rawValue) handleDetectedBarcode(codes[0].rawValue); } } catch (e) {}
         if (nativeDetectorLoop) requestAnimationFrame(loop);
       };
       requestAnimationFrame(loop);
     }
 
     function updateZoomButtonUI(val) {
-      [1, 2, 3].forEach(z => {
-        const btn = document.getElementById('zbtn-' + z);
-        if (btn) {
-          btn.className = (Math.round(val) === z)
-            ? "px-2.5 py-1 bg-indigo-600 rounded-lg font-bold"
-            : "px-2.5 py-1 bg-slate-800 rounded-lg font-bold";
-        }
-      });
+      [1, 2, 3].forEach(z => { const btn = document.getElementById('zbtn-' + z); if (btn) btn.className = (Math.round(val) === z) ? "px-2.5 py-1 bg-indigo-600 rounded-lg font-bold" : "px-2.5 py-1 bg-slate-800 rounded-lg font-bold"; });
     }
 
     async function setScannerZoom(zoomVal) {
       const z = Number(zoomVal);
-      currentZoomLevel = z;
       document.getElementById('scanner-zoom-slider').value = z;
       document.getElementById('zoom-level-label').innerText = z.toFixed(1) + "x";
       updateZoomButtonUI(z);
-
       const videoEl = document.getElementById('zxing-scanner-video');
       let hardwareZoomApplied = false;
-
       const stream = videoEl.srcObject || activeVideoStream;
       if (stream) {
         try {
           const track = stream.getVideoTracks()[0];
           const caps = track.getCapabilities ? track.getCapabilities() : {};
-          if (caps.zoom) {
-            const clamped = Math.min(Math.max(z, caps.zoom.min), caps.zoom.max);
-            await track.applyConstraints({ advanced: [{ zoom: clamped }] });
-            hardwareZoomApplied = true;
-          }
+          if (caps.zoom) { await track.applyConstraints({ advanced: [{ zoom: Math.min(Math.max(z, caps.zoom.min), caps.zoom.max) }] }); hardwareZoomApplied = true; }
         } catch (e) {}
       }
-
-      // Apply smooth visual CSS scale so zoom always works visually even if hardware zoom API is locked
       videoEl.style.transform = hardwareZoomApplied ? "scale(1)" : `scale(${z})`;
     }
 
@@ -920,31 +1155,157 @@
         await track.applyConstraints({ advanced: [{ torch: torchOn }] });
         document.getElementById('torch-btn').classList.toggle('bg-amber-500', torchOn);
         document.getElementById('torch-btn').classList.toggle('text-slate-900', torchOn);
-      } else {
-        alert("Is camera par flashlight/torch supported nahi hai.");
-      }
+      } else alert("Is camera par torch supported nahi hai.");
     }
 
     function closeUltraFastScanner() {
       nativeDetectorLoop = false;
-      if (zxingCodeReader) {
-        try { zxingCodeReader.reset(); } catch (e) {}
-        zxingCodeReader = null;
-      }
+      if (zxingCodeReader) { try { zxingCodeReader.reset(); } catch (e) {} zxingCodeReader = null; }
       const videoEl = document.getElementById('zxing-scanner-video');
-      if (videoEl && videoEl.srcObject) {
-        videoEl.srcObject.getTracks().forEach(t => t.stop());
-        videoEl.srcObject = null;
-      }
+      if (videoEl && videoEl.srcObject) { videoEl.srcObject.getTracks().forEach(t => t.stop()); videoEl.srcObject = null; }
       activeVideoStream = null;
       document.getElementById('live-scanner-modal').classList.add('hidden');
       document.getElementById('live-scanner-modal').classList.remove('flex');
     }
 
-    // ================= AUTH & TABS =================
+    // ================= AI BILL SCANNER & AI COPILOT =================
+    function handleAIBillUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const statusBox = document.getElementById('ai-scan-status');
+      statusBox.classList.remove('hidden'); statusBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI bill padh raha hai...`;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const res = await callSheetAPI("parseBillImageWithAI", e.target.result);
+          const items = Array.isArray(res) ? res : (res.items || []);
+          aiParsedData = { supplierName: res.supplierName || "", supplierBillNo: res.supplierBillNo || "", items, billImage: e.target.result.length < 45000 ? e.target.result : "" };
+          statusBox.classList.add('hidden');
+          renderAIExtractedEditor();
+        } catch (err) { statusBox.innerText = "Error: " + err.message; }
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    }
+
+    function renderAIExtractedEditor() {
+      const box = document.getElementById('ai-extracted-box');
+      box.classList.remove('hidden');
+      const existingProds = branchProducts();
+      box.innerHTML = `
+        <div class="flex justify-between items-center border-b pb-2">
+          <p class="font-extrabold text-xs text-indigo-700">✅ ${aiParsedData.items.length} Items Mile (Edit & Select Karein):</p>
+          <button onclick="closeAIExtractedBox()" class="px-2.5 py-1 bg-red-100 text-red-600 rounded-lg font-bold text-xs">✕ Close</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2 bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-100">
+          <div><span class="text-[10px] font-bold text-slate-500">Supplier Name</span><input type="text" id="ai-pb-supplier" value="${String(aiParsedData.supplierName).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-bold"></div>
+          <div><span class="text-[10px] font-bold text-slate-500">Supplier Bill No.</span><input type="text" id="ai-pb-billno" value="${String(aiParsedData.supplierBillNo).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-mono"></div>
+        </div>
+        <div class="space-y-2 max-h-72 overflow-y-auto">
+          ${aiParsedData.items.map((it, idx) => {
+            const match = existingProds.find(p => p.name.toLowerCase().includes(String(it.name).toLowerCase().slice(0, 8)));
+            const rateIncreased = match && match.costPrice > 0 && Number(it.costPrice) > match.costPrice;
+            return `
+            <div class="p-2.5 bg-slate-50 rounded-xl border ${rateIncreased ? 'border-amber-400 bg-amber-50/40' : 'border-slate-200'} space-y-1.5">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="ai-chk-${idx}" checked class="w-4 h-4 accent-indigo-600">
+                <input type="text" id="ai-name-${idx}" value="${String(it.name).replace(/"/g, '&quot;')}" class="flex-1 p-1.5 bg-white border rounded-lg text-xs font-bold">
+                <input type="text" id="ai-cat-${idx}" value="${it.category || 'General'}" class="w-24 p-1.5 bg-white border rounded-lg text-[11px]">
+              </div>
+              ${rateIncreased ? `<p class="text-[10px] font-bold text-amber-700">⚠️ Rate Alert: Pehle Cost ₹${match.costPrice} thi, ab ₹${it.costPrice} ho gayi!</p>` : ''}
+              <div class="grid grid-cols-5 gap-1.5 text-[10px]">
+                <div><span class="text-slate-400">Cost ₹</span><input type="number" id="ai-cost-${idx}" value="${it.costPrice || 0}" class="w-full p-1 bg-white border rounded font-bold"></div>
+                <div><span class="text-slate-400">MRP ₹</span><input type="number" id="ai-mrp-${idx}" value="${it.mrp || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div>
+                <div><span class="text-slate-400">Retail ₹</span><input type="number" id="ai-price-${idx}" value="${it.price || 0}" class="w-full p-1 bg-white border rounded font-bold text-indigo-600"></div>
+                <div><span class="text-slate-400">Whlsl ₹</span><input type="number" id="ai-whl-${idx}" value="${it.wholesalePrice || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div>
+                <div><span class="text-slate-400">Qty</span><input type="number" id="ai-qty-${idx}" value="${it.stock || 1}" class="w-full p-1 bg-white border rounded font-bold text-emerald-600"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <label class="flex items-center gap-2 text-xs font-bold text-slate-700"><input type="checkbox" id="ai-save-pb-chk" checked class="accent-indigo-600"> Purchase Bill record bhi save rakhein</label>
+        <div class="flex gap-2 pt-1">
+          <button onclick="saveSelectedAIItems()" class="flex-1 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">✅ Selected Items & Bill Save Karein</button>
+          <button onclick="closeAIExtractedBox()" class="px-4 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancel</button>
+        </div>
+      `;
+    }
+
+    function closeAIExtractedBox() { document.getElementById('ai-extracted-box').classList.add('hidden'); aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" }; }
+
+    async function saveSelectedAIItems() {
+      const selected = [];
+      aiParsedData.items.forEach((_, idx) => {
+        const chk = document.getElementById(`ai-chk-${idx}`);
+        if (chk && chk.checked) {
+          selected.push({
+            name: document.getElementById(`ai-name-${idx}`).value.trim(),
+            category: document.getElementById(`ai-cat-${idx}`).value.trim() || "General",
+            costPrice: Number(document.getElementById(`ai-cost-${idx}`).value || 0),
+            mrp: Number(document.getElementById(`ai-mrp-${idx}`).value || 0),
+            price: Number(document.getElementById(`ai-price-${idx}`).value || 0),
+            wholesalePrice: Number(document.getElementById(`ai-whl-${idx}`).value || 0),
+            stock: Number(document.getElementById(`ai-qty-${idx}`).value || 1)
+          });
+        }
+      });
+      if (!selected.length) { alert("Kam se kam ek item select karein!"); return; }
+      storeData = await callSheetAPI("bulkSaveAIProductsAndPurchaseBill", {
+        items: selected, supplierName: document.getElementById('ai-pb-supplier').value.trim(),
+        supplierBillNo: document.getElementById('ai-pb-billno').value.trim(),
+        savePurchaseBill: document.getElementById('ai-save-pb-chk').checked, billImage: aiParsedData.billImage, branch: activeBranch
+      });
+      closeAIExtractedBox(); renderAllViews();
+      alert(`✅ ${selected.length} items add ho gaye!`);
+    }
+
+    function renderPurchaseBillsList() {
+      const list = branchPurchaseBills();
+      document.getElementById('purchase-bills-list').innerHTML = list.length ? list.map(pb => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+          <div class="flex justify-between font-bold text-slate-800"><span>${pb.supplierName} ${pb.supplierBillNo ? `(Bill #${pb.supplierBillNo})` : ''}</span><span class="text-indigo-600">₹${pb.totalAmount}</span></div>
+          <p class="text-[10px] text-slate-400">${pb.date} • ${pb.itemsCount} Items (${pb.id})</p>
+          <p class="text-[11px] text-slate-600">${pb.items.map(i => `${i.name} (x${i.stock} @₹${i.costPrice})`).join(', ')}</p>
+        </div>
+      `).join('') : `<p class="text-center text-slate-400 py-6">Abhi koi purchase bill saved nahi hai.</p>`;
+    }
+
+    function openAICopilotModal() { document.getElementById('ai-copilot-modal').classList.remove('hidden'); document.getElementById('ai-copilot-modal').classList.add('flex'); }
+    function startVoiceRecognition() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) { alert("Voice mic supported nahi hai, type karke command dein."); return; }
+      const rec = new SpeechRec(); rec.lang = 'hi-IN';
+      const micBtn = document.getElementById('ai-mic-btn'); micBtn.classList.add('animate-pulse', 'bg-amber-500');
+      rec.onresult = (e) => { const t = e.results[0][0].transcript; document.getElementById('ai-copilot-input').value = t; sendAICopilotPrompt(t); };
+      rec.onend = () => micBtn.classList.remove('animate-pulse', 'bg-amber-500');
+      rec.start();
+    }
+    async function sendAICopilotPrompt(presetText = null) {
+      const input = document.getElementById('ai-copilot-input');
+      const cmd = presetText || input.value.trim();
+      if (!cmd) return;
+      input.value = '';
+      const out = document.getElementById('ai-copilot-output');
+      out.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI samajh raha hai...`;
+      const summary = JSON.stringify({ branch: activeBranch, products: branchProducts().slice(0, 40).map(p => ({ name: p.name, stock: p.stock, retail: p.price, wholesale: p.wholesalePrice })), recentSales: branchInvoices().slice(0, 35).map(i => ({ date: i.date, customer: i.customer, phone: i.phone, items: i.items, total: i.total, mode: i.paymentMode })), expenses: branchExpenses().slice(0, 15) });
+      try {
+        const res = await callSheetAPI("runAICopilotCommand", { command: cmd, summary, branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" });
+        out.innerText = res.reply || "Done!";
+        if (res.type === "ADD_BILL" && res.items) {
+          res.items.forEach(it => { const match = branchProducts().find(p => p.name.toLowerCase().includes(String(it.query).toLowerCase())); if (match) { for (let q = 0; q < (it.qty || 1); q++) addToCart(match.id); } });
+          if (res.customer) document.getElementById('cust-name').value = res.customer;
+          if (res.paymentMode) document.getElementById('pay-mode').value = res.paymentMode;
+          switchTab('pos');
+        } else if (res.updatedData) { storeData = res.updatedData; renderAllViews(); }
+      } catch (err) { out.innerText = "Error: " + err.message; }
+    }
+
+    // ================= AUTH, POS, STOCK, SALES & MORE =================
     function attemptLogin() {
       const staffId = document.getElementById('login-staff-select').value;
       const pin = document.getElementById('login-pin').value.trim();
+      activeBranch = document.getElementById('login-branch-select').value || "Main Branch";
+      document.getElementById('header-branch-select').value = activeBranch;
       const staff = storeData.staff.find(s => String(s.id) === String(staffId));
       if (staff && String(staff.pin) === String(pin)) {
         currentUser = staff;
@@ -955,36 +1316,15 @@
         document.getElementById('admin-profit-card').classList.toggle('hidden', !isAdmin);
         document.getElementById('admin-staff-panel').classList.toggle('hidden', !isAdmin);
         renderAllViews();
-      } else {
-        alert("Galat PIN!");
-      }
+      } else alert("Galat PIN!");
     }
-
     function logout() { currentUser = null; document.getElementById('login-screen').classList.remove('hidden'); }
 
-    function switchTab(tab) {
-      ['pos', 'inventory', 'invoices', 'repairs', 'used', 'expenses'].forEach(t => {
-        document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
-        const btn = document.getElementById('nav-' + t);
-        if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); }
-      });
-    }
-
-    // ================= RETAIL / WHOLESALE & CUSTOMER HISTORY =================
     function setPriceMode(mode) {
-      currentPriceMode = mode;
-      document.getElementById('cart-mode-badge').innerText = mode;
-      ['Retail', 'Wholesale'].forEach(m => {
-        document.getElementById('mode-btn-' + m).className = (m === mode)
-          ? "px-3 py-1 rounded-md text-xs font-extrabold bg-white text-indigo-700 shadow-sm"
-          : "px-3 py-1 rounded-md text-xs font-bold text-slate-600";
-      });
-      cart.forEach(c => {
-        const p = storeData.products.find(x => String(x.id) === String(c.id));
-        if (p) c.price = mode === 'Wholesale' ? (p.wholesalePrice || p.price) : p.price;
-      });
-      renderPosProducts();
-      renderCart();
+      currentPriceMode = mode; document.getElementById('cart-mode-badge').innerText = mode;
+      ['Retail', 'Wholesale'].forEach(m => { document.getElementById('mode-btn-' + m).className = (m === mode) ? "px-2.5 py-1 rounded-md text-xs font-extrabold bg-white text-indigo-700 shadow-sm" : "px-2.5 py-1 rounded-md text-xs font-bold text-slate-600"; });
+      cart.forEach(c => { if (!c.isCustom) { const p = branchProducts().find(x => String(x.id) === String(c.id)); if (p) c.price = mode === 'Wholesale' ? (p.wholesalePrice || p.price) : p.price; } });
+      renderPosProducts(); renderCart();
     }
 
     function lookupCustomerHistory() {
@@ -993,50 +1333,32 @@
       if (phone.length < 5) { banner.classList.add('hidden'); return; }
       const matches = storeData.invoices.filter(inv => String(inv.phone).replace(/\D/g, '').includes(phone));
       if (matches.length > 0) {
-        if (!document.getElementById('cust-name').value.trim()) {
-          document.getElementById('cust-name').value = matches[0].customer;
-        }
-        const totalSpent = matches.reduce((s, x) => s + Number(x.total || 0), 0);
-        document.getElementById('cust-history-summary').innerText = `Purane ${matches.length} Bills (Total ₹${totalSpent})`;
+        if (!document.getElementById('cust-name').value.trim()) document.getElementById('cust-name').value = matches[0].customer;
+        document.getElementById('cust-history-summary').innerText = `Purane ${matches.length} Bills (Total ₹${matches.reduce((s, x) => s + Number(x.total || 0), 0)})`;
         banner.classList.remove('hidden');
-      } else {
-        banner.classList.add('hidden');
-      }
+      } else banner.classList.add('hidden');
     }
 
     function openCustomerHistoryModal() {
       const phone = document.getElementById('cust-phone').value.replace(/\D/g, '');
       const matches = storeData.invoices.filter(inv => String(inv.phone).replace(/\D/g, '').includes(phone));
       document.getElementById('cust-hist-title').innerText = `Purchase History (${matches.length} Bills)`;
-      document.getElementById('cust-hist-list').innerHTML = matches.map(inv => `
-        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="flex justify-between font-bold"><span>${inv.id} • ${inv.date}</span><span class="text-indigo-600">₹${inv.total}</span></div>
-          <p class="text-slate-600 mt-1">${inv.items}</p>
-          ${inv.note ? `<p class="text-[10px] text-amber-700 mt-0.5">Note/IMEI: ${inv.note}</p>` : ''}
-        </div>
-      `).join('');
-      document.getElementById('cust-history-modal').classList.remove('hidden');
-      document.getElementById('cust-history-modal').classList.add('flex');
+      document.getElementById('cust-hist-list').innerHTML = matches.map(inv => `<div class="p-2.5 bg-slate-50 rounded-xl border"><div class="flex justify-between font-bold"><span>${inv.id} • ${inv.date}</span><span class="text-indigo-600">₹${inv.total}</span></div><p class="text-slate-600 mt-1">${inv.items}</p></div>`).join('');
+      document.getElementById('cust-history-modal').classList.remove('hidden'); document.getElementById('cust-history-modal').classList.add('flex');
     }
 
-    // ================= POS PRODUCTS & CART =================
     function renderCategories() {
-      const hasFav = storeData.products.some(p => p.isFavorite);
-      const cats = ['All', ...(hasFav ? ['★ Favorites'] : []), ...new Set(storeData.products.map(p => p.category || 'General'))];
-      document.getElementById('pos-categories').innerHTML = cats.map(c => `
-        <button onclick="selectedCategory='${c}';renderCategories();renderPosProducts();" 
-          class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${selectedCategory === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'}">${c}</button>
-      `).join('');
+      const prods = branchProducts();
+      const hasFav = prods.some(p => p.isFavorite);
+      const cats = ['All', ...(hasFav ? ['★ Favorites'] : []), ...new Set(prods.map(p => p.category || 'General'))];
+      document.getElementById('pos-categories').innerHTML = cats.map(c => `<button onclick="selectedCategory='${c}';renderCategories();renderPosProducts();" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${selectedCategory === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'}">${c}</button>`).join('');
     }
 
     function renderPosProducts() {
       const q = document.getElementById('pos-search').value.toLowerCase().trim();
-      const filtered = storeData.products.filter(p => {
-        const matchCat = selectedCategory === 'All' || (selectedCategory === '★ Favorites' ? p.isFavorite : p.category === selectedCategory);
-        return matchCat && (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q));
-      });
+      const filtered = branchProducts().filter(p => (selectedCategory === 'All' || (selectedCategory === '★ Favorites' ? p.isFavorite : p.category === selectedCategory)) && (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)));
       const grid = document.getElementById('pos-products-grid');
-      if (filtered.length === 0) { grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Koi product nahi mila.</div>`; return; }
+      if (!filtered.length) { grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Koi product nahi mila.</div>`; return; }
       grid.innerHTML = filtered.map(p => {
         const activePrice = currentPriceMode === 'Wholesale' ? (p.wholesalePrice || p.price) : p.price;
         const mrp = p.mrp || activePrice;
@@ -1050,31 +1372,22 @@
             <p class="text-[10px] font-mono text-slate-400 mt-0.5">${p.barcode}</p>
           </div>
           <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-50">
-            <div>
-              ${mrp > activePrice ? `<span class="text-[10px] line-through text-slate-400 mr-1">₹${mrp}</span>` : ''}
-              <span class="font-black text-sm text-indigo-600">₹${activePrice}</span>
-            </div>
+            <div>${mrp > activePrice ? `<span class="text-[10px] line-through text-slate-400 mr-1">₹${mrp}</span>` : ''}<span class="font-black text-sm text-indigo-600">₹${activePrice}</span></div>
             <span class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Stock: ${p.stock}</span>
           </div>
-        </div>
-      `}).join('');
+        </div>`;
+      }).join('');
     }
 
-    async function toggleFav(id) {
-      storeData = await callSheetAPI("toggleProductFavorite", id);
-      renderCategories(); renderPosProducts();
-    }
+    async function toggleFav(id) { storeData = await callSheetAPI("toggleProductFavorite", id); renderCategories(); renderPosProducts(); }
 
     function addToCart(prodId) {
-      const prod = storeData.products.find(p => String(p.id) === String(prodId));
+      const prod = branchProducts().find(p => String(p.id) === String(prodId));
       if (!prod || prod.stock <= 0) { alert("Stock khatam hai!"); return; }
       const activePrice = currentPriceMode === 'Wholesale' ? (prod.wholesalePrice || prod.price) : prod.price;
       const existing = cart.find(c => String(c.id) === String(prodId));
-      if (existing) {
-        if (existing.qty < prod.stock) existing.qty++;
-      } else {
-        cart.push({ id: prod.id, name: prod.name, mrp: prod.mrp || activePrice, price: activePrice, costPrice: prod.costPrice || 0, qty: 1 });
-      }
+      if (existing) { if (existing.qty < prod.stock) existing.qty++; }
+      else cart.push({ id: prod.id, name: prod.name, mrp: prod.mrp || activePrice, price: activePrice, costPrice: prod.costPrice || 0, image: prod.image || "", qty: 1, isCustom: false });
       renderCart();
     }
 
@@ -1083,17 +1396,15 @@
 
     function renderCart() {
       const box = document.getElementById('cart-items');
-      if (cart.length === 0) { box.innerHTML = `<p class="text-center text-slate-400 py-6 text-xs">Cart khaali hai.</p>`; updateCartTotals(); return; }
+      if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-6 text-xs">Cart khaali hai. Item select karein ya "+ Photo Item" se photo+price daalein.</p>`; updateCartTotals(); return; }
       box.innerHTML = cart.map((c, idx) => `
-        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100">
-          <div class="flex-1 pr-2">
-            <p class="font-bold text-xs text-slate-800">${c.name}</p>
-            <p class="text-[11px] text-slate-500">
-              ${c.mrp > c.price ? `<span class="line-through text-slate-400">₹${c.mrp}</span> ` : ''}
-              ₹${c.price} × ${c.qty} = <b>₹${c.price * c.qty}</b>
-            </p>
+        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">
+          ${c.image ? `<img src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-xs text-slate-800 truncate">${c.name} ${c.isCustom ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 px-1 rounded">Photo</span>' : ''}</p>
+            <p class="text-[11px] text-slate-500">₹${c.price} × ${c.qty} = <b>₹${c.price * c.qty}</b></p>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 shrink-0">
             <button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button>
             <span class="font-bold text-xs w-4 text-center">${c.qty}</span>
             <button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button>
@@ -1108,15 +1419,13 @@
       const subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
       const extraDisc = Number(document.getElementById('bill-discount').value || 0);
       const finalTotal = Math.max(0, subTotal - extraDisc);
-      const totalSavings = Math.max(0, mrpTotal - finalTotal);
-
       document.getElementById('cart-mrp-total').innerText = mrpTotal;
-      document.getElementById('cart-total-savings').innerText = totalSavings;
+      document.getElementById('cart-total-savings').innerText = Math.max(0, mrpTotal - finalTotal);
       document.getElementById('cart-final-total').innerText = finalTotal;
     }
 
     async function checkoutSale() {
-      if (cart.length === 0) { alert("Cart khaali hai!"); return; }
+      if (!cart.length) { alert("Cart khaali hai!"); return; }
       const btn = document.getElementById('checkout-btn');
       btn.disabled = true; btn.innerText = "Saving...";
       try {
@@ -1124,51 +1433,40 @@
         const subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
         const extraDisc = Number(document.getElementById('bill-discount').value || 0);
         const finalTotal = Math.max(0, subTotal - extraDisc);
-        const totalSavings = Math.max(0, mrpTotal - finalTotal);
-
+        const cleanCartForSheet = cart.map(c => ({
+          id: c.id, name: c.name, mrp: c.mrp, price: c.price, costPrice: c.costPrice, qty: c.qty,
+          isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : ""
+        }));
         const salePayload = {
           staffName: currentUser ? currentUser.name : 'Staff',
           customerName: document.getElementById('cust-name').value.trim() || 'Walk-in Customer',
           customerPhone: document.getElementById('cust-phone').value.trim(),
-          priceMode: currentPriceMode,
-          paymentMode: document.getElementById('pay-mode').value,
-          subtotal: subTotal,
-          mrpTotal: mrpTotal,
-          discount: extraDisc,
-          totalSavings: totalSavings,
+          priceMode: currentPriceMode, paymentMode: document.getElementById('pay-mode').value,
+          subtotal: subTotal, mrpTotal, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal),
           note: document.getElementById('bill-note').value.trim(),
-          total: finalTotal,
-          cart: cart
+          customDate: document.getElementById('bill-custom-date').value.trim(),
+          total: finalTotal, cart: cleanCartForSheet, branch: activeBranch
         };
         const res = await callSheetAPI("processSale", salePayload);
         storeData = res.updatedData;
         showReceiptModal(res.invoiceId, res.date, salePayload);
         cart = [];
-        document.getElementById('cust-name').value = '';
-        document.getElementById('cust-phone').value = '';
-        document.getElementById('bill-discount').value = '';
-        document.getElementById('bill-note').value = '';
+        ['cust-name', 'cust-phone', 'bill-discount', 'bill-note', 'bill-custom-date'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('cust-history-banner').classList.add('hidden');
         renderAllViews();
       } catch (err) { alert("Error: " + err.message); }
       finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Bill Save & Print Karein`; }
     }
 
-    // ================= MULTI-THEME RECEIPT =================
     function showReceiptModal(invId, dateStr, sale) {
       lastReceipt = { invId, dateStr, ...sale };
-      document.getElementById('receipt-modal').classList.remove('hidden');
-      document.getElementById('receipt-modal').classList.add('flex');
+      document.getElementById('receipt-modal').classList.remove('hidden'); document.getElementById('receipt-modal').classList.add('flex');
       renderReceiptTheme();
     }
 
     function setBillTheme(theme) {
       currentBillTheme = theme;
-      ['thermal', 'modern', 'classic'].forEach(t => {
-        document.getElementById('theme-btn-' + t).className = (t === theme)
-          ? "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white"
-          : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600";
-      });
+      ['thermal', 'modern', 'classic'].forEach(t => { document.getElementById('theme-btn-' + t).className = (t === theme) ? "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white" : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600"; });
       renderReceiptTheme();
     }
 
@@ -1178,165 +1476,83 @@
       const mrpTotal = Number(r.mrpTotal || r.total);
       const savings = Number(r.totalSavings || Math.max(0, mrpTotal - r.total));
       const box = document.getElementById('receipt-print-area');
+      const brObj = storeData.branches.find(b => b.name === (r.branch || activeBranch)) || { name: "Kirtika Mobile", address: "Madhuban, Jodhpur", phone: "8209618586" };
+      const widthClass = hwPrefs.receiptSize === '58mm' ? 'max-w-[230px] mx-auto text-[11px]' : (hwPrefs.receiptSize === '80mm' ? 'max-w-[310px] mx-auto text-xs' : 'w-full text-xs');
 
       if (currentBillTheme === 'thermal') {
         box.innerHTML = `
-          <div class="p-4 text-xs font-mono space-y-2 border border-slate-200 rounded-xl bg-white text-slate-900">
-            <div class="text-center border-b border-dashed border-slate-300 pb-2">
-              <h2 class="font-black text-base tracking-wide">KIRTIKA MOBILE</h2>
-              <p>The TB Store • Madhuban, Jodhpur</p>
-              <p>Mob: 8209618586</p>
+          <div class="${widthClass} p-3 font-mono space-y-2 border border-slate-200 rounded-xl bg-white text-slate-900">
+            <div class="text-center border-b border-dashed border-slate-300 pb-2"><h2 class="font-black text-sm">KIRTIKA MOBILE (${brObj.name})</h2><p class="text-[10px]">${brObj.address || 'Madhuban, Jodhpur'} • ${brObj.phone || '8209618586'}</p></div>
+            <div class="flex justify-between text-[10px]"><span>${r.invId} (${r.priceMode || 'Retail'})</span><span>${r.dateStr}</span></div>
+            <div class="text-[10px]">Customer: <b>${r.customerName}</b> ${r.customerPhone ? '(' + r.customerPhone + ')' : ''}</div>
+            <div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
+              ${r.cart.map(c => `<div class="flex justify-between font-bold"><span>${c.name} x${c.qty}</span><span>₹${c.price * c.qty}</span></div>`).join('')}
             </div>
-            <div class="flex justify-between text-[11px]"><span>${r.invId} (${r.priceMode || 'Retail'})</span><span>${r.dateStr}</span></div>
-            <div class="text-[11px]">Customer: <b>${r.customerName}</b> ${r.customerPhone ? '(' + r.customerPhone + ')' : ''}</div>
-            <div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1.5">
-              ${r.cart.map(c => `
-                <div>
-                  <div class="flex justify-between font-bold"><span>${c.name} x${c.qty}</span><span>₹${c.price * c.qty}</span></div>
-                  ${(c.mrp && c.mrp > c.price) ? `<div class="text-[10px] text-slate-500">MRP: ₹${c.mrp} | You Saved: ₹${(c.mrp - c.price) * c.qty}</div>` : ''}
-                </div>
-              `).join('')}
-            </div>
-            ${savings > 0 ? `
-              <div class="bg-slate-100 p-2 rounded text-[11px] space-y-0.5">
-                <div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div>
-                <div class="flex justify-between font-bold"><span>Customer Discount:</span><span>- ₹${savings}</span></div>
-              </div>
-            ` : ''}
-            <div class="flex justify-between font-black text-sm pt-1">
-              <span>NET PAID (${r.paymentMode})</span>
-              <span>₹${r.total}</span>
-            </div>
-            ${r.note ? `<p class="text-[10px] text-slate-600">IMEI/Note: ${r.note}</p>` : ''}
-            <p class="text-center text-[10px] pt-2 border-t border-dashed border-slate-300">Thank you for shopping at Kirtika Mobile!</p>
-          </div>
-        `;
+            ${savings > 0 ? `<div class="bg-slate-100 p-1.5 rounded text-[10px] flex justify-between font-bold"><span>Customer Discount:</span><span>- ₹${savings}</span></div>` : ''}
+            <div class="flex justify-between font-black text-sm pt-1"><span>NET PAID (${r.paymentMode})</span><span>₹${r.total}</span></div>
+            ${r.note ? `<p class="text-[10px] text-slate-600">Note: ${r.note}</p>` : ''}
+          </div>`;
       } else if (currentBillTheme === 'modern') {
         box.innerHTML = `
           <div class="border border-indigo-200 rounded-xl overflow-hidden bg-white text-slate-800 text-xs">
-            <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
-              <div>
-                <h2 class="font-black text-base">KIRTIKA MOBILE</h2>
-                <p class="text-[10px] text-indigo-100">The TB Store • Madhuban, Jodhpur • 8209618586</p>
-              </div>
-              <span class="bg-white/20 px-2.5 py-1 rounded-lg font-bold text-[10px]">${r.priceMode || 'RETAIL'} BILL</span>
-            </div>
+            <div class="bg-indigo-600 text-white p-4 flex justify-between items-center"><div><h2 class="font-black text-base">KIRTIKA MOBILE</h2><p class="text-[10px] text-indigo-100">${brObj.name} • ${brObj.address}</p></div><span class="bg-white/20 px-2.5 py-1 rounded-lg font-bold text-[10px]">${r.priceMode || 'RETAIL'}</span></div>
             <div class="p-4 space-y-3">
-              <div class="flex justify-between bg-slate-50 p-2.5 rounded-lg text-[11px]">
-                <div><span class="text-slate-400">Customer:</span><br><b>${r.customerName}</b><br>${r.customerPhone || ''}</div>
-                <div class="text-right"><span class="text-slate-400">Bill Details:</span><br><b>${r.invId}</b><br>${r.dateStr}</div>
-              </div>
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-slate-200 text-[10px] text-slate-400 uppercase">
-                    <th class="py-1.5">Item</th><th class="py-1.5 text-center">MRP</th><th class="py-1.5 text-center">Rate</th><th class="py-1.5 text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                  ${r.cart.map(c => `<tr><td class="py-2 font-semibold">${c.name} ×${c.qty}</td><td class="py-2 text-center text-slate-400 line-through">₹${c.mrp || c.price}</td><td class="py-2 text-center">₹${c.price}</td><td class="py-2 text-right font-bold">₹${c.price * c.qty}</td></tr>`).join('')}
-                </tbody>
-              </table>
-              <div class="border-t border-slate-200 pt-2 space-y-1 text-right">
-                ${savings > 0 ? `<p class="text-xs font-bold text-emerald-600">🎉 Aapki Total Bachat (Discount): ₹${savings}</p>` : ''}
-                <p class="text-base font-black text-indigo-600">Grand Total: ₹${r.total}</p>
-                <span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] font-bold">Paid via ${r.paymentMode}</span>
-              </div>
-              ${r.note ? `<p class="text-[10px] bg-amber-50 p-2 rounded text-amber-800">IMEI / Note: ${r.note}</p>` : ''}
+              <div class="flex justify-between bg-slate-50 p-2.5 rounded-lg text-[11px]"><div><b>${r.customerName}</b><br>${r.customerPhone || ''}</div><div class="text-right"><b>${r.invId}</b><br>${r.dateStr}</div></div>
+              <table class="w-full text-left"><thead><tr class="border-b text-[10px] text-slate-400"><th>Item</th><th class="text-center">Rate</th><th class="text-right">Total</th></tr></thead><tbody class="divide-y">${r.cart.map(c => `<tr><td class="py-1.5 font-semibold">${c.name} ×${c.qty}</td><td class="text-center">₹${c.price}</td><td class="text-right font-bold">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table>
+              <div class="border-t pt-2 text-right"><p class="text-base font-black text-indigo-600">Grand Total: ₹${r.total}</p></div>
             </div>
-          </div>
-        `;
+          </div>`;
       } else {
         box.innerHTML = `
           <div class="border-2 border-slate-900 p-4 bg-white text-slate-900 text-xs space-y-3">
-            <div class="text-center border-b-2 border-slate-900 pb-2">
-              <h2 class="font-black text-lg">KIRTIKA MOBILE - THE TB STORE</h2>
-              <p class="text-[11px]">Madhuban, Jodhpur (Raj.) • Ph: 8209618586</p>
-            </div>
-            <div class="flex justify-between border-b border-slate-300 pb-2 text-[11px]">
-              <span><b>M/s:</b> ${r.customerName}</span>
-              <span><b>Bill:</b> ${r.invId} | ${r.dateStr}</span>
-            </div>
-            <div class="space-y-1.5">
-              ${r.cart.map((c, idx) => `<div class="flex justify-between"><span>${idx + 1}. ${c.name} (MRP ₹${c.mrp || c.price} → ₹${c.price} × ${c.qty})</span><b>₹${c.price * c.qty}</b></div>`).join('')}
-            </div>
-            <div class="border-t-2 border-slate-900 pt-2 flex justify-between items-center">
-              <span class="text-[11px] font-bold">Mode: ${r.paymentMode} ${savings > 0 ? `| Total Discount: ₹${savings}` : ''}</span>
-              <span class="text-base font-black">NET TOTAL: ₹${r.total}/-</span>
-            </div>
-          </div>
-        `;
+            <div class="text-center border-b-2 border-slate-900 pb-2"><h2 class="font-black text-lg">KIRTIKA MOBILE - ${brObj.name}</h2><p class="text-[11px]">${brObj.address} • Ph: ${brObj.phone}</p></div>
+            <div class="flex justify-between border-b pb-2"><span><b>M/s:</b> ${r.customerName}</span><span><b>Bill:</b> ${r.invId} | ${r.dateStr}</span></div>
+            <div class="space-y-1">${r.cart.map((c, idx) => `<div class="flex justify-between"><span>${idx + 1}. ${c.name} × ${c.qty}</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>
+            <div class="border-t-2 border-slate-900 pt-2 flex justify-between font-black"><span>Mode: ${r.paymentMode}</span><span>NET TOTAL: ₹${r.total}/-</span></div>
+          </div>`;
       }
     }
 
     function reprintSavedInvoice(id) {
       const inv = storeData.invoices.find(x => String(x.id) === String(id));
       if (!inv) return;
-      showReceiptModal(inv.id, inv.date, {
-        customerName: inv.customer, customerPhone: inv.phone, priceMode: inv.priceMode,
-        paymentMode: inv.paymentMode, mrpTotal: inv.mrpTotal, discount: inv.discount,
-        totalSavings: inv.totalSavings, note: inv.note, total: inv.total,
-        cart: (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, mrp: inv.total, price: inv.total, qty: 1 }]
-      });
+      showReceiptModal(inv.id, inv.date, { customerName: inv.customer, customerPhone: inv.phone, priceMode: inv.priceMode, paymentMode: inv.paymentMode, mrpTotal: inv.mrpTotal, discount: inv.discount, totalSavings: inv.totalSavings, note: inv.note, total: inv.total, branch: inv.branch, cart: (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, mrp: inv.total, price: inv.total, qty: 1 }] });
     }
 
     function shareWhatsAppReceipt() {
       if (!lastReceipt) return;
       const itemsText = lastReceipt.cart.map(c => `• ${c.name} (x${c.qty}) - ₹${c.price * c.qty}`).join('%0A');
-      const savingsLine = lastReceipt.totalSavings > 0 ? `%0A*Total Discount / Bachat:* ₹${lastReceipt.totalSavings}` : '';
-      const msg = `*KIRTIKA MOBILE - THE TB STORE*%0AMadhuban, Jodhpur (8209618586)%0A------------------------%0A*Bill No:* ${lastReceipt.invId}%0A*Date:* ${lastReceipt.dateStr}%0A*Customer:* ${lastReceipt.customerName}%0A------------------------%0A${itemsText}%0A------------------------${savingsLine}%0A*Net Paid (${lastReceipt.paymentMode}): ₹${lastReceipt.total}*`;
+      const msg = `*KIRTIKA MOBILE (${activeBranch})*%0A*Bill No:* ${lastReceipt.invId} (${lastReceipt.dateStr})%0A*Customer:* ${lastReceipt.customerName}%0A${itemsText}%0A*Net Paid (${lastReceipt.paymentMode}): ₹${lastReceipt.total}*`;
       const phone = lastReceipt.customerPhone ? '91' + lastReceipt.customerPhone.replace(/\D/g, '').slice(-10) : '';
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
-    // ================= STOCK, BARCODE STICKERS & AI =================
-    function generateRandomBarcode(inputId) {
-      document.getElementById(inputId).value = '890' + Math.floor(100000000 + Math.random() * 900000000);
-    }
-
-    function openBarcodeGenModal(prodId) {
-      currentBarcodeProd = storeData.products.find(p => String(p.id) === String(prodId));
-      if (!currentBarcodeProd) return;
-      document.getElementById('barcode-gen-modal').classList.remove('hidden');
-      document.getElementById('barcode-gen-modal').classList.add('flex');
-      renderBarcodeStickers();
-    }
+    // ================= STOCK, BARCODE & PRODUCTS =================
+    function generateRandomBarcode(inputId) { document.getElementById(inputId).value = '890' + Math.floor(100000000 + Math.random() * 900000000); }
+    function openBarcodeGenModal(prodId) { currentBarcodeProd = branchProducts().find(p => String(p.id) === String(prodId)); if (!currentBarcodeProd) return; document.getElementById('barcode-gen-modal').classList.remove('hidden'); document.getElementById('barcode-gen-modal').classList.add('flex'); renderBarcodeStickers(); }
     function closeBarcodeGenModal() { document.getElementById('barcode-gen-modal').classList.add('hidden'); }
-
     function renderBarcodeStickers() {
       if (!currentBarcodeProd) return;
       const qty = Number(document.getElementById('barcode-qty-select').value || 4);
       const area = document.getElementById('barcode-print-area');
       const codeVal = currentBarcodeProd.barcode || '890123456789';
+      area.className = hwPrefs.barcodeSize === 'thermal_50x25' ? "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-1 gap-2 text-center" : "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-2 gap-3 text-center";
       let html = '';
-      for (let i = 0; i < qty; i++) {
-        html += `
-          <div class="border border-slate-300 rounded-lg p-2 flex flex-col items-center justify-center bg-white">
-            <p class="text-[9px] font-black uppercase text-slate-900">KIRTIKA MOBILE</p>
-            <p class="text-[10px] font-bold text-slate-700 truncate max-w-[140px]">${currentBarcodeProd.name}</p>
-            <svg class="barcode-svg-${i} my-0.5"></svg>
-            <p class="text-[10px] font-black text-slate-900">MRP ₹${currentBarcodeProd.mrp || currentBarcodeProd.price} | Offer ₹${currentBarcodeProd.price}</p>
-          </div>
-        `;
-      }
+      for (let i = 0; i < qty; i++) html += `<div class="border border-slate-300 rounded-lg p-2 flex flex-col items-center bg-white"><p class="text-[9px] font-black uppercase">KIRTIKA MOBILE</p><p class="text-[10px] font-bold truncate max-w-[160px]">${currentBarcodeProd.name}</p><svg class="barcode-svg-${i} my-0.5"></svg><p class="text-[10px] font-black">MRP ₹${currentBarcodeProd.mrp || currentBarcodeProd.price} | Offer ₹${currentBarcodeProd.price}</p></div>`;
       area.innerHTML = html;
-      for (let i = 0; i < qty; i++) {
-        try { JsBarcode(`.barcode-svg-${i}`, String(codeVal), { format: "CODE128", width: 1.4, height: 34, fontSize: 10, margin: 2 }); } catch (e) {}
-      }
+      for (let i = 0; i < qty; i++) { try { JsBarcode(`.barcode-svg-${i}`, String(codeVal), { format: "CODE128", width: 1.4, height: 34, fontSize: 10, margin: 2 }); } catch (e) {} }
     }
 
     function compressProductPhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+      const file = event.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const max = 260;
+          const canvas = document.createElement('canvas'); const max = 260;
           let w = img.width, h = img.height;
           if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
           document.getElementById('prod-image-data').value = canvas.toDataURL('image/jpeg', 0.7);
           document.getElementById('prod-photo-label').innerText = "✅ Photo Ready";
         };
@@ -1349,130 +1565,55 @@
       const name = document.getElementById('prod-name').value.trim();
       const price = Number(document.getElementById('prod-price').value);
       if (!name || !price) { alert("Name aur Retail Price daalein!"); return; }
-      const btn = document.getElementById('add-prod-btn');
-      btn.disabled = true; btn.innerText = "Saving...";
+      const btn = document.getElementById('add-prod-btn'); btn.disabled = true; btn.innerText = "Saving...";
       try {
-        storeData = await callSheetAPI("saveProduct", {
-          name,
-          category: document.getElementById('prod-cat').value.trim() || 'General',
-          barcode: document.getElementById('prod-barcode').value.trim() || ('890' + Math.floor(100000000 + Math.random() * 900000000)),
-          costPrice: Number(document.getElementById('prod-cost').value) || 0,
-          mrp: Number(document.getElementById('prod-mrp').value) || price,
-          price,
-          wholesalePrice: Number(document.getElementById('prod-wholesale').value) || price,
-          stock: Number(document.getElementById('prod-stock').value) || 1,
-          image: document.getElementById('prod-image-data').value
-        });
+        storeData = await callSheetAPI("saveProduct", { name, category: document.getElementById('prod-cat').value.trim() || 'General', barcode: document.getElementById('prod-barcode').value.trim() || ('890' + Math.floor(100000000 + Math.random() * 900000000)), costPrice: Number(document.getElementById('prod-cost').value) || 0, mrp: Number(document.getElementById('prod-mrp').value) || price, price, wholesalePrice: Number(document.getElementById('prod-wholesale').value) || price, stock: Number(document.getElementById('prod-stock').value) || 1, image: document.getElementById('prod-image-data').value, branch: activeBranch });
         ['prod-name', 'prod-cat', 'prod-barcode', 'prod-cost', 'prod-mrp', 'prod-price', 'prod-wholesale', 'prod-stock', 'prod-image-data'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('prod-photo-label').innerText = "Product Photo Chunein";
-        renderAllViews();
-        alert("✅ Product Saved!");
+        renderAllViews(); alert("✅ Product Saved!");
       } finally { btn.disabled = false; btn.innerText = "+ Inventory Mein Save Karein"; }
     }
 
     function toggleLowStockFilter() { showLowStockOnly = !showLowStockOnly; renderInventoryList(); }
 
     function openEditProdModal(id) {
-      const p = storeData.products.find(x => String(x.id) === String(id));
-      if (!p) return;
-      document.getElementById('edit-prod-id').value = p.id;
-      document.getElementById('edit-prod-name').value = p.name;
-      document.getElementById('edit-prod-cat').value = p.category;
-      document.getElementById('edit-prod-barcode').value = p.barcode;
-      document.getElementById('edit-prod-cost').value = p.costPrice || 0;
-      document.getElementById('edit-prod-mrp').value = p.mrp || p.price;
-      document.getElementById('edit-prod-price').value = p.price;
-      document.getElementById('edit-prod-wholesale').value = p.wholesalePrice || p.price;
-      document.getElementById('edit-prod-stock').value = p.stock;
-      document.getElementById('edit-prod-image').value = p.image || '';
-      document.getElementById('edit-prod-modal').classList.remove('hidden');
-      document.getElementById('edit-prod-modal').classList.add('flex');
+      const p = branchProducts().find(x => String(x.id) === String(id)); if (!p) return;
+      document.getElementById('edit-prod-id').value = p.id; document.getElementById('edit-prod-name').value = p.name;
+      document.getElementById('edit-prod-cat').value = p.category; document.getElementById('edit-prod-barcode').value = p.barcode;
+      document.getElementById('edit-prod-cost').value = p.costPrice || 0; document.getElementById('edit-prod-mrp').value = p.mrp || p.price;
+      document.getElementById('edit-prod-price').value = p.price; document.getElementById('edit-prod-wholesale').value = p.wholesalePrice || p.price;
+      document.getElementById('edit-prod-stock').value = p.stock; document.getElementById('edit-prod-image').value = p.image || '';
+      document.getElementById('edit-prod-modal').classList.remove('hidden'); document.getElementById('edit-prod-modal').classList.add('flex');
     }
 
     async function saveEditedProduct() {
-      storeData = await callSheetAPI("updateExistingProduct", {
-        id: document.getElementById('edit-prod-id').value,
-        name: document.getElementById('edit-prod-name').value,
-        category: document.getElementById('edit-prod-cat').value,
-        barcode: document.getElementById('edit-prod-barcode').value,
-        costPrice: Number(document.getElementById('edit-prod-cost').value),
-        mrp: Number(document.getElementById('edit-prod-mrp').value),
-        price: Number(document.getElementById('edit-prod-price').value),
-        wholesalePrice: Number(document.getElementById('edit-prod-wholesale').value),
-        stock: Number(document.getElementById('edit-prod-stock').value),
-        image: document.getElementById('edit-prod-image').value
-      });
-      document.getElementById('edit-prod-modal').classList.add('hidden');
-      renderAllViews();
+      storeData = await callSheetAPI("updateExistingProduct", { id: document.getElementById('edit-prod-id').value, name: document.getElementById('edit-prod-name').value, category: document.getElementById('edit-prod-cat').value, barcode: document.getElementById('edit-prod-barcode').value, costPrice: Number(document.getElementById('edit-prod-cost').value), mrp: Number(document.getElementById('edit-prod-mrp').value), price: Number(document.getElementById('edit-prod-price').value), wholesalePrice: Number(document.getElementById('edit-prod-wholesale').value), stock: Number(document.getElementById('edit-prod-stock').value), image: document.getElementById('edit-prod-image').value });
+      document.getElementById('edit-prod-modal').classList.add('hidden'); renderAllViews();
     }
 
     function renderInventoryList() {
       const isAdmin = currentUser && currentUser.role === 'Admin';
       const q = document.getElementById('inv-search').value.toLowerCase().trim();
-      const list = storeData.products.filter(p => (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)) && (!showLowStockOnly || p.stock <= 2));
+      const list = branchProducts().filter(p => (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)) && (!showLowStockOnly || p.stock <= 2));
       document.getElementById('total-prod-count').innerText = list.length;
       document.getElementById('inventory-list').innerHTML = list.map(p => `
         <div class="py-2.5 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
             ${p.image ? `<img src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0">` : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fas fa-box"></i></div>`}
-            <div class="truncate">
-              <p class="font-bold text-slate-800 truncate">${p.name}</p>
-              <p class="text-[10px] text-slate-400">
-                ${p.category} • <span class="font-mono text-slate-600">${p.barcode}</span>
-                ${isAdmin ? ` • <span class="text-amber-700 font-bold">Cost: ₹${p.costPrice}</span>` : ''}
-              </p>
-            </div>
+            <div class="truncate"><p class="font-bold text-slate-800 truncate">${p.name}</p><p class="text-[10px] text-slate-400">${p.category} • <span class="font-mono text-slate-600">${p.barcode}</span>${isAdmin ? ` • <span class="text-amber-700 font-bold">Cost: ₹${p.costPrice}</span>` : ''}</p></div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick="openBarcodeGenModal('${p.id}')" class="px-2 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-700"><i class="fas fa-barcode"></i></button>
-            <div class="text-right">
-              <p class="font-black text-indigo-600">₹${p.price} <span class="text-[9px] text-slate-400 font-normal">(W:₹${p.wholesalePrice})</span></p>
-              <p class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Qty: ${p.stock}</p>
-            </div>
+            <button onclick="openBarcodeGenModal('${p.id}')" class="px-2 py-1.5 bg-slate-100 border rounded-lg text-slate-700"><i class="fas fa-barcode"></i></button>
+            <div class="text-right"><p class="font-black text-indigo-600">₹${p.price}</p><p class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Qty: ${p.stock}</p></div>
             <button onclick="openEditProdModal('${p.id}')" class="text-indigo-500 p-1"><i class="fas fa-edit"></i></button>
             <button onclick="deleteProd('${p.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       `).join('');
     }
+    async function deleteProd(id) { if (confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExistingProduct", id); renderAllViews(); } }
 
-    async function deleteProd(id) {
-      if (!confirm("Delete karein?")) return;
-      storeData = await callSheetAPI("deleteExistingProduct", id);
-      renderAllViews();
-    }
-
-    function handleAIBillUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const statusBox = document.getElementById('ai-scan-status');
-      statusBox.classList.remove('hidden');
-      statusBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI bill padh raha hai...`;
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        try {
-          aiParsedTempItems = await callSheetAPI("parseBillImageWithAI", e.target.result);
-          statusBox.classList.add('hidden');
-          const box = document.getElementById('ai-extracted-box');
-          box.classList.remove('hidden');
-          box.innerHTML = `
-            <p class="font-extrabold text-xs text-indigo-700">✅ ${aiParsedTempItems.length} Items Mile:</p>
-            ${aiParsedTempItems.map(it => `<div class="text-xs bg-slate-50 p-2 rounded flex justify-between"><span>${it.name} (Qty: ${it.stock})</span><b>₹${it.price}</b></div>`).join('')}
-            <button onclick="saveAllAIItems()" class="w-full py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">Sabhi Items Add Karein</button>
-          `;
-        } catch (err) { statusBox.innerText = "Error: " + err.message; }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    async function saveAllAIItems() {
-      storeData = await callSheetAPI("bulkSaveAIProducts", aiParsedTempItems);
-      document.getElementById('ai-extracted-box').classList.add('hidden');
-      renderAllViews();
-      alert("✅ Sabhi AI items stock mein add ho gaye!");
-    }
-
-    // ================= SALES, ADMIN-ONLY BILL EDIT & RETURN/EXCHANGE =================
+    // ================= SALES, ADMIN EDIT (WITH DATE & TIME) & PHOTO VIEWER =================
     function parseIndianInvoiceDate(dateStr) {
       if (!dateStr) return null;
       const parts = String(dateStr).trim().split(' ')[0].split('/');
@@ -1486,35 +1627,28 @@
 
     function setSalesPeriodFilter(period) {
       salesPeriodFilter = period;
-      ['all', 'today', '7days', '30days'].forEach(p => {
-        document.getElementById('period-btn-' + p).className = (p === period)
-          ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white"
-          : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600";
-      });
+      ['all', 'today', '7days', '30days'].forEach(p => { document.getElementById('period-btn-' + p).className = (p === period) ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white" : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600"; });
       renderInvoicesList();
     }
 
     function openEditInvModal(id) {
-      if (!currentUser || currentUser.role !== 'Admin') {
-        alert("Sirf Admin hi bill edit kar sakta hai!");
-        return;
-      }
-      const inv = storeData.invoices.find(x => String(x.id) === String(id));
-      if (!inv) return;
+      if (!currentUser || currentUser.role !== 'Admin') return;
+      const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return;
       document.getElementById('edit-inv-id').value = inv.id;
+      document.getElementById('edit-inv-date').value = inv.date;
       document.getElementById('edit-inv-cust').value = inv.customer;
       document.getElementById('edit-inv-phone').value = inv.phone;
       document.getElementById('edit-inv-total').value = inv.total;
       document.getElementById('edit-inv-disc').value = inv.discount;
       document.getElementById('edit-inv-mode').value = inv.paymentMode;
       document.getElementById('edit-inv-note').value = inv.note;
-      document.getElementById('edit-inv-modal').classList.remove('hidden');
-      document.getElementById('edit-inv-modal').classList.add('flex');
+      document.getElementById('edit-inv-modal').classList.remove('hidden'); document.getElementById('edit-inv-modal').classList.add('flex');
     }
 
     async function saveEditedInvoice() {
       storeData = await callSheetAPI("updateExistingInvoice", {
         id: document.getElementById('edit-inv-id').value,
+        date: document.getElementById('edit-inv-date').value.trim(),
         customer: document.getElementById('edit-inv-cust').value,
         phone: document.getElementById('edit-inv-phone').value,
         total: Number(document.getElementById('edit-inv-total').value),
@@ -1522,57 +1656,67 @@
         paymentMode: document.getElementById('edit-inv-mode').value,
         note: document.getElementById('edit-inv-note').value
       });
-      document.getElementById('edit-inv-modal').classList.add('hidden');
-      renderAllViews();
-      alert("✅ Bill Update Ho Gaya!");
+      document.getElementById('edit-inv-modal').classList.add('hidden'); renderAllViews();
+      alert("✅ Bill & Date/Time Update Ho Gaya!");
     }
 
     async function returnOrDeleteBill(id, mode) {
-      const msg = mode === 'return'
-        ? "Customer Return/Exchange mark karke saare items wapas stock mein jodein?"
-        : "Bill permanently delete karke stock wapas badhayein?";
-      if (!confirm(msg)) return;
-      storeData = await callSheetAPI("returnOrDeleteInvoice", { id, mode });
-      renderAllViews();
+      if (!confirm(mode === 'return' ? "Item return mark karke stock wapas badhayein?" : "Bill delete karein?")) return;
+      storeData = await callSheetAPI("returnOrDeleteInvoice", { id, mode }); renderAllViews();
+    }
+
+    let todayCashInCache = 0, todayExpOutCache = 0;
+    function updateGallaTally() {
+      const opening = Number(document.getElementById('galla-opening').value || 0);
+      document.getElementById('galla-expected').innerText = opening + todayCashInCache - todayExpOutCache;
     }
 
     function renderInvoicesList() {
       const isAdmin = currentUser && currentUser.role === 'Admin';
+      const invs = branchInvoices();
       const now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const sevenDaysAgo = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
-      const thirtyDaysAgo = new Date(todayStart.getTime() - 29 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(todayStart.getTime() - 6 * 86400000);
+      const thirtyDaysAgo = new Date(todayStart.getTime() - 29 * 86400000);
 
       let todaySales = 0, todayBills = 0, d7Sales = 0, d7Bills = 0, d30Sales = 0, d30Bills = 0;
-      storeData.invoices.forEach(inv => {
+      todayCashInCache = 0;
+      const staffMap = {};
+
+      invs.forEach(inv => {
         if (inv.status === 'Returned') return;
         const amt = Number(inv.total || 0);
+        const stf = inv.staff || "Staff";
+        if (!staffMap[stf]) staffMap[stf] = { bills: 0, sales: 0 };
+        staffMap[stf].bills++; staffMap[stf].sales += amt;
         const invDate = parseIndianInvoiceDate(inv.date);
         if (invDate) {
           const invDay = new Date(invDate.getFullYear(), invDate.getMonth(), invDate.getDate());
-          if (invDay.getTime() === todayStart.getTime()) { todaySales += amt; todayBills++; }
+          if (invDay.getTime() === todayStart.getTime()) { todaySales += amt; todayBills++; if (inv.paymentMode === 'Cash') todayCashInCache += amt; }
           if (invDay >= sevenDaysAgo) { d7Sales += amt; d7Bills++; }
           if (invDay >= thirtyDaysAgo) { d30Sales += amt; d30Bills++; }
         }
       });
 
-      document.getElementById('stat-today-sales').innerText = todaySales;
-      document.getElementById('stat-today-bills').innerText = todayBills;
-      document.getElementById('stat-7d-sales').innerText = d7Sales;
-      document.getElementById('stat-7d-bills').innerText = d7Bills;
-      document.getElementById('stat-30d-sales').innerText = d30Sales;
-      document.getElementById('stat-30d-bills').innerText = d30Bills;
+      todayExpOutCache = 0;
+      branchExpenses().forEach(e => { const d = parseIndianInvoiceDate(e.date); if (d && new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayStart.getTime()) todayExpOutCache += Number(e.amount || 0); });
+      document.getElementById('galla-cash-in').innerText = todayCashInCache;
+      document.getElementById('galla-exp-out').innerText = todayExpOutCache;
+      updateGallaTally();
+
+      document.getElementById('staff-sales-breakdown').innerHTML = Object.keys(staffMap).map(s => `<div class="px-3 py-1.5 bg-slate-100 rounded-xl font-bold text-slate-700">${s}: <span class="text-indigo-600">₹${staffMap[s].sales}</span> (${staffMap[s].bills} bills)</div>`).join('') || `<span class="text-slate-400">No sales yet</span>`;
+      document.getElementById('stat-today-sales').innerText = todaySales; document.getElementById('stat-today-bills').innerText = todayBills;
+      document.getElementById('stat-7d-sales').innerText = d7Sales; document.getElementById('stat-7d-bills').innerText = d7Bills;
+      document.getElementById('stat-30d-sales').innerText = d30Sales; document.getElementById('stat-30d-bills').innerText = d30Bills;
 
       const modeFilter = document.getElementById('inv-mode-filter').value;
       const q = document.getElementById('inv-list-search').value.toLowerCase().trim();
-
-      const filtered = storeData.invoices.filter(inv => {
+      const filtered = invs.filter(inv => {
         const matchMode = modeFilter === 'All' || inv.paymentMode === modeFilter;
         const matchQ = inv.customer.toLowerCase().includes(q) || inv.id.toLowerCase().includes(q) || String(inv.phone).includes(q);
         if (!matchMode || !matchQ) return false;
         if (salesPeriodFilter === 'all') return true;
-        const invDate = parseIndianInvoiceDate(inv.date);
-        if (!invDate) return false;
+        const invDate = parseIndianInvoiceDate(inv.date); if (!invDate) return false;
         const invDay = new Date(invDate.getFullYear(), invDate.getMonth(), invDate.getDate());
         if (salesPeriodFilter === 'today') return invDay.getTime() === todayStart.getTime();
         if (salesPeriodFilter === '7days') return invDay >= sevenDaysAgo;
@@ -1583,199 +1727,139 @@
       let totalSales = 0, totalUpi = 0, totalCash = 0, totalUdhar = 0, grossProfit = 0;
       filtered.forEach(inv => {
         if (inv.status === 'Returned') return;
-        const amt = Number(inv.total || 0);
-        totalSales += amt;
-        grossProfit += Number(inv.profit || 0);
-        if (inv.paymentMode === 'UPI') totalUpi += amt;
-        else if (inv.paymentMode === 'Cash') totalCash += amt;
-        else if (inv.paymentMode === 'Udhar') totalUdhar += amt;
+        const amt = Number(inv.total || 0); totalSales += amt; grossProfit += Number(inv.profit || 0);
+        if (inv.paymentMode === 'UPI') totalUpi += amt; else if (inv.paymentMode === 'Cash') totalCash += amt; else if (inv.paymentMode === 'Udhar') totalUdhar += amt;
       });
 
-      const totalExp = storeData.expenses.reduce((s, e) => s + Number(e.amount || 0), 0);
-      document.getElementById('stat-total-sales').innerText = totalSales;
-      document.getElementById('stat-total-upi').innerText = totalUpi;
-      document.getElementById('stat-total-cash').innerText = totalCash;
-      document.getElementById('stat-total-udhar').innerText = totalUdhar;
+      const totalExp = branchExpenses().reduce((s, e) => s + Number(e.amount || 0), 0);
+      document.getElementById('stat-total-sales').innerText = totalSales; document.getElementById('stat-total-upi').innerText = totalUpi;
+      document.getElementById('stat-total-cash').innerText = totalCash; document.getElementById('stat-total-udhar').innerText = totalUdhar;
       document.getElementById('stat-net-profit').innerText = grossProfit - (salesPeriodFilter === 'all' ? totalExp : 0);
       document.getElementById('stat-total-bills').innerText = filtered.length;
 
-      document.getElementById('invoices-list').innerHTML = filtered.map(inv => `
+      document.getElementById('invoices-list').innerHTML = filtered.map(inv => {
+        const hasPhoto = (inv.cart || []).some(c => c.image);
+        return `
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center gap-2 ${inv.status === 'Returned' ? 'opacity-60' : ''}">
           <div>
-            <p class="font-bold text-slate-800">${inv.customer} <span class="text-[10px] text-slate-400">(${inv.id} • ${inv.priceMode || 'Retail'})</span></p>
+            <p class="font-bold text-slate-800">${inv.customer} <span class="text-[10px] text-slate-400">(${inv.id} • By ${inv.staff})</span></p>
             <p class="text-[11px] text-slate-500 mt-0.5">${inv.items}</p>
-            <p class="text-[10px] text-slate-400 mt-0.5">${inv.date} ${inv.totalSavings > 0 ? `• <span class="text-emerald-600 font-bold">Discount: ₹${inv.totalSavings}</span>` : ''}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">${inv.date} ${hasPhoto ? `<button onclick="viewSoldBillPhotos('${inv.id}')" class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"><i class="fas fa-camera mr-0.5"></i>Photo Dekhein</button>` : ''}</p>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="text-right">
               <p class="font-black text-sm text-slate-900">₹${inv.total}</p>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${inv.status === 'Returned' ? 'bg-amber-100 text-amber-800' : (inv.paymentMode === 'Udhar' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700')}">
-                ${inv.status === 'Returned' ? 'Returned' : inv.paymentMode}
-              </span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${inv.status === 'Returned' ? 'bg-amber-100 text-amber-800' : (inv.paymentMode === 'Udhar' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700')}">${inv.status === 'Returned' ? 'Returned' : inv.paymentMode}</span>
             </div>
-            <button onclick="reprintSavedInvoice('${inv.id}')" class="text-slate-600 p-1" title="Print Bill"><i class="fas fa-receipt"></i></button>
-            ${isAdmin ? `<button onclick="openEditInvModal('${inv.id}')" class="text-indigo-600 p-1" title="Admin Edit Bill"><i class="fas fa-edit"></i></button>` : ''}
-            ${inv.status !== 'Returned' ? `<button onclick="returnOrDeleteBill('${inv.id}', 'return')" class="text-amber-600 p-1" title="Return / Exchange"><i class="fas fa-undo"></i></button>` : ''}
-            ${isAdmin ? `<button onclick="returnOrDeleteBill('${inv.id}', 'delete')" class="text-red-400 p-1" title="Delete"><i class="fas fa-trash"></i></button>` : ''}
+            <button onclick="reprintSavedInvoice('${inv.id}')" class="text-slate-600 p-1"><i class="fas fa-receipt"></i></button>
+            ${isAdmin ? `<button onclick="openEditInvModal('${inv.id}')" class="text-indigo-600 p-1" title="Edit Bill & Date/Time"><i class="fas fa-edit"></i></button>` : ''}
+            ${inv.status !== 'Returned' ? `<button onclick="returnOrDeleteBill('${inv.id}', 'return')" class="text-amber-600 p-1"><i class="fas fa-undo"></i></button>` : ''}
+            ${isAdmin ? `<button onclick="returnOrDeleteBill('${inv.id}', 'delete')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
-    // ================= REPAIRS, USED PHONES, EXPENSES & STAFF =================
+    // ================= REPAIRS, SUPPLIER BOX, USED PHONES, EXPENSES, STAFF & BACKUP =================
     async function addRepairJob() {
-      const customer = document.getElementById('rep-cust').value.trim();
-      const deviceModel = document.getElementById('rep-model').value.trim();
-      const fault = document.getElementById('rep-fault').value.trim();
+      const customer = document.getElementById('rep-cust').value.trim(); const deviceModel = document.getElementById('rep-model').value.trim(); const fault = document.getElementById('rep-fault').value.trim();
       if (!customer || !deviceModel || !fault) { alert("Customer, Model aur Fault daalein!"); return; }
-      storeData = await callSheetAPI("saveRepair", {
-        customer, phone: document.getElementById('rep-phone').value.trim(), deviceModel, fault,
-        estimate: Number(document.getElementById('rep-estimate').value || 0),
-        advance: Number(document.getElementById('rep-advance').value || 0)
-      });
+      storeData = await callSheetAPI("saveRepair", { customer, phone: document.getElementById('rep-phone').value.trim(), deviceModel, fault, estimate: Number(document.getElementById('rep-estimate').value || 0), advance: Number(document.getElementById('rep-advance').value || 0), branch: activeBranch });
       ['rep-cust', 'rep-phone', 'rep-model', 'rep-fault', 'rep-estimate', 'rep-advance'].forEach(id => document.getElementById(id).value = '');
       renderRepairsList();
     }
-
-    async function changeRepairStatus(id, status) {
-      storeData = await callSheetAPI("updateRepairStatus", { id, status });
-      renderRepairsList();
-    }
-
+    async function changeRepairStatus(id, status) { storeData = await callSheetAPI("updateRepairStatus", { id, status }); renderRepairsList(); }
     function sendRepairWhatsApp(id) {
-      const r = storeData.repairs.find(x => String(x.id) === String(id));
-      if (!r) return;
+      const r = storeData.repairs.find(x => String(x.id) === String(id)); if (!r) return;
       const due = Math.max(0, r.estimate - r.advance);
-      const msg = `*KIRTIKA MOBILE - REPAIR UPDATE*%0AJob ID: ${r.id}%0AModel: ${r.deviceModel} (${r.fault})%0AStatus: *${r.status}*%0ATotal Charge: ₹${r.estimate} | Balance Due: *₹${due}*%0AMadhuban, Jodhpur (8209618586)`;
+      const msg = `*KIRTIKA MOBILE - REPAIR UPDATE*%0AJob: ${r.id} | Model: ${r.deviceModel}%0AStatus: *${r.status}* | Balance Due: *₹${due}*`;
       const phone = r.phone ? '91' + r.phone.replace(/\D/g, '').slice(-10) : '';
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
-
     function renderRepairsList() {
-      document.getElementById('rep-count').innerText = storeData.repairs.length;
-      document.getElementById('repairs-list').innerHTML = storeData.repairs.map(r => {
-        const due = Math.max(0, r.estimate - r.advance);
-        return `
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-2">
-          <div>
-            <p class="font-bold text-slate-800">${r.deviceModel} — <span class="text-indigo-600">${r.fault}</span></p>
-            <p class="text-[11px] text-slate-500">${r.customer} (${r.phone}) • ${r.id}</p>
-            <p class="text-[11px] font-bold mt-0.5">Est: ₹${r.estimate} | Adv: ₹${r.advance} | <span class="text-red-600">Due: ₹${due}</span></p>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <select onchange="changeRepairStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white">
-              <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="Ready" ${r.status === 'Ready' ? 'selected' : ''}>Ready</option>
-              <option value="Delivered" ${r.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-            </select>
-            <button onclick="sendRepairWhatsApp('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold"><i class="fab fa-whatsapp"></i></button>
-          </div>
-        </div>
-      `}).join('');
+      document.getElementById('repairs-list').innerHTML = branchRepairs().map(r => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center gap-2"><div><p class="font-bold">${r.deviceModel} — <span class="text-indigo-600">${r.fault}</span></p><p class="text-[11px] text-slate-500">${r.customer} (${r.phone}) • Due: ₹${Math.max(0, r.estimate - r.advance)}</p></div><div class="flex items-center gap-1.5"><select onchange="changeRepairStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="Ready" ${r.status === 'Ready' ? 'selected' : ''}>Ready</option><option value="Delivered" ${r.status === 'Delivered' ? 'selected' : ''}>Delivered</option></select><button onclick="sendRepairWhatsApp('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg"><i class="fab fa-whatsapp"></i></button></div></div>`).join('');
+    }
+
+    async function addSupplierReturn() {
+      const customer = document.getElementById('ret-cust').value.trim(); const productName = document.getElementById('ret-prod').value.trim();
+      if (!customer || !productName) return;
+      storeData = await callSheetAPI("saveSupplierReturn", { customer, phone: document.getElementById('ret-phone').value.trim(), productName, supplier: document.getElementById('ret-supplier').value.trim(), issue: document.getElementById('ret-issue').value.trim(), branch: activeBranch });
+      ['ret-cust', 'ret-phone', 'ret-prod', 'ret-supplier', 'ret-issue'].forEach(id => document.getElementById(id).value = '');
+      renderReturnsBoxList();
+    }
+    async function changeReturnStatus(id, status) { storeData = await callSheetAPI("updateSupplierReturnStatus", { id, status }); renderReturnsBoxList(); }
+    function renderReturnsBoxList() {
+      document.getElementById('returns-box-list').innerHTML = branchReturns().map(r => `<div class="p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl flex justify-between items-center"><div><p class="font-bold">${r.productName} <span class="text-amber-700">(Supplier: ${r.supplier})</span></p><p class="text-[11px] text-slate-500">${r.customer} • ${r.issue}</p></div><select onchange="changeReturnStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="Sent to Supplier" ${r.status === 'Sent to Supplier' ? 'selected' : ''}>Sent to Supplier</option><option value="Replaced" ${r.status === 'Replaced' ? 'selected' : ''}>Replaced</option></select></div>`).join('');
     }
 
     async function addUsedPhone() {
-      const model = document.getElementById('used-model').value.trim();
-      const imei1 = document.getElementById('used-imei1').value.trim();
-      const buyPrice = Number(document.getElementById('used-buy-price').value || 0);
-      if (!model || !imei1 || !buyPrice) { alert("Model, IMEI 1 aur Purchase Price daalein!"); return; }
-      storeData = await callSheetAPI("saveUsedPhone", {
-        model, imei1, imei2: document.getElementById('used-imei2').value.trim(), buyPrice,
-        sellerName: document.getElementById('used-seller').value.trim(),
-        sellerPhone: document.getElementById('used-seller-phone').value.trim(),
-        sellerIDProof: document.getElementById('used-id-proof').value.trim()
-      });
+      const model = document.getElementById('used-model').value.trim(); const imei1 = document.getElementById('used-imei1').value.trim(); const buyPrice = Number(document.getElementById('used-buy-price').value || 0);
+      if (!model || !imei1 || !buyPrice) return;
+      storeData = await callSheetAPI("saveUsedPhone", { model, imei1, imei2: document.getElementById('used-imei2').value.trim(), buyPrice, sellerName: document.getElementById('used-seller').value.trim(), sellerPhone: document.getElementById('used-seller-phone').value.trim(), sellerIDProof: document.getElementById('used-id-proof').value.trim(), branch: activeBranch });
       ['used-model', 'used-imei1', 'used-imei2', 'used-buy-price', 'used-seller', 'used-seller-phone', 'used-id-proof'].forEach(id => document.getElementById(id).value = '');
       renderUsedPhonesList();
     }
-
     async function markUsedPhoneSold(id) {
-      const sellPrice = prompt("Kitne rupaye (₹) mein becha?");
-      if (!sellPrice) return;
-      const buyerName = prompt("Buyer (Customer) ka naam:") || "Walk-in Customer";
-      storeData = await callSheetAPI("sellUsedPhone", { id, sellPrice: Number(sellPrice), buyerName });
-      renderUsedPhonesList();
+      const sellPrice = prompt("Kitne rupaye (₹) mein becha?"); if (!sellPrice) return;
+      const buyerName = prompt("Buyer ka naam:") || "Walk-in Customer";
+      storeData = await callSheetAPI("sellUsedPhone", { id, sellPrice: Number(sellPrice), buyerName }); renderUsedPhonesList();
     }
-
     function renderUsedPhonesList() {
-      document.getElementById('used-count').innerText = storeData.usedPhones.length;
-      document.getElementById('used-phones-list').innerHTML = storeData.usedPhones.map(u => `
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold text-slate-800">${u.model} <span class="font-mono text-[10px] text-slate-500">(IMEI: ${u.imei1})</span></p>
-            <p class="text-[11px] text-slate-500">Seller: ${u.sellerName} (${u.sellerPhone}) • ID: ${u.sellerIDProof}</p>
-            <p class="text-[11px] font-bold mt-0.5">Buy: ₹${u.buyPrice} ${u.status === 'Sold' ? `→ <span class="text-emerald-600">Sold: ₹${u.sellPrice} (Profit: ₹${u.sellPrice - u.buyPrice})</span>` : ''}</p>
-          </div>
-          <div>
-            ${u.status === 'In Stock'
-              ? `<button onclick="markUsedPhoneSold('${u.id}')" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Sell Phone</button>`
-              : `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-[10px]">Sold to ${u.buyerName}</span>`}
-          </div>
-        </div>
-      `).join('');
+      const list = branchUsed(); document.getElementById('used-count').innerText = list.length;
+      document.getElementById('used-phones-list').innerHTML = list.map(u => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center"><div><p class="font-bold">${u.model} (IMEI: ${u.imei1})</p><p class="text-[11px] text-slate-500">Seller: ${u.sellerName} • ID: ${u.sellerIDProof} • Buy: ₹${u.buyPrice}</p></div>${u.status === 'In Stock' ? `<button onclick="markUsedPhoneSold('${u.id}')" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Sell</button>` : `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-[10px]">Sold ₹${u.sellPrice}</span>`}</div>`).join('');
     }
 
     async function addExpenseEntry() {
-      const amount = Number(document.getElementById('exp-amount').value || 0);
-      if (!amount) { alert("Amount daalein!"); return; }
-      storeData = await callSheetAPI("saveExpense", {
-        category: document.getElementById('exp-cat').value, amount,
-        note: document.getElementById('exp-note').value.trim(),
-        staff: currentUser ? currentUser.name : 'Staff'
-      });
-      document.getElementById('exp-amount').value = '';
-      document.getElementById('exp-note').value = '';
-      renderExpensesList(); renderInvoicesList();
+      const amount = Number(document.getElementById('exp-amount').value || 0); if (!amount) return;
+      storeData = await callSheetAPI("saveExpense", { category: document.getElementById('exp-cat').value, amount, note: document.getElementById('exp-note').value.trim(), staff: currentUser ? currentUser.name : 'Staff', branch: activeBranch });
+      document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = ''; renderExpensesList(); renderInvoicesList();
     }
-
-    async function deleteExpenseEntry(id) {
-      if (!confirm("Kharcha delete karein?")) return;
-      storeData = await callSheetAPI("deleteExpense", id);
-      renderExpensesList(); renderInvoicesList();
-    }
-
+    async function deleteExpenseEntry(id) { if (confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExpense", id); renderExpensesList(); renderInvoicesList(); } }
     function renderExpensesList() {
-      const total = storeData.expenses.reduce((s, e) => s + Number(e.amount || 0), 0);
-      document.getElementById('stat-total-expenses').innerText = total;
-      document.getElementById('expenses-list').innerHTML = storeData.expenses.map(e => `
-        <div class="py-2.5 flex justify-between items-center">
-          <div>
-            <p class="font-bold text-slate-800">${e.category} ${e.note ? `<span class="font-normal text-slate-500">- ${e.note}</span>` : ''}</p>
-            <p class="text-[10px] text-slate-400">${e.date} • By ${e.staff}</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="font-black text-red-600">₹${e.amount}</span>
-            <button onclick="deleteExpenseEntry('${e.id}')" class="text-slate-400 hover:text-red-500 p-1"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-      `).join('');
+      const list = branchExpenses(); document.getElementById('stat-total-expenses').innerText = list.reduce((s, e) => s + Number(e.amount || 0), 0);
+      document.getElementById('expenses-list').innerHTML = list.map(e => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold">${e.category} ${e.note ? `- ${e.note}` : ''}</p><p class="text-[10px] text-slate-400">${e.date} • ${e.staff}</p></div><div class="flex items-center gap-2"><span class="font-black text-red-600">₹${e.amount}</span><button onclick="deleteExpenseEntry('${e.id}')" class="text-slate-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join('');
     }
 
     async function addStaffMember() {
-      const name = document.getElementById('stf-name').value.trim();
-      const pin = document.getElementById('stf-pin').value.trim();
-      if (!name || pin.length !== 4) { alert("Naam aur 4-digit PIN daalein!"); return; }
+      const name = document.getElementById('stf-name').value.trim(); const pin = document.getElementById('stf-pin').value.trim();
+      if (!name || pin.length !== 4) return;
       storeData = await callSheetAPI("saveStaffMember", { name, pin, role: document.getElementById('stf-role').value });
-      document.getElementById('stf-name').value = ''; document.getElementById('stf-pin').value = '';
-      renderStaffList();
+      document.getElementById('stf-name').value = ''; document.getElementById('stf-pin').value = ''; renderStaffList();
     }
-
-    async function deleteStaff(id) {
-      if (!confirm("Staff delete karein?")) return;
-      try { storeData = await callSheetAPI("deleteStaffMember", id); renderStaffList(); }
-      catch (e) { alert(e.message); }
-    }
-
+    async function deleteStaff(id) { if (confirm("Delete staff?")) { try { storeData = await callSheetAPI("deleteStaffMember", id); renderStaffList(); } catch (e) { alert(e.message); } } }
     function renderStaffList() {
-      document.getElementById('staff-list-box').innerHTML = storeData.staff.map(s => `
-        <div class="py-2 flex justify-between items-center">
-          <div>
-            <p class="font-bold text-slate-800">${s.name} <span class="text-[10px] px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full">${s.role}</span></p>
-            <p class="text-[10px] text-slate-400">PIN: ${s.pin}</p>
-          </div>
-          <button onclick="deleteStaff('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>
-        </div>
-      `).join('');
+      document.getElementById('staff-list-box').innerHTML = storeData.staff.map(s => `<div class="py-2 flex justify-between items-center"><div><p class="font-bold">${s.name} (${s.role})</p><p class="text-[10px] text-slate-400">PIN: ${s.pin}</p></div><button onclick="deleteStaff('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></div>`).join('');
+    }
+
+    // ================= EXCEL & PDF BACKUP =================
+    function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); document.getElementById('backup-modal').classList.add('flex'); }
+    function getFilteredBackupData() {
+      const period = document.getElementById('backup-period-select').value;
+      const now = new Date(); let cutoff = null, label = "Lifetime";
+      if (period === '1m') { cutoff = new Date(now.getTime() - 30 * 86400000); label = "Last_1_Month"; }
+      else if (period === '6m') { cutoff = new Date(now.getTime() - 182 * 86400000); label = "Last_6_Months"; }
+      else if (period === '1y') { cutoff = new Date(now.getTime() - 365 * 86400000); label = "Last_1_Year"; }
+      const filterByDate = (arr, field) => !cutoff ? arr : arr.filter(item => { const d = parseIndianInvoiceDate(item[field]); return d && d >= cutoff; });
+      return { label, invoices: filterByDate(branchInvoices(), 'date'), expenses: filterByDate(branchExpenses(), 'date'), products: branchProducts(), purchaseBills: filterByDate(branchPurchaseBills(), 'date') };
+    }
+    function exportExcelBackup() {
+      const data = getFilteredBackupData();
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.invoices.length ? data.invoices.map(i => ({ ...i, cart: "" })) : [{ Note: "No bills" }]), "Sales");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.products.length ? data.products.map(p => ({ ...p, image: "" })) : [{ Note: "No stock" }]), "Stock");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.purchaseBills.length ? data.purchaseBills.map(pb => ({ ID: pb.id, Date: pb.date, Supplier: pb.supplierName, BillNo: pb.supplierBillNo, Total: pb.totalAmount })) : [{ Note: "No purchase bills" }]), "Purchase_Bills");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.expenses.length ? data.expenses : [{ Note: "No expenses" }]), "Expenses");
+      XLSX.writeFile(wb, `Kirtika_${activeBranch.replace(/\s+/g, '_')}_${data.label}.xlsx`);
+      document.getElementById('backup-modal').classList.add('hidden');
+    }
+    function exportPDFBackup() {
+      const data = getFilteredBackupData();
+      const { jsPDF } = window.jspdf; const doc = new jsPDF();
+      doc.setFontSize(15); doc.text(`KIRTIKA MOBILE - ${activeBranch}`, 14, 16);
+      doc.setFontSize(10); doc.text(`Report: ${data.label.replace(/_/g, ' ')} | Bills: ${data.invoices.length}`, 14, 22);
+      doc.autoTable({ startY: 28, head: [['Bill ID', 'Date', 'Customer', 'Items', 'Mode', 'Total']], body: data.invoices.map(i => [i.id, i.date, i.customer, i.items, i.paymentMode, i.total]), styles: { fontSize: 8 } });
+      doc.save(`Kirtika_${activeBranch.replace(/\s+/g, '_')}_${data.label}.pdf`);
+      document.getElementById('backup-modal').classList.add('hidden');
     }
   </script>
 </body>
