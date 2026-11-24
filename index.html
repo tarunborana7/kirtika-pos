@@ -49,7 +49,7 @@
         </div>
         <div class="text-left">
           <label class="text-[11px] font-bold text-slate-500 uppercase">4-Digit PIN Daalein</label>
-          <input type="password" id="login-pin" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="new-password" class="w-full mt-1 p-2.5 bg-slate-100 rounded-xl text-center text-2xl tracking-widest font-bold text-slate-900 border border-slate-200">
+          <input type="password" id="login-pin" maxlength="4" inputmode="numeric" enterkeyhint="go" onkeydown="if(event.key==='Enter') attemptLogin()" placeholder="••••" autocomplete="new-password" class="w-full mt-1 p-2.5 bg-slate-100 rounded-xl text-center text-2xl tracking-widest font-bold text-slate-900 border border-slate-200">
         </div>
         <button onclick="attemptLogin()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Store Open Karein <i class="fas fa-arrow-right ml-1"></i></button>
       </div>
@@ -362,7 +362,7 @@
         <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="admin-only-el p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-users-cog text-slate-700 text-base mb-1"></i><p class="font-extrabold text-xs">Staff & PIN</p><p class="text-[10px] text-slate-500">Name, PIN & Salary</p></button>
       </div>
 
-      <!-- SUBVIEW 0: CHHOTI KAMAI / COUNTER SERVICES (RECHARGE, SIM, PHOTOCOPY, MONEY TRANSFER) -->
+      <!-- SUBVIEW 0: CHHOTI KAMAI / COUNTER SERVICES -->
       <div id="more-sub-counter" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
           <div>
@@ -778,7 +778,7 @@
       reader.readAsDataURL(file);
     }
 
-    // ================= 0. CHHOTI KAMAI / COUNTER SERVICES (RECHARGE, SIM, PHOTOCOPY, TRANSFER) =================
+    // ================= 0. CHHOTI KAMAI / COUNTER SERVICES =================
     async function saveCounterServiceEntry(btn) {
       const serviceType = document.getElementById('cs-type').value;
       const customerNumber = document.getElementById('cs-number').value.trim();
@@ -951,7 +951,7 @@
       `).join('') : `<p class="text-center text-slate-400 py-6">Abhi koi online order save nahi hai.</p>`;
     }
 
-    // ================= 2. UNIQUE CUSTOMERS DIRECTORY (NO DUPLICATES + EXCEL EXPORT) =================
+    // ================= 2. UNIQUE CUSTOMERS DIRECTORY =================
     function getUniqueCustomersList() {
       const map = {};
       const addRecord = (name, phone, address, amount, source, date) => {
@@ -1021,7 +1021,7 @@
       XLSX.writeFile(wb, `Kirtika_Mobile_Customers_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
-    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE (STAFF PRIVACY LOCKED) =================
+    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE =================
     function normalizeClientDate(val) {
       if (!val) return "";
       const s = String(val).replace(/^'/, "").trim().split(' ')[0];
@@ -1147,7 +1147,6 @@
       document.getElementById('admin-manual-att-box').classList.toggle('hidden', !admin);
       document.getElementById('admin-att-staff').innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
-      // Enforce strict privacy: Staff sees ONLY their own attendance; Admin sees All or selected staff
       const effectiveStaffId = admin ? selectedAttStaffId : (currentUser ? currentUser.id : null);
       document.getElementById('att-calendar-heading').innerText = admin ? "Staff Chunein (Calendar Dekhne Ke Liye):" : `Aapki Monthly Attendance (${currentUser ? currentUser.name : ''}):`;
 
@@ -1165,7 +1164,7 @@
         chipsBox.classList.add('hidden');
       }
 
-      const monthVal = document.getElementById('att-month-picker')?.value || ""; // YYYY-MM
+      const monthVal = document.getElementById('att-month-picker')?.value || "";
       const sumCard = document.getElementById('att-staff-summary-card');
       const calGrid = document.getElementById('att-visual-calendar-grid');
       const selectedCalDate = document.getElementById('att-calendar-date')?.value || "";
@@ -1552,7 +1551,7 @@
     function switchTab(tab) { ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => { document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab); const btn = document.getElementById('nav-' + t); if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); } }); }
     function showMoreSubView(sub) { ['counter', 'online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) { const wasHidden = btn.classList.contains('hidden'); btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; if (wasHidden) btn.classList.add('hidden'); } }); }
 
-    // ================= TRANSFER, HOLD, SCANNER & AI =================
+    // ================= TRANSFER, HOLD & ULTRA-FAST HYBRID SCANNER =================
     function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
     async function executeBranchTransfer(btn) { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; const res = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock...", btn); if (!res) return; storeData = res; document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
 
@@ -1564,12 +1563,130 @@
     function togglePCRemoteListener() { const btn = document.getElementById('pc-remote-btn'); if (pcPollInterval) { clearInterval(pcPollInterval); pcPollInterval = null; btn.className = "px-3 py-2.5 bg-slate-800 text-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5"; return; } btn.className = "px-3 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 animate-pulse"; pcPollInterval = setInterval(async () => { try { const res = await fetch(`${GOOGLE_API_URL}?pollScan=1&branch=${encodeURIComponent(activeBranch)}`); const data = await res.json(); if (data.scan && data.scan.id !== lastProcessedRemoteId && (Date.now() - data.scan.ts) < 15000) { lastProcessedRemoteId = data.scan.id; const exactProd = branchProducts().find(p => String(p.barcode).trim() === String(data.scan.barcode).trim()); if (exactProd) { playBeepAndVibrate(); addToCart(exactProd.id); } } } catch (e) {} }, 2200); }
     function toggleMobileSendToPC() { mobileSendToPC = !mobileSendToPC; const btn = document.getElementById('mobile-send-pc-btn'); btn.innerHTML = `<i class="fas fa-desktop mr-1"></i>Send to PC: ${mobileSendToPC ? 'ON' : 'OFF'}`; }
     function playBeepAndVibrate() { try { if (navigator.vibrate) navigator.vibrate(75); } catch (e) {} try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = "sine"; osc.frequency.setValueAtTime(1400, ctx.currentTime); gain.gain.setValueAtTime(0.28, ctx.currentTime); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1); } catch (e) {} }
-    async function handleDetectedBarcode(decodedText) { const cleanCode = String(decodedText).trim(); if (!cleanCode) return; const now = Date.now(); if (cleanCode === lastScannedCode && (now - lastScanTime) < 1500) return; lastScannedCode = cleanCode; lastScanTime = now; playBeepAndVibrate(); if (mobileSendToPC) { callSheetAPI("pushRemoteScan", { barcode: cleanCode, branch: activeBranch }, null).catch(() => {}); return; } if (scanTargetField === 'pos-search') { const exactProd = branchProducts().find(p => String(p.barcode).trim() === cleanCode); if (exactProd) addToCart(exactProd.id); else { closeUltraFastScanner(); document.getElementById('pos-search').value = cleanCode; renderPosProducts(); } } else { document.getElementById(scanTargetField).value = cleanCode; closeUltraFastScanner(); } }
-    async function openUltraFastScanner(targetId) { scanTargetField = targetId; torchOn = false; const modal = document.getElementById('live-scanner-modal'); modal.classList.remove('hidden'); modal.classList.add('flex'); try { zxingCodeReader = new ZXing.BrowserMultiFormatReader(); await zxingCodeReader.decodeFromConstraints({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } }, 'zxing-scanner-video', (result) => { if (result && result.text) handleDetectedBarcode(result.text); }); } catch (err) {} }
-    function setScannerZoom(zoomVal) { const z = Number(zoomVal); document.getElementById('zoom-level-label').innerText = z.toFixed(1) + "x"; document.getElementById('zxing-scanner-video').style.transform = `scale(${z})`; }
-    async function toggleScannerTorch() { const stream = document.getElementById('zxing-scanner-video').srcObject; if (!stream) return; const track = stream.getVideoTracks()[0]; if (track.getCapabilities?.().torch) { torchOn = !torchOn; await track.applyConstraints({ advanced: [{ torch: torchOn }] }); } }
-    function closeUltraFastScanner() { if (zxingCodeReader) { try { zxingCodeReader.reset(); } catch (e) {} zxingCodeReader = null; } const videoEl = document.getElementById('zxing-scanner-video'); if (videoEl && videoEl.srcObject) { videoEl.srcObject.getTracks().forEach(t => t.stop()); videoEl.srcObject = null; } document.getElementById('live-scanner-modal').classList.add('hidden'); }
 
+    async function handleDetectedBarcode(decodedText) {
+      const cleanCode = String(decodedText).trim();
+      if (!cleanCode) return;
+      const now = Date.now();
+      if (cleanCode === lastScannedCode && (now - lastScanTime) < 1500) return;
+      lastScannedCode = cleanCode;
+      lastScanTime = now;
+      playBeepAndVibrate();
+      document.getElementById('live-scan-feedback').innerText = "✅ Scanned: " + cleanCode;
+
+      if (mobileSendToPC) {
+        callSheetAPI("pushRemoteScan", { barcode: cleanCode, branch: activeBranch }, null).catch(() => {});
+        return;
+      }
+      if (scanTargetField === 'pos-search') {
+        const exactProd = branchProducts().find(p => String(p.barcode).trim() === cleanCode);
+        if (exactProd) {
+          addToCart(exactProd.id);
+        } else {
+          closeUltraFastScanner();
+          document.getElementById('pos-search').value = cleanCode;
+          renderPosProducts();
+        }
+      } else {
+        document.getElementById(scanTargetField).value = cleanCode;
+        closeUltraFastScanner();
+      }
+    }
+
+    async function openUltraFastScanner(targetId) {
+      scanTargetField = targetId;
+      torchOn = false;
+      lastScannedCode = "";
+      lastScanTime = 0;
+      const modal = document.getElementById('live-scanner-modal');
+      const feedback = document.getElementById('live-scan-feedback');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      feedback.innerText = "Camera start ho raha hai...";
+
+      try {
+        activeVideoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+          audio: false
+        });
+        const videoEl = document.getElementById('zxing-scanner-video');
+        videoEl.srcObject = activeVideoStream;
+        await videoEl.play();
+        feedback.innerText = "Barcode ko green laser box mein rakhein";
+
+        if ('BarcodeDetector' in window) {
+          const detector = new BarcodeDetector({
+            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code', 'itf']
+          });
+          nativeDetectorLoop = true;
+          const scanFrame = async () => {
+            if (!nativeDetectorLoop || !activeVideoStream) return;
+            try {
+              if (videoEl.readyState >= 2) {
+                const barcodes = await detector.detect(videoEl);
+                if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                  await handleDetectedBarcode(barcodes[0].rawValue);
+                }
+              }
+            } catch (e) {}
+            if (nativeDetectorLoop) requestAnimationFrame(scanFrame);
+          };
+          requestAnimationFrame(scanFrame);
+        } else {
+          zxingCodeReader = new ZXing.BrowserMultiFormatReader();
+          await zxingCodeReader.decodeFromVideoElement(videoEl, (result) => {
+            if (result && result.text) handleDetectedBarcode(result.text);
+          });
+        }
+      } catch (err) {
+        feedback.innerText = "Camera Error: " + err.message;
+      }
+    }
+
+    function setScannerZoom(zoomVal) {
+      const z = Number(zoomVal);
+      document.getElementById('zoom-level-label').innerText = z.toFixed(1) + "x";
+      const videoEl = document.getElementById('zxing-scanner-video');
+      if (activeVideoStream) {
+        const track = activeVideoStream.getVideoTracks()[0];
+        const caps = track?.getCapabilities?.();
+        if (caps && caps.zoom) {
+          const clamped = Math.min(caps.zoom.max, Math.max(caps.zoom.min, z));
+          track.applyConstraints({ advanced: [{ zoom: clamped }] }).catch(() => {});
+          videoEl.style.transform = "scale(1)";
+          return;
+        }
+      }
+      videoEl.style.transform = `scale(${z})`;
+    }
+
+    async function toggleScannerTorch() {
+      if (!activeVideoStream) return;
+      const track = activeVideoStream.getVideoTracks()[0];
+      if (track?.getCapabilities?.().torch) {
+        torchOn = !torchOn;
+        await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+      } else {
+        alert("Is device par camera flash available nahi hai.");
+      }
+    }
+
+    function closeUltraFastScanner() {
+      nativeDetectorLoop = false;
+      if (zxingCodeReader) {
+        try { zxingCodeReader.reset(); } catch (e) {}
+        zxingCodeReader = null;
+      }
+      if (activeVideoStream) {
+        activeVideoStream.getTracks().forEach(t => t.stop());
+        activeVideoStream = null;
+      }
+      const videoEl = document.getElementById('zxing-scanner-video');
+      if (videoEl) videoEl.srcObject = null;
+      document.getElementById('live-scanner-modal').classList.add('hidden');
+    }
+
+    // ================= AI BILL SCANNER & AI COPILOT =================
     function compressBillDataUrl(rawDataUrl, callback) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const max = 420; let w = img.width, h = img.height; if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6)); }; img.src = rawDataUrl; }
     function handleAIBillUpload(event) { const file = event.target.files[0]; if (!file) return; const statusBox = document.getElementById('ai-scan-status'); statusBox.classList.remove('hidden'); statusBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI bill padh raha hai...`; const reader = new FileReader(); reader.onload = async function(e) { try { const res = await callSheetAPI("parseBillImageWithAI", e.target.result, "AI Scanning Bill..."); const items = Array.isArray(res) ? res : (res.items || []); compressBillDataUrl(e.target.result, (compressedImg) => { aiParsedData = { supplierName: res.supplierName || "", supplierBillNo: res.supplierBillNo || "", items, billImage: compressedImg }; statusBox.classList.add('hidden'); renderAIExtractedEditor(); }); } catch (err) { statusBox.innerText = "Error: " + err.message; } }; reader.readAsDataURL(file); event.target.value = ""; }
     function renderAIExtractedEditor() { const box = document.getElementById('ai-extracted-box'); box.classList.remove('hidden'); box.innerHTML = `<div class="flex justify-between items-center border-b pb-2"><p class="font-extrabold text-xs text-indigo-700">✅ ${aiParsedData.items.length} Items Mile:</p><button onclick="closeAIExtractedBox()" class="px-2.5 py-1 bg-red-100 text-red-600 rounded-lg font-bold text-xs">✕ Close</button></div><div class="grid grid-cols-2 gap-2 bg-indigo-50/70 p-2.5 rounded-xl border"><div><span class="text-[10px] font-bold">Supplier</span><input type="text" id="ai-pb-supplier" value="${String(aiParsedData.supplierName).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-bold"></div><div><span class="text-[10px] font-bold">Bill No.</span><input type="text" id="ai-pb-billno" value="${String(aiParsedData.supplierBillNo).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-mono"></div></div><div class="space-y-2 max-h-72 overflow-y-auto">${aiParsedData.items.map((it, idx) => `<div class="p-2.5 bg-slate-50 rounded-xl border space-y-1.5"><div class="flex items-center gap-2"><input type="checkbox" id="ai-chk-${idx}" checked class="w-4 h-4"><input type="text" id="ai-name-${idx}" value="${String(it.name).replace(/"/g, '&quot;')}" class="flex-1 p-1.5 bg-white border rounded-lg text-xs font-bold"><input type="text" id="ai-cat-${idx}" value="${it.category || 'General'}" class="w-24 p-1.5 bg-white border rounded-lg text-[11px]"></div><div class="grid grid-cols-5 gap-1.5 text-[10px]"><div><span>Cost</span><input type="number" id="ai-cost-${idx}" value="${it.costPrice || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>MRP</span><input type="number" id="ai-mrp-${idx}" value="${it.mrp || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Retail</span><input type="number" id="ai-price-${idx}" value="${it.price || 0}" class="w-full p-1 bg-white border rounded font-bold text-indigo-600"></div><div><span>Whlsl</span><input type="number" id="ai-whl-${idx}" value="${it.wholesalePrice || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Qty</span><input type="number" id="ai-qty-${idx}" value="${it.stock || 1}" class="w-full p-1 bg-white border rounded font-bold text-emerald-600"></div></div></div>`).join('')}</div><div class="space-y-1 pt-1 border-t"><label class="flex items-center gap-2 text-xs font-bold"><input type="checkbox" id="ai-save-pb-chk" checked> Purchase Bill save karein</label><label class="flex items-center gap-2 text-xs font-bold text-indigo-700"><input type="checkbox" id="ai-save-pb-photo-chk" checked> Bill ki Photo bhi save rakhein</label></div><button id="ai-save-btn" onclick="saveSelectedAIItems()" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">✅ Selected Items & Bill Save Karein</button>`; }
@@ -1723,7 +1840,7 @@
     function reprintSavedInvoice(id) { const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; showReceiptModal(inv.id, inv.date, { customerName: inv.customer, customerPhone: inv.phone, priceMode: inv.priceMode, paymentMode: inv.paymentMode, cashPaid: inv.cashPaid, upiPaid: inv.upiPaid, udharDue: inv.udharDue, mrpTotal: inv.mrpTotal, discount: inv.discount, totalSavings: inv.totalSavings, note: inv.note, total: inv.total, branch: inv.branch, cart: (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, mrp: inv.total, price: inv.total, qty: 1 }] }); }
     function shareWhatsAppReceipt() { if (!lastReceipt) return; const itemsText = lastReceipt.cart.map(c => `• ${c.name} (x${c.qty}) - ₹${c.price * c.qty}`).join('%0A'); const dueLine = lastReceipt.udharDue > 0 ? `%0A*Baaki Udhar:* ₹${lastReceipt.udharDue}` : ''; const msg = `*KIRTIKA MOBILE (${activeBranch})*%0A*Bill No:* ${lastReceipt.invId} (${lastReceipt.dateStr})%0A*Customer:* ${lastReceipt.customerName}%0A${itemsText}%0A*Total (${lastReceipt.paymentMode}): ₹${lastReceipt.total}*${dueLine}`; const phone = lastReceipt.customerPhone ? '91' + lastReceipt.customerPhone.replace(/\D/g, '').slice(-10) : ''; window.open(`https://wa.me/${phone}?text=${msg}`, '_blank'); }
 
-    // ================= STOCK, BARCODE, PRODUCTS (ADMIN ONLY EDIT/COST/DELETE) =================
+    // ================= STOCK, BARCODE, PRODUCTS =================
     function generateRandomBarcode(inputId) { document.getElementById(inputId).value = '890' + Math.floor(100000000 + Math.random() * 900000000); }
     function openBarcodeGenModal(prodId) { currentBarcodeProd = branchProducts().find(p => String(p.id) === String(prodId)); if (!currentBarcodeProd) return; document.getElementById('barcode-gen-modal').classList.remove('hidden'); document.getElementById('barcode-gen-modal').classList.add('flex'); renderBarcodeStickers(); }
     function closeBarcodeGenModal() { document.getElementById('barcode-gen-modal').classList.add('hidden'); }
@@ -1792,7 +1909,6 @@
         }
       });
 
-      // Add Counter Services (Chhoti Kamai) into Daily Cash & Sales Totals
       branchCounterServices().forEach(cs => {
         const amt = Number(cs.amount || 0);
         const csDate = parseIndianInvoiceDate(cs.date);
