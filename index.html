@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; -webkit-tap-highlight-color: transparent; }
@@ -63,7 +64,7 @@
         <div>
           <div class="flex items-center gap-1">
             <select id="header-branch-select" onchange="switchActiveBranch(this.value)" class="bg-slate-800 text-amber-300 font-extrabold text-xs px-2 py-0.5 rounded-lg border border-slate-700 focus:outline-none"></select>
-            <button onclick="openAddBranchModal()" class="px-1.5 py-0.5 bg-indigo-600 text-white rounded text-[10px] font-bold" title="Nayi Branch">+Shop</button>
+            <button id="header-add-shop-btn" onclick="openAddBranchModal()" class="hidden px-1.5 py-0.5 bg-indigo-600 text-white rounded text-[10px] font-bold" title="Nayi Branch">+Shop</button>
           </div>
           <p class="text-[10px] text-slate-400 mt-0.5" id="header-staff-info">Staff: --</p>
         </div>
@@ -71,7 +72,7 @@
       <div class="flex items-center gap-1.5">
         <button onclick="openAICopilotModal()" class="px-2.5 py-1.5 bg-violet-600 text-white rounded-lg text-[11px] font-bold shadow flex items-center gap-1"><i class="fas fa-robot"></i><span>AI</span></button>
         <button onclick="openHardwareModal()" class="px-2 py-1.5 bg-slate-800 text-cyan-300 border border-slate-700 rounded-lg text-[11px] font-bold"><i class="fas fa-print"></i></button>
-        <button onclick="openBackupModal()" class="px-2.5 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-[11px] font-bold"><i class="fas fa-file-export mr-1"></i>Backup</button>
+        <button id="header-backup-btn" onclick="openBackupModal()" class="hidden px-2.5 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-[11px] font-bold"><i class="fas fa-file-export mr-1"></i>Backup</button>
         <button onclick="loadDataFromServer()" class="p-2 bg-slate-800 rounded-lg text-xs text-slate-300"><i class="fas fa-sync-alt" id="sync-icon"></i></button>
         <button onclick="logout()" class="px-2 py-1.5 bg-red-500/20 text-red-300 rounded-lg text-[11px] font-bold">Lock</button>
       </div>
@@ -198,7 +199,7 @@
 
     <!-- ==================== TAB 2: STOCK ==================== -->
     <section id="tab-inventory" class="hidden space-y-4">
-      <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4 rounded-2xl shadow-md">
+      <div id="admin-ai-stock-banner" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4 rounded-2xl shadow-md">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">AI Smart Stock</span>
@@ -214,7 +215,7 @@
         <div id="ai-extracted-box" class="hidden mt-3 bg-white text-slate-800 p-3.5 rounded-xl space-y-2.5 shadow-lg"></div>
       </div>
 
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+      <div id="admin-add-product-box" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-plus-circle text-indigo-600 mr-1"></i>Naya Product Add Karein (<span class="text-indigo-600 active-branch-label">Main Branch</span>)</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
           <input type="text" id="prod-name" placeholder="Product Name *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
@@ -242,7 +243,7 @@
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2">
           <div class="flex items-center gap-2">
-            <input type="checkbox" id="select-all-stock-chk" onchange="toggleSelectAllStock(this.checked)" class="w-4 h-4 accent-indigo-600">
+            <input type="checkbox" id="select-all-stock-chk" onchange="toggleSelectAllStock(this.checked)" class="admin-only-el w-4 h-4 accent-indigo-600">
             <h3 class="font-extrabold text-sm">Stock (<span id="total-prod-count">0</span>)</h3>
             <button onclick="toggleLowStockFilter()" id="low-stock-btn" class="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[11px] font-bold">Low Stock</button>
             <button onclick="shareLowStockWhatsApp()" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-bold"><i class="fab fa-whatsapp mr-1"></i>Order List</button>
@@ -287,7 +288,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
+      <div id="admin-staff-sales-box" class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="font-extrabold text-xs uppercase text-slate-600"><i class="fas fa-user-check text-indigo-600 mr-1.5"></i>Staff-Wise Sales (Click Karke Bills Filter Karein)</h3>
           <span id="active-staff-filter-badge" class="hidden text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded"></span>
@@ -300,7 +301,7 @@
         <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">UPI Received</p><p class="text-base font-black text-indigo-600 mt-0.5">₹<span id="stat-total-upi">0</span></p></div>
         <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">Cash Received</p><p class="text-base font-black text-emerald-600 mt-0.5">₹<span id="stat-total-cash">0</span></p></div>
         <div class="bg-white p-3 rounded-2xl border border-slate-200"><p class="text-[10px] text-slate-500 font-bold uppercase">Baaki Udhar</p><p class="text-base font-black text-red-600 mt-0.5">₹<span id="stat-total-udhar">0</span></p></div>
-        <div id="admin-profit-card" class="bg-amber-50 p-3 rounded-2xl border border-amber-200"><p class="text-[10px] text-amber-800 font-bold uppercase">Net Profit (Admin)</p><p class="text-base font-black text-amber-900 mt-0.5">₹<span id="stat-net-profit">0</span></p></div>
+        <div id="admin-profit-card" class="hidden bg-amber-50 p-3 rounded-2xl border border-amber-200"><p class="text-[10px] text-amber-800 font-bold uppercase">Net Profit (Admin)</p><p class="text-base font-black text-amber-900 mt-0.5">₹<span id="stat-net-profit">0</span></p></div>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
@@ -347,21 +348,51 @@
 
     <!-- ==================== TAB 5: MORE ==================== -->
     <section id="tab-more" class="hidden space-y-4">
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-        <button onclick="showMoreSubView('online')" id="more-btn-online" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-shipping-fast text-base mb-1"></i><p class="font-extrabold text-xs">Online Orders</p><p class="text-[10px] opacity-80">AI WhatsApp + Courier</p></button>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button onclick="showMoreSubView('counter')" id="more-btn-counter" class="p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm"><i class="fas fa-bolt text-base mb-1"></i><p class="font-extrabold text-xs">Chhoti Kamai</p><p class="text-[10px] opacity-80">Recharge, Print, SIM</p></button>
+        <button onclick="showMoreSubView('online')" id="more-btn-online" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-shipping-fast text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Online Orders</p><p class="text-[10px] text-slate-500">AI WhatsApp + Courier</p></button>
         <button onclick="showMoreSubView('customers')" id="more-btn-customers" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-address-book text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Customers (<span id="unique-cust-count">0</span>)</p><p class="text-[10px] text-slate-500">Unique List + Excel</p></button>
-        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Visual Calendar + Edit</p></button>
-        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Multi-Card & WhatsApp</p></button>
+        <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Visual Calendar</p></button>
+        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Cards & Image Share</p></button>
         <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Repairing</p><p class="text-[10px] text-slate-500">Job Cards</p></button>
         <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Used Phones</p><p class="text-[10px] text-slate-500">IMEI & ID Register</p></button>
         <button onclick="showMoreSubView('returns')" id="more-btn-returns" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-undo-alt text-amber-600 text-base mb-1"></i><p class="font-extrabold text-xs">Return Box</p><p class="text-[10px] text-slate-500">Supplier Warranty</p></button>
-        <button onclick="showMoreSubView('transfer')" id="more-btn-transfer" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-exchange-alt text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Stock Transfer</p><p class="text-[10px] text-slate-500">Main ↔ Branch 2</p></button>
-        <button onclick="showMoreSubView('pbills')" id="more-btn-pbills" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-file-invoice text-violet-600 text-base mb-1"></i><p class="font-extrabold text-xs">Purchase Bills (<span id="saved-pb-count">0</span>)</p><p class="text-[10px] text-slate-500">Open & Edit</p></button>
-        <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-users-cog text-slate-700 text-base mb-1"></i><p class="font-extrabold text-xs">Staff & PIN</p><p class="text-[10px] text-slate-500">Name, PIN & Salary</p></button>
+        <button onclick="showMoreSubView('transfer')" id="more-btn-transfer" class="admin-only-el p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-exchange-alt text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Stock Transfer</p><p class="text-[10px] text-slate-500">Main ↔ Branch 2</p></button>
+        <button onclick="showMoreSubView('pbills')" id="more-btn-pbills" class="admin-only-el p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-file-invoice text-violet-600 text-base mb-1"></i><p class="font-extrabold text-xs">Purchase Bills (<span id="saved-pb-count">0</span>)</p><p class="text-[10px] text-slate-500">Open & Edit</p></button>
+        <button onclick="showMoreSubView('staff')" id="more-btn-staff" class="admin-only-el p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-users-cog text-slate-700 text-base mb-1"></i><p class="font-extrabold text-xs">Staff & PIN</p><p class="text-[10px] text-slate-500">Name, PIN & Salary</p></button>
+      </div>
+
+      <!-- SUBVIEW 0: CHHOTI KAMAI / COUNTER SERVICES (RECHARGE, SIM, PHOTOCOPY, MONEY TRANSFER) -->
+      <div id="more-sub-counter" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center border-b pb-2">
+          <div>
+            <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-bolt text-amber-500 mr-1.5"></i>Chhoti Kamai Counter (Recharge, SIM, Photocopy, Transfer)</h3>
+            <p class="text-[11px] text-slate-500">Aaj ki chhoti kamai seedha Galla Cash & UPI mein judegi</p>
+          </div>
+          <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-xl font-black text-xs">Aaj: ₹<span id="today-counter-service-total">0</span></span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
+          <select id="cs-type" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+            <option value="Mobile Recharge">📱 Mobile Recharge</option>
+            <option value="Photocopy / Printout">🖨️ Photocopy / Printout</option>
+            <option value="New SIM / MNP">💳 New SIM / MNP</option>
+            <option value="Money Transfer">💸 Money Transfer</option>
+            <option value="Other Service">⚡ Other Service</option>
+          </select>
+          <input type="tel" id="cs-number" placeholder="Mobile Number (Recharge/SIM)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono">
+          <input type="text" id="cs-operator" placeholder="Sim (Jio/Airtel/Vi) ya Note" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="number" id="cs-amount" placeholder="Amount (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-black text-indigo-700">
+          <select id="cs-pay" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+          </select>
+        </div>
+        <button onclick="saveCounterServiceEntry(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Entry Save Karein</button>
+        <div id="counter-services-list" class="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto pt-1"></div>
       </div>
 
       <!-- SUBVIEW 1: ONLINE ORDERS WITH AI WHATSAPP MESSAGE / SCREENSHOT AUTO-FILL -->
-      <div id="more-sub-online" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+      <div id="more-sub-online" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3.5 rounded-2xl space-y-2.5">
           <div class="flex flex-wrap justify-between items-center gap-2">
             <div>
@@ -375,7 +406,7 @@
           </div>
           <div class="flex gap-2">
             <textarea id="ai-online-msg-input" rows="2" placeholder="Customer ka WhatsApp address/order message yahan paste karein..." class="flex-1 p-2 rounded-xl text-xs text-slate-900 bg-white/95 focus:outline-none"></textarea>
-            <button onclick="aiParseOnlineMessage()" id="ai-online-btn" class="px-3.5 bg-slate-900 text-amber-300 rounded-xl font-extrabold text-xs shrink-0"><i class="fas fa-magic mr-1"></i>AI Fill</button>
+            <button onclick="aiParseOnlineMessage(this)" class="px-3.5 bg-slate-900 text-amber-300 rounded-xl font-extrabold text-xs shrink-0"><i class="fas fa-magic mr-1"></i>AI Fill</button>
           </div>
         </div>
 
@@ -391,7 +422,7 @@
           <input type="text" id="onl-courier" placeholder="Courier / Shiprocket (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
           <input type="text" id="onl-awb" placeholder="Tracking / AWB No. (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono">
         </div>
-        <button onclick="saveNewOnlineOrder()" id="save-onl-btn" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Online Order Save Karein</button>
+        <button onclick="saveNewOnlineOrder(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Online Order Save Karein</button>
 
         <div id="online-orders-list" class="space-y-2.5 text-xs pt-2"></div>
       </div>
@@ -411,14 +442,14 @@
         <div id="unique-customers-list" class="divide-y divide-slate-100 text-xs max-h-[60vh] overflow-y-auto"></div>
       </div>
 
-      <!-- SUBVIEW 3: SHOP GPS + MONTHLY VISUAL CALENDAR GRID ATTENDANCE -->
+      <!-- SUBVIEW 3: SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE (PRIVACY LOCKED FOR STAFF) -->
       <div id="more-sub-attendance" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
           <div>
             <h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-map-marker-alt text-rose-600 mr-1.5"></i>Shop GPS + Monthly Visual Calendar</h3>
             <p class="text-[11px] text-slate-500" id="shop-gps-status">Shop GPS checking...</p>
           </div>
-          <button id="set-shop-gps-btn" onclick="captureAndSaveShopGPS()" class="hidden px-3 py-1.5 bg-slate-900 text-amber-300 rounded-xl text-xs font-extrabold">📍 Set Current Shop Location</button>
+          <button id="set-shop-gps-btn" onclick="captureAndSaveShopGPS(this)" class="hidden px-3 py-1.5 bg-slate-900 text-amber-300 rounded-xl text-xs font-extrabold">📍 Set Current Shop Location</button>
         </div>
 
         <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-2.5">
@@ -430,14 +461,14 @@
             </label>
             <img id="att-selfie-preview" class="hidden w-12 h-12 rounded-xl object-cover border-2 border-emerald-500">
             <input type="hidden" id="att-selfie-data">
-            <button onclick="submitGPSAttendance('Present')" id="att-present-btn" class="px-4 py-2 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ 2. Verify GPS & Mark Present</button>
-            <button onclick="submitGPSAttendance('Half-Day')" class="px-3 py-2 bg-amber-500 text-white font-bold rounded-xl text-xs">Half-Day</button>
+            <button onclick="submitGPSAttendance('Present', this)" class="px-4 py-2 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ 2. Verify GPS & Mark Present</button>
+            <button onclick="submitGPSAttendance('Half-Day', this)" class="px-3 py-2 bg-amber-500 text-white font-bold rounded-xl text-xs">Half-Day</button>
           </div>
         </div>
 
         <div class="bg-slate-50 p-3 rounded-2xl border space-y-2.5">
           <div class="flex flex-wrap justify-between items-center gap-2">
-            <p class="text-xs font-extrabold text-slate-700">Staff Chunein (Calendar Dekhne Ke Liye):</p>
+            <p class="text-xs font-extrabold text-slate-700" id="att-calendar-heading">Monthly Attendance Calendar:</p>
             <input type="month" id="att-month-picker" onchange="renderAttendanceView()" class="p-1.5 bg-white border rounded-lg text-xs font-bold">
           </div>
           <div id="att-staff-chips" class="flex flex-wrap gap-1.5 text-xs"></div>
@@ -445,7 +476,7 @@
 
           <div class="pt-1 space-y-1.5">
             <div class="flex flex-wrap justify-between items-center text-[10px] font-bold text-slate-500">
-              <span>📅 Tareekh Box Par Click Karke Details / Edit Karein:</span>
+              <span>📅 Tareekh Box Par Click Karke Details Dekhein:</span>
               <div class="flex gap-2">
                 <span class="flex items-center gap-1"><i class="w-2.5 h-2.5 rounded bg-emerald-500 inline-block"></i>Present</span>
                 <span class="flex items-center gap-1"><i class="w-2.5 h-2.5 rounded bg-amber-400 inline-block"></i>Half</span>
@@ -468,7 +499,7 @@
           <div id="admin-manual-att-box" class="hidden flex items-center gap-1.5">
             <select id="admin-att-staff" class="p-1.5 bg-white border rounded-lg font-bold"></select>
             <select id="admin-att-status" class="p-1.5 bg-white border rounded-lg font-bold"><option value="Present">Present</option><option value="Half-Day">Half-Day</option><option value="Absent">Absent</option></select>
-            <button onclick="adminMarkManualAttendance()" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold">+ Save</button>
+            <button onclick="adminMarkManualAttendance(this)" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold">+ Save</button>
           </div>
         </div>
 
@@ -482,7 +513,7 @@
           <input type="checkbox" id="loy-overlap-toggle" checked onchange="saveLoyaltyOverlapPref(); renderLoyaltyView();" class="w-4 h-4 accent-indigo-600">
           <span>₹1000+ bill ko ₹500 wale card mein bhi count karein (Uncheck karne par ₹500–₹999 aur ₹1000+ alag-alag count honge)</span>
         </label>
-        <div id="admin-loyalty-rule-box" class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2 text-xs">
+        <div id="admin-loyalty-rule-box" class="hidden p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2 text-xs">
           <p class="font-extrabold text-amber-900">+ Naya Loyalty Card / Offer Banayein (Admin):</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <input type="text" id="loy-card-title" placeholder="Card Naam (e.g. Silver ₹500×3)" class="p-2 bg-white border rounded-lg font-bold">
@@ -490,38 +521,58 @@
             <input type="number" id="loy-min-spend" placeholder="Min Bill Amount (e.g. 500)" class="p-2 bg-white border rounded-lg font-bold">
             <input type="number" id="loy-target-visits" placeholder="Kitni Visits? (e.g. 3 ya 6)" class="p-2 bg-white border rounded-lg font-bold">
           </div>
-          <button onclick="saveLoyaltyRuleSettings()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Card Tier Add Karein</button>
+          <button onclick="saveLoyaltyRuleSettings(this)" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Card Tier Add Karein</button>
           <div id="loyalty-rules-list" class="space-y-1.5 pt-2 border-t border-amber-200/70"></div>
         </div>
         <div id="loyalty-customers-list" class="space-y-2.5 text-xs"></div>
       </div>
 
       <!-- SUBVIEWS: REPAIRS, USED PHONES, RETURNS, TRANSFER, PBILLS & STAFF -->
-      <div id="more-sub-repairs" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-tools text-indigo-600 mr-1.5"></i>Mobile Repairing Job Card</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="rep-phone" placeholder="WhatsApp Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-model" placeholder="Mobile Model *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-fault" placeholder="Problem / Fault *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-estimate" placeholder="Total Repair Charge (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-advance" placeholder="Advance Paid (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addRepairJob()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button><div id="repairs-list" class="space-y-2 text-xs pt-2"></div></div>
-      <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:col-span-2"></div><button onclick="addUsedPhone()" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Register Mein Save Karein</button><div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div></div>
-      <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3"><h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty Return Box</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"><input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-prod" placeholder="Defective Item *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-issue" placeholder="Problem" class="p-2 bg-slate-50 border rounded-xl text-xs sm:col-span-2"></div><button onclick="addSupplierReturn()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Box Mein Daalein</button><div id="returns-box-list" class="space-y-2 text-xs pt-1"></div></div>
-      <div id="more-sub-transfer" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-indigo-200 space-y-3"><h3 class="font-extrabold text-sm text-indigo-900"><i class="fas fa-exchange-alt text-indigo-600 mr-1.5"></i>Stock Transfer (<span class="active-branch-label">Main Branch</span> Se Doosri Branch)</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2"><select id="trf-prod-select" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold sm:col-span-2"></select><select id="trf-to-branch" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-indigo-700"></select><div class="flex gap-1.5"><input type="number" id="trf-qty" placeholder="Qty" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><button onclick="executeBranchTransfer()" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Transfer</button></div></div></div>
+      <div id="more-sub-repairs" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-tools text-indigo-600 mr-1.5"></i>Mobile Repairing Job Card</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="rep-phone" placeholder="WhatsApp Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-model" placeholder="Mobile Model *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="rep-fault" placeholder="Problem / Fault *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-estimate" placeholder="Total Repair Charge (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="number" id="rep-advance" placeholder="Advance Paid (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addRepairJob(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button><div id="repairs-list" class="space-y-2 text-xs pt-2"></div></div>
+      <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"><input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:col-span-2"></div><button onclick="addUsedPhone(this)" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Register Mein Save Karein</button><div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div></div>
+      <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3"><h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty Return Box</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"><input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-prod" placeholder="Defective Item *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-issue" placeholder="Problem" class="p-2 bg-slate-50 border rounded-xl text-xs sm:col-span-2"></div><button onclick="addSupplierReturn(this)" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Box Mein Daalein</button><div id="returns-box-list" class="space-y-2 text-xs pt-1"></div></div>
+      <div id="more-sub-transfer" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-indigo-200 space-y-3"><h3 class="font-extrabold text-sm text-indigo-900"><i class="fas fa-exchange-alt text-indigo-600 mr-1.5"></i>Stock Transfer (<span class="active-branch-label">Main Branch</span> Se Doosri Branch)</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2"><select id="trf-prod-select" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold sm:col-span-2"></select><select id="trf-to-branch" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-indigo-700"></select><div class="flex gap-1.5"><input type="number" id="trf-qty" placeholder="Qty" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><button onclick="executeBranchTransfer(this)" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Transfer</button></div></div></div>
       <div id="more-sub-pbills" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-invoice text-violet-600 mr-1.5"></i>Saved Supplier Purchase Bills</h3><div id="purchase-bills-list" class="space-y-2.5 text-xs"></div></div>
-      <div id="more-sub-staff" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><div id="admin-staff-panel" class="space-y-3"><h3 class="font-extrabold text-sm">Staff & Admin Name, PIN & Salary</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5"><input type="text" id="stf-name" placeholder="Staff / Admin Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="stf-pin" maxlength="4" placeholder="4-Digit PIN *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><select id="stf-role" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold"><option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option></select><input type="number" id="stf-salary" placeholder="Monthly Salary (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addStaffMember()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Naya Staff Save Karein</button><div id="staff-list-box" class="divide-y divide-slate-100 text-xs"></div></div></div>
+      <div id="more-sub-staff" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><div id="admin-staff-panel" class="space-y-3"><h3 class="font-extrabold text-sm">Staff & Admin Name, PIN & Salary</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5"><input type="text" id="stf-name" placeholder="Staff / Admin Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="stf-pin" maxlength="4" placeholder="4-Digit PIN *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><select id="stf-role" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold"><option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option></select><input type="number" id="stf-salary" placeholder="Monthly Salary (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addStaffMember(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Naya Staff Save Karein</button><div id="staff-list-box" class="divide-y divide-slate-100 text-xs"></div></div></div>
     </section>
   </main>
 
   <!-- ALL MODALS -->
   <div id="selfie-viewer-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3 text-center"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="sv-title">Staff Selfie</h3><button onclick="document.getElementById('selfie-viewer-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><img id="sv-img" class="w-full max-h-80 object-cover rounded-2xl border shadow"><p id="sv-meta" class="text-xs font-bold text-slate-600"></p></div></div>
-  <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-amber-800"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards</h3><button onclick="document.getElementById('loyalty-card-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div><span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Card Chunein:</span><div id="loyalty-card-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div></div><div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div><div class="grid grid-cols-2 gap-2"><button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Card</button><button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift()" class="hidden py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset)</button></div></div></div>
-  <div id="udhar-jama-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-emerald-800"><i class="fas fa-hand-holding-usd mr-1.5"></i>Udhar Jama / Adjust</h3><button onclick="document.getElementById('udhar-jama-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="jama-inv-id"><div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs"><p class="font-bold text-slate-800" id="jama-cust-label">Customer</p><p class="text-red-700 font-black text-sm mt-0.5">Baaki Udhar: ₹<span id="jama-due-amount">0</span></p></div><input type="number" id="jama-recv-input" placeholder="Kitne Rupaye Jama Kiye? (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-black text-emerald-700"><select id="jama-mode-select" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Cash">Cash Mein Aaye</option><option value="UPI">UPI / Online Aaye</option></select><button onclick="submitUdharJama()" id="jama-submit-btn" class="w-full py-3 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ Jama Save Karein</button></div></div>
+
+  <!-- VIP LOYALTY CARD MODAL (WITH HD IMAGE DOWNLOAD / SHARE) -->
+  <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-sm text-amber-800"><i class="fas fa-award text-amber-500 mr-1.5"></i>VIP Loyalty Cards</h3>
+        <button onclick="document.getElementById('loyalty-card-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+      </div>
+      <div>
+        <span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Card Chunein:</span>
+        <div id="loyalty-card-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div>
+      </div>
+      <div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="downloadOrShareLoyaltyImage(this)" class="py-2.5 bg-indigo-600 text-white font-extrabold rounded-xl text-xs shadow"><i class="fas fa-image mr-1"></i>Save / Share Photo</button>
+        <button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Text</button>
+      </div>
+      <button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift(this)" class="hidden w-full py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset Card)</button>
+    </div>
+  </div>
+
+  <div id="udhar-jama-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-emerald-800"><i class="fas fa-hand-holding-usd mr-1.5"></i>Udhar Jama / Adjust</h3><button onclick="document.getElementById('udhar-jama-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="jama-inv-id"><div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs"><p class="font-bold text-slate-800" id="jama-cust-label">Customer</p><p class="text-red-700 font-black text-sm mt-0.5">Baaki Udhar: ₹<span id="jama-due-amount">0</span></p></div><input type="number" id="jama-recv-input" placeholder="Kitne Rupaye Jama Kiye? (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-black text-emerald-700"><select id="jama-mode-select" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Cash">Cash Mein Aaye</option><option value="UPI">UPI / Online Aaye</option></select><button onclick="submitUdharJama(this)" id="jama-submit-btn" class="w-full py-3 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow">✅ Jama Save Karein</button></div></div>
   <div id="view-pb-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="vpb-title">Purchase Bill</h3><button onclick="document.getElementById('view-pb-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="vpb-content" class="max-h-[70vh] overflow-y-auto space-y-3 text-xs"></div></div></div>
-  <div id="edit-pb-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Purchase Bill Edit</h3><button onclick="document.getElementById('edit-pb-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-pb-id"><input type="text" id="edit-pb-supplier" placeholder="Supplier Name" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="edit-pb-billno" placeholder="Supplier Bill No." class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="edit-pb-total" placeholder="Total Amount (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-black"><button onclick="saveEditedPurchaseBill()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Update</button></div></div>
-  <div id="edit-staff-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Staff / Admin Edit</h3><button onclick="document.getElementById('edit-staff-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-stf-id"><input type="text" id="edit-stf-name" placeholder="Name *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="tel" id="edit-stf-pin" maxlength="4" placeholder="New 4-Digit PIN *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-mono font-bold text-center tracking-widest"><select id="edit-stf-role" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option></select><input type="number" id="edit-stf-salary" placeholder="Monthly Salary (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><button onclick="saveEditedStaff()" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">Save Changes</button></div></div>
+  <div id="edit-pb-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Purchase Bill Edit</h3><button onclick="document.getElementById('edit-pb-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-pb-id"><input type="text" id="edit-pb-supplier" placeholder="Supplier Name" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="edit-pb-billno" placeholder="Supplier Bill No." class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="edit-pb-total" placeholder="Total Amount (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-black"><button onclick="saveEditedPurchaseBill(this)" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Update</button></div></div>
+  <div id="edit-staff-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Staff / Admin Edit</h3><button onclick="document.getElementById('edit-staff-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-stf-id"><input type="text" id="edit-stf-name" placeholder="Name *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="tel" id="edit-stf-pin" maxlength="4" placeholder="New 4-Digit PIN *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm font-mono font-bold text-center tracking-widest"><select id="edit-stf-role" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option></select><input type="number" id="edit-stf-salary" placeholder="Monthly Salary (₹)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><button onclick="saveEditedStaff(this)" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">Save Changes</button></div></div>
   <div id="quick-photo-cart-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-indigo-800"><i class="fas fa-images mr-1.5"></i>Quick Photo Item (Camera / Gallery)</h3><button onclick="closeQuickPhotoCartModal()" class="text-slate-400 font-bold">✕</button></div><label class="block p-3 bg-indigo-50 border-2 border-dashed border-indigo-300 rounded-xl text-center cursor-pointer"><img id="qp-preview-img" class="hidden w-28 h-28 object-cover rounded-xl mx-auto mb-2 border shadow"><span id="qp-photo-text" class="text-xs font-extrabold text-indigo-700"><i class="fas fa-images mr-1"></i>Camera ya Gallery Se Photo Chunein</span><input type="file" accept="image/*" class="hidden" onchange="compressImageToInput(event, 'qp-image-data', 'qp-photo-text', 'qp-preview-img')"></label><input type="hidden" id="qp-image-data"><input type="text" id="qp-name" placeholder="Item Naam (Optional)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold"><div class="grid grid-cols-2 gap-2"><input type="number" id="qp-price" placeholder="Selling Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-black text-indigo-700"><input type="number" id="qp-qty" value="1" placeholder="Qty" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"></div><button onclick="addQuickPhotoItemToCart()" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow">+ Cart Mein Add Karein</button></div></div>
   <div id="view-bill-photos-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="vbp-title">Sold Item Photos</h3><button onclick="document.getElementById('view-bill-photos-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="vbp-grid" class="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto"></div></div></div>
-  <div id="edit-inv-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-2.5 shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Bill & Date/Time Edit</h3><button onclick="document.getElementById('edit-inv-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-inv-id"><input type="text" id="edit-inv-date" placeholder="Bill Date & Time" class="w-full p-2 bg-amber-50 border border-amber-200 rounded-xl text-xs font-mono font-bold"><input type="text" id="edit-inv-cust" placeholder="Customer Name" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="tel" id="edit-inv-phone" placeholder="Mobile Number" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="grid grid-cols-2 gap-2"><input type="number" id="edit-inv-total" placeholder="Final Total (₹)" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-black"><input type="number" id="edit-inv-disc" placeholder="Discount (₹)" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"></div><select id="edit-inv-mode" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><option value="UPI">UPI</option><option value="Cash">Cash</option><option value="Udhar">Udhar</option><option value="Split">Split</option></select><input type="text" id="edit-inv-note" placeholder="Note / IMEI" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-2 pt-1"><button onclick="saveEditedInvoice()" class="flex-1 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">Update Bill</button><button onclick="document.getElementById('edit-inv-modal').classList.add('hidden')" class="flex-1 py-2.5 bg-slate-200 font-bold rounded-xl text-xs">Cancel</button></div></div></div>
-  <div id="edit-prod-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-2.5"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm">✏️ Product Edit Karein</h3><button onclick="document.getElementById('edit-prod-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-prod-id"><div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border"><img id="edit-prod-preview" class="w-14 h-14 rounded-xl object-cover border bg-white"><label class="flex-1 py-2 px-3 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-extrabold text-center cursor-pointer"><i class="fas fa-images mr-1"></i> <span id="edit-prod-photo-lbl">Photo Badlein / Lagayein</span><input type="file" accept="image/*" class="hidden" onchange="compressImageToInput(event, 'edit-prod-image', 'edit-prod-photo-lbl', 'edit-prod-preview')"></label><input type="hidden" id="edit-prod-image"></div><input type="text" id="edit-prod-name" placeholder="Name" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="edit-prod-cat" placeholder="Category" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-1.5"><input type="text" id="edit-prod-barcode" placeholder="Barcode" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-mono"><button onclick="generateRandomBarcode('edit-prod-barcode')" class="px-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold"><i class="fas fa-magic"></i></button><button onclick="openUltraFastScanner('edit-prod-barcode')" class="px-2.5 bg-slate-800 text-white rounded-xl text-xs"><i class="fas fa-camera"></i></button></div><div class="grid grid-cols-2 gap-2"><input type="number" id="edit-prod-cost" placeholder="Cost Price" class="p-2 bg-amber-50 border rounded-xl text-xs"><input type="number" id="edit-prod-mrp" placeholder="MRP" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="number" id="edit-prod-price" placeholder="Retail Price" class="p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="number" id="edit-prod-wholesale" placeholder="Wholesale Price" class="p-2 bg-indigo-50 border rounded-xl text-xs"></div><input type="number" id="edit-prod-stock" placeholder="Stock Qty" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-2 pt-1"><button onclick="saveEditedProduct()" class="flex-1 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Update</button><button onclick="document.getElementById('edit-prod-modal').classList.add('hidden')" class="flex-1 py-2.5 bg-slate-200 font-bold rounded-xl text-xs">Cancel</button></div></div></div>
+  <div id="edit-inv-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-2.5 shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800">✏️ Bill & Date/Time Edit</h3><button onclick="document.getElementById('edit-inv-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-inv-id"><input type="text" id="edit-inv-date" placeholder="Bill Date & Time" class="w-full p-2 bg-amber-50 border border-amber-200 rounded-xl text-xs font-mono font-bold"><input type="text" id="edit-inv-cust" placeholder="Customer Name" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="tel" id="edit-inv-phone" placeholder="Mobile Number" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="grid grid-cols-2 gap-2"><input type="number" id="edit-inv-total" placeholder="Final Total (₹)" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-black"><input type="number" id="edit-inv-disc" placeholder="Discount (₹)" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"></div><select id="edit-inv-mode" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><option value="UPI">UPI</option><option value="Cash">Cash</option><option value="Udhar">Udhar</option><option value="Split">Split</option></select><input type="text" id="edit-inv-note" placeholder="Note / IMEI" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-2 pt-1"><button onclick="saveEditedInvoice(this)" class="flex-1 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">Update Bill</button><button onclick="document.getElementById('edit-inv-modal').classList.add('hidden')" class="flex-1 py-2.5 bg-slate-200 font-bold rounded-xl text-xs">Cancel</button></div></div></div>
+  <div id="edit-prod-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-2.5"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm">✏️ Product Edit Karein</h3><button onclick="document.getElementById('edit-prod-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="hidden" id="edit-prod-id"><div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border"><img id="edit-prod-preview" class="w-14 h-14 rounded-xl object-cover border bg-white"><label class="flex-1 py-2 px-3 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-extrabold text-center cursor-pointer"><i class="fas fa-images mr-1"></i> <span id="edit-prod-photo-lbl">Photo Badlein / Lagayein</span><input type="file" accept="image/*" class="hidden" onchange="compressImageToInput(event, 'edit-prod-image', 'edit-prod-photo-lbl', 'edit-prod-preview')"></label><input type="hidden" id="edit-prod-image"></div><input type="text" id="edit-prod-name" placeholder="Name" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="edit-prod-cat" placeholder="Category" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-1.5"><input type="text" id="edit-prod-barcode" placeholder="Barcode" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-mono"><button onclick="generateRandomBarcode('edit-prod-barcode')" class="px-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold"><i class="fas fa-magic"></i></button><button onclick="openUltraFastScanner('edit-prod-barcode')" class="px-2.5 bg-slate-800 text-white rounded-xl text-xs"><i class="fas fa-camera"></i></button></div><div class="grid grid-cols-2 gap-2"><input type="number" id="edit-prod-cost" placeholder="Cost Price" class="p-2 bg-amber-50 border rounded-xl text-xs"><input type="number" id="edit-prod-mrp" placeholder="MRP" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="number" id="edit-prod-price" placeholder="Retail Price" class="p-2 bg-slate-50 border rounded-xl text-xs font-bold"><input type="number" id="edit-prod-wholesale" placeholder="Wholesale Price" class="p-2 bg-indigo-50 border rounded-xl text-xs"></div><input type="number" id="edit-prod-stock" placeholder="Stock Qty" class="w-full p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex gap-2 pt-1"><button onclick="saveEditedProduct(this)" class="flex-1 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Update</button><button onclick="document.getElementById('edit-prod-modal').classList.add('hidden')" class="flex-1 py-2.5 bg-slate-200 font-bold rounded-xl text-xs">Cancel</button></div></div></div>
   <div id="hardware-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-print text-indigo-600 mr-1.5"></i>Printer & Scanner Setup</h3><button onclick="document.getElementById('hardware-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div class="space-y-3 text-xs"><div class="p-3 bg-slate-50 rounded-xl border space-y-1.5"><p class="font-extrabold">1. Bill Paper Size</p><select id="hw-receipt-size" onchange="saveHardwarePrefs()" class="w-full p-2 bg-white border rounded-lg font-bold"><option value="58mm">58mm (2-Inch Portable)</option><option value="80mm" selected>80mm (3-Inch Counter Thermal)</option><option value="A4">A4 Full Page Regular Printer</option></select></div><div class="p-3 bg-slate-50 rounded-xl border space-y-1.5"><p class="font-extrabold">2. Barcode Label Printer</p><select id="hw-barcode-size" onchange="saveHardwarePrefs()" class="w-full p-2 bg-white border rounded-lg font-bold"><option value="thermal_50x25" selected>50mm × 25mm (Thermal Roll)</option><option value="a4_grid">A4 Sticker Sheet (Grid)</option></select></div><div class="p-3 bg-indigo-50 rounded-xl border border-indigo-200"><button onclick="focusScannerGunInput()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Scanner Gun Ready</button></div></div></div></div>
   <div id="ai-copilot-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-violet-800"><i class="fas fa-robot text-violet-600 mr-1.5"></i>Kirtika AI Assistant</h3><button onclick="document.getElementById('ai-copilot-modal').classList.add('hidden')" class="text-slate-400 font-bold text-base">✕</button></div><div class="flex flex-wrap gap-1.5 text-[10px]"><button onclick="sendAICopilotPrompt('Aaj kitni total sale hui aur kaunse items bike?')" class="px-2.5 py-1 bg-violet-50 text-violet-700 rounded-full font-bold">📊 Aaj Ki Report</button><button onclick="sendAICopilotPrompt('Mere sabhi products ki WhatsApp Wholesale Rate List Catalog bana kar do')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full font-bold">📋 Wholesale Catalog</button><button onclick="sendAICopilotPrompt('Customers ko VIP, Regular aur Inactive groups me segment karke WhatsApp offer likho')" class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full font-bold">👥 Customer Segments</button></div><div id="ai-copilot-output" class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-700 max-h-60 overflow-y-auto whitespace-pre-line">Niche box par tap karke phone keyboard ka Mic (🎤) dabaye ya likhein:
 • "2 Type-C cable aur 1 20W charger Ramesh ke naam UPI me bill bana do"
 • "Aaj 150 rupaye chai nashta kharcha likh do"</div><div class="flex gap-2"><button onclick="startVoiceRecognition()" id="ai-mic-btn" class="px-3.5 py-2.5 bg-rose-600 text-white rounded-xl font-bold text-xs"><i class="fas fa-microphone"></i></button><input type="text" id="ai-copilot-input" placeholder="Bol kar ya likh kar command dein..." class="flex-1 p-2.5 bg-slate-100 rounded-xl text-xs"><button onclick="sendAICopilotPrompt()" class="px-4 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs">Send</button></div></div></div>
-  <div id="add-branch-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm">🏪 Nayi Branch / Doosri Shop</h3><button onclick="document.getElementById('add-branch-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="text" id="br-name" placeholder="Shop / Branch Name *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="br-addr" placeholder="Address" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="br-phone" placeholder="Mobile Number" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><button onclick="createNewBranch()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Shop Save Karein</button></div></div>
+  <div id="add-branch-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm">🏪 Nayi Branch / Doosri Shop</h3><button onclick="document.getElementById('add-branch-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><input type="text" id="br-name" placeholder="Shop / Branch Name *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><input type="text" id="br-addr" placeholder="Address" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="br-phone" placeholder="Mobile Number" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"><button onclick="createNewBranch(this)" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">Shop Save Karein</button></div></div>
   <div id="held-bills-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm">⏸️ Held Bills</h3><button onclick="document.getElementById('held-bills-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="held-bills-list" class="space-y-2 text-xs max-h-72 overflow-y-auto"></div></div></div>
   <div id="backup-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-export text-emerald-600 mr-1.5"></i>Excel & PDF Backup</h3><button onclick="document.getElementById('backup-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><select id="backup-period-select" class="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-800"><option value="1m">Last 1 Month</option><option value="6m">Last 6 Months</option><option value="1y">Last 1 Year</option><option value="lifetime" selected>Lifetime (Poora Data)</option></select><div class="space-y-2 pt-1"><button onclick="exportExcelBackup()" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fas fa-file-excel text-sm"></i> Excel File (.xlsx)</button><button onclick="exportPDFBackup()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fas fa-file-pdf text-sm"></i> PDF Report (.pdf)</button></div></div></div>
   <div id="live-scanner-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex-col items-center justify-center p-4"><div class="w-full max-w-md bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl"><div class="p-3.5 flex justify-between items-center border-b border-slate-800 text-white"><span class="font-extrabold text-sm flex items-center gap-1.5"><i class="fas fa-bolt text-amber-400"></i> Scanner</span><div class="flex items-center gap-1.5"><button onclick="toggleMobileSendToPC()" id="mobile-send-pc-btn" class="px-2.5 py-1 bg-slate-800 text-cyan-300 rounded-xl text-[11px] font-bold"><i class="fas fa-desktop mr-1"></i>Send to PC: OFF</button><button onclick="toggleScannerTorch()" id="torch-btn" class="px-2.5 py-1 bg-slate-800 text-amber-300 rounded-xl text-xs font-bold"><i class="fas fa-lightbulb"></i></button><button onclick="closeUltraFastScanner()" class="px-3 py-1 bg-red-500/20 text-red-400 rounded-xl text-xs font-bold">Close</button></div></div><div class="relative w-full bg-black h-[290px] overflow-hidden flex items-center justify-center"><video id="zxing-scanner-video" class="w-full h-full object-cover origin-center transition-transform duration-150" style="transform: scale(1);" playsinline muted autoplay></video><div class="pointer-events-none absolute inset-0 flex items-center justify-center"><div class="w-[84%] h-28 border-2 border-emerald-400 rounded-2xl relative shadow-[0_0_0_9999px_rgba(0,0,0,0.45)] overflow-hidden"><div class="laser-line absolute inset-x-2 h-0.5 bg-red-500 shadow-[0_0_8px_#ef4444]"></div></div></div></div><div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-2 text-xs text-white"><span class="text-slate-400 font-bold">Zoom (<span id="zoom-level-label">1.0x</span>):</span><input type="range" id="scanner-zoom-slider" min="1" max="3.5" step="0.25" value="1" oninput="setScannerZoom(this.value)" class="w-32 accent-indigo-500"></div><div class="p-3 text-center text-xs text-slate-300 bg-slate-950" id="live-scan-feedback">Barcode ko green laser box mein rakhein</div></div></div>
@@ -564,7 +615,7 @@
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
 
-    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
+    let storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], counterServices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
     let currentUser = null, activeBranch = "Main Branch", cart = [], heldBills = [], currentPriceMode = 'Retail', selectedCategory = 'All';
     let showLowStockOnly = false, salesPeriodFilter = 'all', staffSalesFilter = 'All', lastReceipt = null, currentBillTheme = 'thermal', currentBarcodeProd = null;
     let aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" }, isSavingAIItems = false;
@@ -584,7 +635,14 @@
       document.getElementById('global-loader').classList.add('hidden');
     }
 
-    async function callSheetAPI(action, payload = null, loaderMsg = "Saving...") {
+    async function callSheetAPI(action, payload = null, loaderMsg = "Saving...", btnEl = null) {
+      let origHtml = "";
+      if (btnEl) {
+        if (btnEl.disabled) return null;
+        origHtml = btnEl.innerHTML;
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
+      }
       if (loaderMsg) showGlobalLoader(loaderMsg);
       try {
         const response = await fetch(GOOGLE_API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, payload }) });
@@ -593,6 +651,10 @@
         return data;
       } finally {
         if (loaderMsg) hideGlobalLoader();
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.innerHTML = origHtml;
+        }
       }
     }
 
@@ -608,6 +670,25 @@
       if (mPicker) mPicker.value = monthStr;
       loadDataFromServer();
     };
+
+    function isAdminUser() {
+      return currentUser && currentUser.role === 'Admin';
+    }
+
+    function applyRolePermissions() {
+      const admin = isAdminUser();
+      document.querySelectorAll('.admin-only-el').forEach(el => el.classList.toggle('hidden', !admin));
+      document.getElementById('admin-profit-card').classList.toggle('hidden', !admin);
+      document.getElementById('admin-staff-panel').classList.toggle('hidden', !admin);
+      document.getElementById('admin-ai-stock-banner').classList.toggle('hidden', !admin);
+      document.getElementById('admin-add-product-box').classList.toggle('hidden', !admin);
+      document.getElementById('admin-staff-sales-box').classList.toggle('hidden', !admin);
+      document.getElementById('header-add-shop-btn').classList.toggle('hidden', !admin);
+      document.getElementById('header-backup-btn').classList.toggle('hidden', !admin);
+      document.getElementById('set-shop-gps-btn').classList.toggle('hidden', !admin);
+      document.getElementById('admin-manual-att-box').classList.toggle('hidden', !admin);
+      document.getElementById('admin-loyalty-rule-box').classList.toggle('hidden', !admin);
+    }
 
     function openHardwareModal() { document.getElementById('hardware-modal').classList.remove('hidden'); document.getElementById('hardware-modal').classList.add('flex'); }
     function saveHardwarePrefs() { hwPrefs = { receiptSize: document.getElementById('hw-receipt-size').value, barcodeSize: document.getElementById('hw-barcode-size').value }; localStorage.setItem('km_hw_prefs', JSON.stringify(hwPrefs)); }
@@ -626,7 +707,7 @@
       try {
         const res = await fetch(GOOGLE_API_URL);
         const data = await res.json();
-        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [], ...data };
+        storeData = { staff: [], attendance: [], branches: [], products: [], invoices: [], counterServices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [], ...data };
         if (!storeData.branches.length) storeData.branches = [{ id: "BR-1", name: "Main Branch", address: "Madhuban, Jodhpur", phone: "8209618586", lat: null, lng: null }];
         const brOpts = storeData.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
         document.getElementById('login-branch-select').innerHTML = brOpts;
@@ -642,6 +723,7 @@
 
     function branchProducts() { return storeData.products.filter(p => (p.branch || "Main Branch") === activeBranch); }
     function branchInvoices() { return storeData.invoices.filter(i => (i.branch || "Main Branch") === activeBranch); }
+    function branchCounterServices() { return (storeData.counterServices || []).filter(c => (c.branch || "Main Branch") === activeBranch); }
     function branchOnlineOrders() { return (storeData.onlineOrders || []).filter(o => (o.branch || "Main Branch") === activeBranch); }
     function branchRepairs() { return storeData.repairs.filter(r => (r.branch || "Main Branch") === activeBranch); }
     function branchUsed() { return storeData.usedPhones.filter(u => (u.branch || "Main Branch") === activeBranch); }
@@ -651,18 +733,21 @@
 
     function switchActiveBranch(brName) { activeBranch = brName; cart = []; document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch); renderCart(); renderAllViews(); }
     function openAddBranchModal() { document.getElementById('add-branch-modal').classList.remove('hidden'); document.getElementById('add-branch-modal').classList.add('flex'); }
-    async function createNewBranch() {
+    async function createNewBranch(btn) {
       const name = document.getElementById('br-name').value.trim(); if (!name) return;
-      storeData = await callSheetAPI("saveBranch", { name, address: document.getElementById('br-addr').value.trim(), phone: document.getElementById('br-phone').value.trim() }, "Creating Shop...");
+      const res = await callSheetAPI("saveBranch", { name, address: document.getElementById('br-addr').value.trim(), phone: document.getElementById('br-phone').value.trim() }, "Creating Shop...", btn);
+      if (!res) return;
+      storeData = res;
       document.getElementById('br-name').value = ''; document.getElementById('add-branch-modal').classList.add('hidden');
       activeBranch = name; await loadDataFromServer();
     }
 
     function renderAllViews() {
+      applyRolePermissions();
       document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch);
       document.getElementById('saved-pb-count').innerText = branchPurchaseBills().length;
       renderCategories(); renderPosProducts(); renderInventoryList(); renderTransferDropdowns();
-      renderInvoicesList(); renderOnlineOrdersList(); renderUniqueCustomersView();
+      renderInvoicesList(); renderCounterServicesList(); renderOnlineOrdersList(); renderUniqueCustomersView();
       renderRepairsList(); renderReturnsBoxList(); renderUsedPhonesList();
       renderPurchaseBillsList(); renderExpensesList(); renderStaffList(); renderAttendanceView(); renderLoyaltyView();
     }
@@ -693,6 +778,58 @@
       reader.readAsDataURL(file);
     }
 
+    // ================= 0. CHHOTI KAMAI / COUNTER SERVICES (RECHARGE, SIM, PHOTOCOPY, TRANSFER) =================
+    async function saveCounterServiceEntry(btn) {
+      const serviceType = document.getElementById('cs-type').value;
+      const customerNumber = document.getElementById('cs-number').value.trim();
+      const operatorOrNote = document.getElementById('cs-operator').value.trim();
+      const amount = Number(document.getElementById('cs-amount').value || 0);
+      const paymentMode = document.getElementById('cs-pay').value;
+      if (amount <= 0) { alert("Amount (₹) daalein!"); return; }
+
+      const res = await callSheetAPI("saveCounterService", {
+        serviceType, customerNumber, operatorOrNote, amount, paymentMode,
+        staff: currentUser ? currentUser.name : "Staff", branch: activeBranch
+      }, "Saving Entry...", btn);
+      if (!res) return;
+      storeData = res;
+      ['cs-number', 'cs-operator', 'cs-amount'].forEach(id => document.getElementById(id).value = '');
+      renderAllViews();
+    }
+
+    async function deleteCounterServiceItem(id) {
+      if (!confirm("Is entry ko delete karein?")) return;
+      storeData = await callSheetAPI("deleteCounterService", id, "Deleting...");
+      renderAllViews();
+    }
+
+    function renderCounterServicesList() {
+      const admin = isAdminUser();
+      const list = branchCounterServices();
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      let todaySum = 0;
+      list.forEach(item => {
+        const d = parseIndianInvoiceDate(item.date);
+        if (d && new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayStart) todaySum += Number(item.amount || 0);
+      });
+      document.getElementById('today-counter-service-total').innerText = todaySum;
+
+      document.getElementById('counter-services-list').innerHTML = list.length ? list.map(s => `
+        <div class="py-2.5 flex justify-between items-center gap-2">
+          <div>
+            <p class="font-bold text-slate-800">${s.serviceType} ${s.customerNumber ? `<span class="font-mono text-indigo-600">(${s.customerNumber})</span>` : ''} ${s.operatorOrNote ? `- ${s.operatorOrNote}` : ''}</p>
+            <p class="text-[10px] text-slate-400">${s.date} • By ${s.staff}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.paymentMode === 'Cash' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'}">${s.paymentMode}</span>
+            <span class="font-black text-slate-900">₹${s.amount}</span>
+            ${admin ? `<button onclick="deleteCounterServiceItem('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}
+          </div>
+        </div>
+      `).join('') : `<p class="text-center text-slate-400 py-5">Abhi koi recharge / photocopy entry nahi hai.</p>`;
+    }
+
     // ================= 1. ONLINE ORDERS + AI WHATSAPP MESSAGE / SCREENSHOT SCANNER =================
     function fillOnlineOrderFormFromAI(res) {
       if (res.platform) {
@@ -710,18 +847,16 @@
       }
     }
 
-    async function aiParseOnlineMessage() {
+    async function aiParseOnlineMessage(btn) {
       const txt = document.getElementById('ai-online-msg-input').value.trim();
       if (!txt) { alert("Pehle WhatsApp message paste karein!"); return; }
-      const btn = document.getElementById('ai-online-btn');
-      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
       try {
-        const res = await callSheetAPI("parseOnlineOrderWithAI", { text: txt }, "AI Extracting Address...");
+        const res = await callSheetAPI("parseOnlineOrderWithAI", { text: txt }, "AI Extracting Address...", btn);
+        if (!res) return;
         fillOnlineOrderFormFromAI(res);
         document.getElementById('ai-online-msg-input').value = '';
-        alert("✅ AI ne Customer Name, Phone aur Address bhar diya hai! Check karke Save dabaye.");
+        alert("✅ AI ne Customer Name, Phone aur Address bhar diya hai! Verify karke Save dabaye.");
       } catch (err) { alert("Error: " + err.message); }
-      finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-magic mr-1"></i>AI Fill`; }
     }
 
     function aiParseOnlineScreenshot(event) {
@@ -730,6 +865,7 @@
       reader.onload = async function(e) {
         try {
           const res = await callSheetAPI("parseOnlineOrderWithAI", { image: e.target.result }, "AI Reading Screenshot...");
+          if (!res) return;
           fillOnlineOrderFormFromAI(res);
           alert("✅ Screenshot se details extract ho gayi hain! Verify karke Save karein.");
         } catch (err) { alert("Error: " + err.message); }
@@ -738,28 +874,27 @@
       event.target.value = "";
     }
 
-    async function saveNewOnlineOrder() {
+    async function saveNewOnlineOrder(btn) {
       const customer = document.getElementById('onl-cust').value.trim();
       const phone = document.getElementById('onl-phone').value.trim();
       const amount = Number(document.getElementById('onl-amount').value || 0);
       if (!customer || !phone || !amount) { alert("Customer Name, Phone aur Amount zaroori hai!"); return; }
 
-      const btn = document.getElementById('save-onl-btn'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
-      try {
-        storeData = await callSheetAPI("saveOnlineOrder", {
-          platform: document.getElementById('onl-platform').value,
-          customer, phone,
-          address: document.getElementById('onl-address').value.trim(),
-          items: document.getElementById('onl-items').value.trim() || "Online Gadget Order",
-          amount,
-          paymentStatus: document.getElementById('onl-pay').value,
-          courier: document.getElementById('onl-courier').value.trim(),
-          trackingNo: document.getElementById('onl-awb').value.trim(),
-          branch: activeBranch
-        }, "Saving Online Order...");
-        ['onl-cust', 'onl-phone', 'onl-address', 'onl-items', 'onl-amount', 'onl-courier', 'onl-awb'].forEach(id => document.getElementById(id).value = '');
-        renderAllViews(); alert("✅ Online Order Save Ho Gaya!");
-      } finally { btn.disabled = false; btn.innerText = "+ Online Order Save Karein"; }
+      const res = await callSheetAPI("saveOnlineOrder", {
+        platform: document.getElementById('onl-platform').value,
+        customer, phone,
+        address: document.getElementById('onl-address').value.trim(),
+        items: document.getElementById('onl-items').value.trim() || "Online Gadget Order",
+        amount,
+        paymentStatus: document.getElementById('onl-pay').value,
+        courier: document.getElementById('onl-courier').value.trim(),
+        trackingNo: document.getElementById('onl-awb').value.trim(),
+        branch: activeBranch
+      }, "Saving Online Order...", btn);
+      if (!res) return;
+      storeData = res;
+      ['onl-cust', 'onl-phone', 'onl-address', 'onl-items', 'onl-amount', 'onl-courier', 'onl-awb'].forEach(id => document.getElementById(id).value = '');
+      renderAllViews(); alert("✅ Online Order Save Ho Gaya!");
     }
 
     async function updateOnlineOrderStatus(id, status) {
@@ -788,6 +923,7 @@
     }
 
     function renderOnlineOrdersList() {
+      const admin = isAdminUser();
       const list = branchOnlineOrders();
       document.getElementById('online-orders-list').innerHTML = list.length ? list.map(o => `
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-2">
@@ -809,7 +945,7 @@
               <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
             </select>
             <button onclick="sendOnlineTrackingWhatsApp('${o.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-xs"><i class="fab fa-whatsapp"></i></button>
-            <button onclick="deleteOnlineOrderItem('${o.id}')" class="p-1.5 text-red-400"><i class="fas fa-trash"></i></button>
+            ${admin ? `<button onclick="deleteOnlineOrderItem('${o.id}')" class="p-1.5 text-red-400"><i class="fas fa-trash"></i></button>` : ''}
           </div>
         </div>
       `).join('') : `<p class="text-center text-slate-400 py-6">Abhi koi online order save nahi hai.</p>`;
@@ -885,7 +1021,21 @@
       XLSX.writeFile(wb, `Kirtika_Mobile_Customers_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
-    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR GRID ATTENDANCE =================
+    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE (STAFF PRIVACY LOCKED) =================
+    function normalizeClientDate(val) {
+      if (!val) return "";
+      const s = String(val).replace(/^'/, "").trim().split(' ')[0];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        const p = s.split('-');
+        return `${p[2]}/${p[1]}/${p[0]}`;
+      }
+      const slashParts = s.split('/');
+      if (slashParts.length === 3) {
+        return `${slashParts[0].padStart(2, '0')}/${slashParts[1].padStart(2, '0')}/${slashParts[2]}`;
+      }
+      return s;
+    }
+
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3, toRad = x => x * Math.PI / 180;
       const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
@@ -893,12 +1043,12 @@
       return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     }
 
-    function captureAndSaveShopGPS() {
+    function captureAndSaveShopGPS(btn) {
       if (!navigator.geolocation) { alert("GPS supported nahi hai!"); return; }
       showGlobalLoader("Locking Shop GPS...");
       navigator.geolocation.getCurrentPosition(async pos => {
         try {
-          storeData = await callSheetAPI("saveBranchLocation", { branch: activeBranch, lat: pos.coords.latitude, lng: pos.coords.longitude }, "Saving GPS...");
+          storeData = await callSheetAPI("saveBranchLocation", { branch: activeBranch, lat: pos.coords.latitude, lng: pos.coords.longitude }, "Saving GPS...", btn);
           renderAttendanceView();
           alert(`✅ ${activeBranch} ki exact GPS location save ho gayi!`);
         } finally { hideGlobalLoader(); }
@@ -912,12 +1062,12 @@
       if (!rec || !rec.selfie) return;
       document.getElementById('sv-title').innerText = `${rec.staffName} (${rec.status})`;
       document.getElementById('sv-img').src = rec.selfie;
-      document.getElementById('sv-meta').innerText = `${rec.date} • ${rec.time} • GPS Distance: ${rec.distance} • ${rec.branch}`;
+      document.getElementById('sv-meta').innerText = `${normalizeClientDate(rec.date)} • ${rec.time} • GPS Distance: ${rec.distance} • ${rec.branch}`;
       document.getElementById('selfie-viewer-modal').classList.remove('hidden');
       document.getElementById('selfie-viewer-modal').classList.add('flex');
     }
 
-    async function submitGPSAttendance(status) {
+    async function submitGPSAttendance(status, btn) {
       if (!currentUser) return;
       const selfie = document.getElementById('att-selfie-data').value;
       if (!selfie) { alert("❌ Pehle '1. Live Selfie Khinchein' daba kar apni live photo khinchein!"); return; }
@@ -926,27 +1076,30 @@
         alert("⚠️ Admin ne abhi is shop ki GPS location set nahi ki hai. Pehle Admin login se 'Set Current Shop Location' dabayein.");
         return;
       }
-      const btn = document.getElementById('att-present-btn');
-      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Checking GPS...`;
+      const origText = btn ? btn.innerHTML : "";
+      if (btn) { if (btn.disabled) return; btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Checking GPS...`; }
       navigator.geolocation.getCurrentPosition(async pos => {
         const dist = calculateDistanceMeters(pos.coords.latitude, pos.coords.longitude, brObj.lat, brObj.lng);
         if (dist > 80) {
-          btn.disabled = false; btn.innerText = "✅ 2. Verify GPS & Mark Present";
+          if (btn) { btn.disabled = false; btn.innerHTML = origText; }
           alert(`❌ Attendance Rejected!\nAap abhi shop se ${dist} meter door hain.\nAttendance sirf dukaan ke andar (80m radius) hi lagegi!`);
           return;
         }
         try {
-          storeData = await callSheetAPI("markStaffAttendance", { staffId: currentUser.id, staffName: currentUser.name, status, distance: dist + "m", selfie, branch: activeBranch }, "Saving Attendance...");
+          const now = new Date();
+          const todayDDMMYYYY = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+          storeData = await callSheetAPI("markStaffAttendance", { staffId: currentUser.id, staffName: currentUser.name, status, date: todayDDMMYYYY, distance: dist + "m", selfie, branch: activeBranch }, "Saving Attendance...");
           document.getElementById('att-selfie-data').value = '';
           document.getElementById('att-selfie-preview').classList.add('hidden');
           document.getElementById('att-selfie-label').innerText = "1. Live Selfie Khinchein";
           renderAttendanceView();
           alert(`✅ Attendance (${status}) lag gayi! Shop distance: ${dist}m`);
-        } finally { btn.disabled = false; btn.innerText = "✅ 2. Verify GPS & Mark Present"; }
-      }, err => { btn.disabled = false; btn.innerText = "✅ 2. Verify GPS & Mark Present"; alert("Location ON karein: " + err.message); }, { enableHighAccuracy: true, timeout: 10000 });
+        } finally { if (btn) { btn.disabled = false; btn.innerHTML = origText; } }
+      }, err => { if (btn) { btn.disabled = false; btn.innerHTML = origText; } alert("Location ON karein: " + err.message); }, { enableHighAccuracy: true, timeout: 10000 });
     }
 
-    async function adminMarkManualAttendance() {
+    async function adminMarkManualAttendance(btn) {
+      if (!isAdminUser()) return;
       const sel = document.getElementById('admin-att-staff');
       const staffId = sel.value, staffName = sel.options[sel.selectedIndex]?.text || "Staff", status = document.getElementById('admin-att-status').value;
       const calDate = document.getElementById('att-calendar-date').value;
@@ -955,22 +1108,26 @@
         const [y, m, d] = calDate.split('-');
         targetDateStr = `${d}/${m}/${y}`;
       }
-      storeData = await callSheetAPI("markStaffAttendance", { staffId, staffName, status, date: targetDateStr, distance: "Admin Entry", selfie: "", branch: activeBranch }, "Saving Attendance...");
+      const res = await callSheetAPI("markStaffAttendance", { staffId, staffName, status, date: targetDateStr, distance: "Admin Entry", selfie: "", branch: activeBranch }, "Saving Attendance...", btn);
+      if (!res) return;
+      storeData = res;
       renderAttendanceView(); alert("✅ Attendance Saved!");
     }
 
     async function adminChangeAttendanceStatus(attId, newStatus) {
+      if (!isAdminUser()) return;
       storeData = await callSheetAPI("updateAttendanceRecord", { id: attId, status: newStatus }, "Updating Status...");
       renderAttendanceView();
     }
 
     async function adminDeleteAttendance(attId) {
-      if (!confirm("Is attendance record ko delete karein?")) return;
+      if (!isAdminUser() || !confirm("Is attendance record ko delete karein?")) return;
       storeData = await callSheetAPI("deleteAttendanceRecord", attId, "Deleting...");
       renderAttendanceView();
     }
 
     function selectStaffForMonthlySummary(staffId) {
+      if (!isAdminUser()) return;
       selectedAttStaffId = (selectedAttStaffId === staffId) ? null : staffId;
       renderAttendanceView();
     }
@@ -982,23 +1139,33 @@
     }
 
     function renderAttendanceView() {
-      const isAdmin = currentUser && currentUser.role === 'Admin';
+      const admin = isAdminUser();
       const brObj = storeData.branches.find(b => b.name === activeBranch);
       document.getElementById('att-current-user-name').innerText = currentUser ? currentUser.name : '--';
       document.getElementById('shop-gps-status').innerText = (brObj && brObj.lat) ? `✅ Shop GPS Locked (${brObj.lat.toFixed(4)}, ${brObj.lng.toFixed(4)})` : `⚠️ Shop GPS abhi set nahi hai`;
-      document.getElementById('set-shop-gps-btn').classList.toggle('hidden', !isAdmin);
-      document.getElementById('admin-manual-att-box').classList.toggle('hidden', !isAdmin);
+      document.getElementById('set-shop-gps-btn').classList.toggle('hidden', !admin);
+      document.getElementById('admin-manual-att-box').classList.toggle('hidden', !admin);
       document.getElementById('admin-att-staff').innerHTML = storeData.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
-      const monthVal = document.getElementById('att-month-picker')?.value || ""; // YYYY-MM
-      document.getElementById('att-staff-chips').innerHTML =
-        `<button onclick="selectStaffForMonthlySummary(null)" class="px-3 py-1.5 rounded-xl font-bold transition ${!selectedAttStaffId ? 'bg-slate-900 text-white shadow' : 'bg-white border text-slate-700'}">All Staff</button>` +
-        storeData.staff.map(s => `
-          <button onclick="selectStaffForMonthlySummary('${s.id}')" class="px-3 py-1.5 rounded-xl font-bold transition ${String(selectedAttStaffId) === String(s.id) ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-indigo-50'}">
-            ${s.name}
-          </button>
-        `).join('');
+      // Enforce strict privacy: Staff sees ONLY their own attendance; Admin sees All or selected staff
+      const effectiveStaffId = admin ? selectedAttStaffId : (currentUser ? currentUser.id : null);
+      document.getElementById('att-calendar-heading').innerText = admin ? "Staff Chunein (Calendar Dekhne Ke Liye):" : `Aapki Monthly Attendance (${currentUser ? currentUser.name : ''}):`;
 
+      const chipsBox = document.getElementById('att-staff-chips');
+      if (admin) {
+        chipsBox.classList.remove('hidden');
+        chipsBox.innerHTML =
+          `<button onclick="selectStaffForMonthlySummary(null)" class="px-3 py-1.5 rounded-xl font-bold transition ${!selectedAttStaffId ? 'bg-slate-900 text-white shadow' : 'bg-white border text-slate-700'}">All Staff</button>` +
+          storeData.staff.map(s => `
+            <button onclick="selectStaffForMonthlySummary('${s.id}')" class="px-3 py-1.5 rounded-xl font-bold transition ${String(selectedAttStaffId) === String(s.id) ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-indigo-50'}">
+              ${s.name}
+            </button>
+          `).join('');
+      } else {
+        chipsBox.classList.add('hidden');
+      }
+
+      const monthVal = document.getElementById('att-month-picker')?.value || ""; // YYYY-MM
       const sumCard = document.getElementById('att-staff-summary-card');
       const calGrid = document.getElementById('att-visual-calendar-grid');
       const selectedCalDate = document.getElementById('att-calendar-date')?.value || "";
@@ -1006,19 +1173,20 @@
       if (monthVal) {
         const [yr, mo] = monthVal.split('-');
         const daysInMonth = new Date(Number(yr), Number(mo), 0).getDate();
-        const firstDayOfWeek = new Date(Number(yr), Number(mo) - 1, 1).getDay(); // 0=Sun
+        const firstDayOfWeek = new Date(Number(yr), Number(mo) - 1, 1).getDay();
         const now = new Date();
         const isCurrentMonth = (Number(yr) === now.getFullYear() && Number(mo) === (now.getMonth() + 1));
         const elapsedDays = isCurrentMonth ? now.getDate() : (new Date(Number(yr), Number(mo) - 1, 1) > now ? 0 : daysInMonth);
 
         const monthLogs = storeData.attendance.filter(a => {
-          const parts = String(a.date).split('/');
+          const norm = normalizeClientDate(a.date);
+          const parts = norm.split('/');
           return parts.length === 3 && parts[1] === mo && parts[2] === yr;
         });
 
-        if (selectedAttStaffId) {
-          const stf = storeData.staff.find(s => String(s.id) === String(selectedAttStaffId));
-          const stfLogs = monthLogs.filter(a => String(a.staffId) === String(selectedAttStaffId));
+        if (effectiveStaffId) {
+          const stf = storeData.staff.find(s => String(s.id) === String(effectiveStaffId));
+          const stfLogs = monthLogs.filter(a => String(a.staffId) === String(effectiveStaffId));
           const presentCount = stfLogs.filter(a => a.status === 'Present').length;
           const halfDayCount = stfLogs.filter(a => a.status === 'Half-Day').length;
           const explicitAbsent = stfLogs.filter(a => a.status === 'Absent').length;
@@ -1030,7 +1198,7 @@
           sumCard.innerHTML = `
             <div class="flex justify-between items-center border-b pb-1.5 mb-2">
               <span class="font-extrabold text-indigo-900">${stf?.name} — ${mo}/${yr} Hisab</span>
-              <button onclick="selectStaffForMonthlySummary(null)" class="text-slate-400 font-bold">✕</button>
+              ${admin ? `<button onclick="selectStaffForMonthlySummary(null)" class="text-slate-400 font-bold">✕</button>` : ''}
             </div>
             <div class="grid grid-cols-4 gap-2 text-center">
               <div class="p-2 bg-emerald-50 rounded-lg"><p class="text-[10px] text-emerald-700 font-bold">Present</p><p class="text-sm font-black text-emerald-900">${presentCount}</p></div>
@@ -1052,15 +1220,15 @@
           const dd = String(d).padStart(2, '0');
           const ddmmyyyy = `${dd}/${mo}/${yr}`;
           const isoStr = `${yr}-${mo}-${dd}`;
-          const dayLogs = monthLogs.filter(a => String(a.date) === ddmmyyyy);
+          const dayLogs = monthLogs.filter(a => normalizeClientDate(a.date) === ddmmyyyy);
           const isFuture = d > elapsedDays;
           const isSelected = selectedCalDate === isoStr;
 
           let boxClass = "bg-white border-slate-200 text-slate-700";
           let badgeHtml = "";
 
-          if (selectedAttStaffId) {
-            const log = dayLogs.find(a => String(a.staffId) === String(selectedAttStaffId));
+          if (effectiveStaffId) {
+            const log = dayLogs.find(a => String(a.staffId) === String(effectiveStaffId));
             if (log) {
               if (log.status === 'Present') { boxClass = "bg-emerald-500 border-emerald-600 text-white"; badgeHtml = `<span class="text-[9px] font-black">P</span>`; }
               else if (log.status === 'Half-Day') { boxClass = "bg-amber-400 border-amber-500 text-slate-950"; badgeHtml = `<span class="text-[9px] font-black">HD</span>`; }
@@ -1104,8 +1272,8 @@
       document.getElementById('att-selected-date-label').innerText = filterDateStr ? `📅 Date: ${filterDateStr}` : `📅 Showing: All Dates`;
 
       const visibleLogs = storeData.attendance.filter(a => {
-        if (filterDateStr && String(a.date) !== filterDateStr) return false;
-        if (selectedAttStaffId && String(a.staffId) !== String(selectedAttStaffId)) return false;
+        if (filterDateStr && normalizeClientDate(a.date) !== filterDateStr) return false;
+        if (effectiveStaffId && String(a.staffId) !== String(effectiveStaffId)) return false;
         return true;
       });
 
@@ -1115,12 +1283,12 @@
             ${a.selfie ? `<img onclick="viewAttendanceSelfie('${a.id}')" src="${a.selfie}" class="w-11 h-11 rounded-xl object-cover border-2 border-indigo-200 cursor-pointer shadow-sm" title="Click to enlarge">` : `<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-user"></i></div>`}
             <div>
               <p class="font-bold text-slate-800">${a.staffName} <span class="text-[10px] text-slate-400">(${a.branch})</span></p>
-              <p class="text-[10px] text-slate-500">${a.date} • ${a.time} • GPS: <b>${a.distance}</b></p>
+              <p class="text-[10px] text-slate-500">${normalizeClientDate(a.date)} • ${a.time} • GPS: <b>${a.distance}</b></p>
             </div>
           </div>
           <div class="flex items-center gap-1.5">
             ${a.selfie ? `<button onclick="viewAttendanceSelfie('${a.id}')" class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold"><i class="fas fa-eye"></i></button>` : ''}
-            ${isAdmin ? `
+            ${admin ? `
               <select onchange="adminChangeAttendanceStatus('${a.id}', this.value)" class="p-1 rounded-lg text-[10px] font-extrabold border ${a.status === 'Present' ? 'bg-emerald-50 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-50 text-amber-800' : 'bg-red-50 text-red-700')}">
                 <option value="Present" ${a.status === 'Present' ? 'selected' : ''}>Present</option>
                 <option value="Half-Day" ${a.status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
@@ -1130,10 +1298,10 @@
             ` : `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold ${a.status === 'Present' ? 'bg-emerald-100 text-emerald-700' : (a.status === 'Half-Day' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700')}">${a.status}</span>`}
           </div>
         </div>
-      `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance entry nahi hai (Upar + Save se add kar sakte hain).` : 'Abhi koi attendance record nahi hai.'}</p>`;
+      `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance entry nahi hai.` : 'Abhi koi attendance record nahi hai.'}</p>`;
     }
 
-    // ================= 4. MULTI-CARD VIP LOYALTY PROGRAM =================
+    // ================= 4. MULTI-CARD VIP LOYALTY PROGRAM + HD IMAGE SHARE =================
     function saveLoyaltyOverlapPref() {
       loyaltyOverlapEnabled = document.getElementById('loy-overlap-toggle').checked;
       localStorage.setItem('km_loy_overlap', loyaltyOverlapEnabled ? 'true' : 'false');
@@ -1176,14 +1344,16 @@
       });
     }
 
-    async function saveLoyaltyRuleSettings() {
+    async function saveLoyaltyRuleSettings(btn) {
       const title = document.getElementById('loy-card-title').value.trim();
       const giftName = document.getElementById('loy-gift-name').value.trim();
       const minSpend = Number(document.getElementById('loy-min-spend').value || 0);
       const targetVisits = Number(document.getElementById('loy-target-visits').value || 0);
       if (!title || !giftName || !minSpend || !targetVisits) { alert("Saari details bharein!"); return; }
 
-      storeData = await callSheetAPI("saveLoyaltyRule", { title, minSpend, targetVisits, giftName }, "Saving Loyalty Card...");
+      const res = await callSheetAPI("saveLoyaltyRule", { title, minSpend, targetVisits, giftName }, "Saving Loyalty Card...", btn);
+      if (!res) return;
+      storeData = res;
       ['loy-card-title', 'loy-gift-name', 'loy-min-spend', 'loy-target-visits'].forEach(id => document.getElementById(id).value = '');
       renderLoyaltyView(); alert("✅ Naya Loyalty Card Add Ho Gaya!");
     }
@@ -1215,12 +1385,13 @@
       }
 
       document.getElementById('loyalty-card-preview').innerHTML = `
-        <div class="flex justify-between items-center"><span class="text-[10px] font-black uppercase text-amber-400">${activeCard.title}</span><span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">${activeCard.currentStamps}/${activeCard.targetVisits} Stamps</span></div>
+        <div class="flex justify-between items-center"><span class="text-[10px] font-black uppercase text-amber-400">KIRTIKA MOBILE • ${activeCard.title}</span><span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">${activeCard.currentStamps}/${activeCard.targetVisits}</span></div>
         <div><h4 class="text-base font-black">${activeCard.name}</h4><p class="text-xs text-slate-300 font-mono">+91 ${activeCard.phone}</p></div>
         <div class="grid grid-cols-3 gap-2">${stampsHtml}</div>
         <div class="p-2.5 rounded-xl ${activeCard.unlocked ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-amber-200'} text-center text-xs font-extrabold">
           ${activeCard.unlocked ? `🎉 UNLOCKED: ${activeCard.giftName}` : `₹${activeCard.minSpend}+ ki ${activeCard.targetVisits} visits par FREE: ${activeCard.giftName}`}
         </div>
+        <p class="text-[9px] text-center text-slate-400">Madhuban, Jodhpur • Mob: 8209618586</p>
       `;
       document.getElementById('claim-gift-btn').classList.toggle('hidden', !activeCard.unlocked);
       document.getElementById('loyalty-card-modal').classList.remove('hidden');
@@ -1229,6 +1400,32 @@
 
     function openLoyaltyCardForCurrentCust() {
       openLoyaltyCardModal(document.getElementById('cust-phone').value, document.getElementById('cust-name').value || "Customer");
+    }
+
+    async function downloadOrShareLoyaltyImage(btn) {
+      const cardEl = document.getElementById('loyalty-card-preview');
+      if (!cardEl || !activeLoyaltyCardData) return;
+      const origHtml = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Creating Photo...`;
+      try {
+        const canvas = await html2canvas(cardEl, { scale: 2, backgroundColor: "#0f172a" });
+        const fileName = `VIP_Card_${activeLoyaltyCardData.name.replace(/\s+/g, '_')}.png`;
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], fileName, { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({ files: [file], title: "Kirtika Mobile VIP Card", text: `Kirtika Mobile VIP Loyalty Card - ${activeLoyaltyCardData.name}` });
+              return;
+            } catch (e) {}
+          }
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        }, "image/png");
+      } finally {
+        btn.disabled = false; btn.innerHTML = origHtml;
+      }
     }
 
     function shareLoyaltyWhatsApp() {
@@ -1243,25 +1440,27 @@
       window.open(`https://wa.me/91${d.phone}?text=${msg}`, '_blank');
     }
 
-    async function claimCustomerLoyaltyGift() {
+    async function claimCustomerLoyaltyGift(btn) {
       if (!activeLoyaltyCardData || !confirm(`Kya aapne ${activeLoyaltyCardData.name} ko "${activeLoyaltyCardData.giftName}" gift de diya hai?`)) return;
-      storeData = await callSheetAPI("claimLoyaltyGift", {
+      const res = await callSheetAPI("claimLoyaltyGift", {
         phone: activeLoyaltyCardData.phone, customer: activeLoyaltyCardData.name,
         gift: activeLoyaltyCardData.giftName, ruleId: activeLoyaltyCardData.ruleId,
         staff: currentUser ? currentUser.name : "Admin", branch: activeBranch
-      }, "Resetting Card...");
+      }, "Resetting Card...", btn);
+      if (!res) return;
+      storeData = res;
       document.getElementById('loyalty-card-modal').classList.add('hidden');
-      renderAllViews(); alert("🎁 Gift Claimed! Ab is card ki count 0/3 se shuru hogi.");
+      renderAllViews(); alert("🎁 Gift Claimed! Ab is card ki count 0 se shuru hogi.");
     }
 
     function renderLoyaltyView() {
-      const isAdmin = currentUser && currentUser.role === 'Admin';
-      document.getElementById('admin-loyalty-rule-box').classList.toggle('hidden', !isAdmin);
+      const admin = isAdminUser();
+      document.getElementById('admin-loyalty-rule-box').classList.toggle('hidden', !admin);
       const rules = storeData.loyaltyRules || [];
       document.getElementById('loyalty-rules-list').innerHTML = rules.map(r => `
         <div class="flex justify-between items-center bg-white p-2 rounded-lg border">
           <div><p class="font-bold text-slate-800">${r.title}</p><p class="text-[10px] text-slate-500">Min ₹${r.minSpend} × ${r.targetVisits} Visits → 🎁 <b>${r.giftName}</b></p></div>
-          <button onclick="deleteLoyaltyRuleItem('${r.id}')" class="text-red-500 p-1"><i class="fas fa-trash"></i></button>
+          ${admin ? `<button onclick="deleteLoyaltyRuleItem('${r.id}')" class="text-red-500 p-1"><i class="fas fa-trash"></i></button>` : ''}
         </div>
       `).join('');
 
@@ -1312,15 +1511,17 @@
       document.getElementById('jama-inv-id').value = inv.id; document.getElementById('jama-cust-label').innerText = `${inv.customer} (${inv.id})`; document.getElementById('jama-due-amount').innerText = inv.udharDue; document.getElementById('jama-recv-input').value = '';
       document.getElementById('udhar-jama-modal').classList.remove('hidden'); document.getElementById('udhar-jama-modal').classList.add('flex');
     }
-    async function submitUdharJama() {
+    async function submitUdharJama(btn) {
       const id = document.getElementById('jama-inv-id').value, amount = Number(document.getElementById('jama-recv-input').value || 0), receiveMode = document.getElementById('jama-mode-select').value;
-      if (amount <= 0) return;
-      storeData = await callSheetAPI("recordUdharPayment", { id, amount, receiveMode }, "Updating Udhar...");
+      if (amount <= 0) { alert("Amount daalein!"); return; }
+      const res = await callSheetAPI("recordUdharPayment", { id, amount, receiveMode }, "Updating Udhar...", btn);
+      if (!res) return;
+      storeData = res;
       document.getElementById('udhar-jama-modal').classList.add('hidden'); renderAllViews(); alert(`✅ ₹${amount} (${receiveMode}) jama ho gaya!`);
     }
 
     function sendDayEndWhatsAppReport() {
-      const msg = `*📊 KIRTIKA MOBILE (${activeBranch}) - DAY END REPORT*%0A*Date:* ${new Date().toLocaleDateString('en-IN')}%0A*Total Bills:* ${document.getElementById('stat-today-bills').innerText}%0A*Aaj Ki Total Sale:* ₹${document.getElementById('stat-today-sales').innerText}%0A*Aaj Cash Sale:* ₹${document.getElementById('galla-cash-in').innerText}%0A*Aaj Kharcha:* ₹${document.getElementById('galla-exp-out').innerText}%0A*Galla Cash Balance:* ₹${document.getElementById('galla-expected').innerText}`;
+      const msg = `*📊 KIRTIKA MOBILE (${activeBranch}) - DAY END REPORT*%0A*Date:* ${new Date().toLocaleDateString('en-IN')}%0A*Total Bills:* ${document.getElementById('stat-today-bills').innerText}%0A*Aaj Ki Total Sale:* ₹${document.getElementById('stat-today-sales').innerText}%0A*Aaj Cash Sale + Services:* ₹${document.getElementById('galla-cash-in').innerText}%0A*Aaj Kharcha:* ₹${document.getElementById('galla-exp-out').innerText}%0A*Galla Cash Balance:* ₹${document.getElementById('galla-expected').innerText}`;
       window.open(`https://wa.me/918209618586?text=${msg}`, '_blank');
     }
 
@@ -1332,9 +1533,10 @@
     }
 
     // ================= BULK STOCK DELETE & QUICK PHOTO CART =================
-    function updateBulkDeleteUI() { const checked = document.querySelectorAll('.stock-row-chk:checked'); document.getElementById('selected-stock-count').innerText = checked.length; document.getElementById('bulk-del-stock-btn').classList.toggle('hidden', checked.length === 0); }
+    function updateBulkDeleteUI() { const checked = document.querySelectorAll('.stock-row-chk:checked'); document.getElementById('selected-stock-count').innerText = checked.length; document.getElementById('bulk-del-stock-btn').classList.toggle('hidden', !isAdminUser() || checked.length === 0); }
     function toggleSelectAllStock(isChecked) { document.querySelectorAll('.stock-row-chk').forEach(cb => cb.checked = isChecked); updateBulkDeleteUI(); }
     async function bulkDeleteSelectedStock() {
+      if (!isAdminUser()) return;
       const ids = Array.from(document.querySelectorAll('.stock-row-chk:checked')).map(cb => cb.value);
       if (!ids.length || !confirm(`${ids.length} items delete karein?`)) return;
       storeData = await callSheetAPI("bulkDeleteProducts", ids, `Deleting ${ids.length} items...`);
@@ -1348,11 +1550,11 @@
 
     // ================= TABS & MORE SUBVIEWS =================
     function switchTab(tab) { ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => { document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab); const btn = document.getElementById('nav-' + t); if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); } }); }
-    function showMoreSubView(sub) { ['online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; }); }
+    function showMoreSubView(sub) { ['counter', 'online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) { const wasHidden = btn.classList.contains('hidden'); btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; if (wasHidden) btn.classList.add('hidden'); } }); }
 
     // ================= TRANSFER, HOLD, SCANNER & AI =================
     function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
-    async function executeBranchTransfer() { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; storeData = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock..."); document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
+    async function executeBranchTransfer(btn) { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; const res = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock...", btn); if (!res) return; storeData = res; document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
 
     function holdCurrentBill() { if (!cart.length) return; heldBills.push({ id: "HOLD-" + (heldBills.length + 1), customer: document.getElementById('cust-name').value.trim() || "Walk-in Customer", phone: document.getElementById('cust-phone').value.trim(), address: document.getElementById('cust-address').value.trim(), cart: JSON.parse(JSON.stringify(cart)), time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }); cart = []; document.getElementById('cust-name').value = ''; document.getElementById('cust-phone').value = ''; document.getElementById('cust-address').value = ''; renderCart(); updateHeldBillsBadge(); }
     function updateHeldBillsBadge() { document.getElementById('held-count').innerText = heldBills.length; document.getElementById('held-bills-btn').classList.toggle('hidden', heldBills.length === 0); }
@@ -1376,7 +1578,7 @@
 
     function openPurchaseBillFull(pbId) { const pb = branchPurchaseBills().find(x => String(x.id) === String(pbId)); if (!pb) return; document.getElementById('vpb-title').innerText = `${pb.supplierName} (${pb.id})`; document.getElementById('vpb-content').innerHTML = `<div class="p-3 bg-slate-50 rounded-xl border"><div class="flex justify-between"><span>Date: <b>${pb.date}</b></span><span>Bill No: <b>${pb.supplierBillNo || '--'}</b></span></div><div class="text-sm font-black text-indigo-700 mt-1">Total: ₹${pb.totalAmount}</div></div>${pb.billImage ? `<img src="${pb.billImage}" class="w-full rounded-lg border">` : ''}<table class="w-full text-left text-[11px] border"><thead class="bg-slate-100"><tr><th class="p-2">Item</th><th class="p-2">Qty</th><th class="p-2">Cost</th><th class="p-2">Sell</th></tr></thead><tbody class="divide-y">${pb.items.map(i => `<tr><td class="p-2 font-bold">${i.name}</td><td class="p-2">${i.stock}</td><td class="p-2">₹${i.costPrice}</td><td class="p-2">₹${i.price}</td></tr>`).join('')}</tbody></table>`; document.getElementById('view-pb-modal').classList.remove('hidden'); document.getElementById('view-pb-modal').classList.add('flex'); }
     function openEditPBModal(pbId) { const pb = branchPurchaseBills().find(x => String(x.id) === String(pbId)); if (!pb) return; document.getElementById('edit-pb-id').value = pb.id; document.getElementById('edit-pb-supplier').value = pb.supplierName; document.getElementById('edit-pb-billno').value = pb.supplierBillNo; document.getElementById('edit-pb-total').value = pb.totalAmount; document.getElementById('edit-pb-modal').classList.remove('hidden'); document.getElementById('edit-pb-modal').classList.add('flex'); }
-    async function saveEditedPurchaseBill() { storeData = await callSheetAPI("updatePurchaseBill", { id: document.getElementById('edit-pb-id').value, supplierName: document.getElementById('edit-pb-supplier').value.trim(), supplierBillNo: document.getElementById('edit-pb-billno').value.trim(), totalAmount: Number(document.getElementById('edit-pb-total').value || 0) }, "Updating Bill..."); document.getElementById('edit-pb-modal').classList.add('hidden'); renderAllViews(); }
+    async function saveEditedPurchaseBill(btn) { const res = await callSheetAPI("updatePurchaseBill", { id: document.getElementById('edit-pb-id').value, supplierName: document.getElementById('edit-pb-supplier').value.trim(), supplierBillNo: document.getElementById('edit-pb-billno').value.trim(), totalAmount: Number(document.getElementById('edit-pb-total').value || 0) }, "Updating Bill...", btn); if (!res) return; storeData = res; document.getElementById('edit-pb-modal').classList.add('hidden'); renderAllViews(); }
     async function deleteSavedPurchaseBill(pbId) { if (confirm("Delete purchase bill?")) { storeData = await callSheetAPI("deletePurchaseBill", pbId, "Deleting Bill..."); renderAllViews(); } }
     function renderPurchaseBillsList() { const list = branchPurchaseBills(); document.getElementById('purchase-bills-list').innerHTML = list.length ? list.map(pb => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center gap-2"><div class="min-w-0"><p class="font-bold truncate">${pb.supplierName} ${pb.supplierBillNo ? `(#${pb.supplierBillNo})` : ''} ${pb.billImage ? '<i class="fas fa-image text-indigo-500 ml-1"></i>' : ''}</p><p class="text-[10px] text-slate-400">${pb.date} • ${pb.itemsCount} Items • <b class="text-indigo-600">₹${pb.totalAmount}</b></p></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="openPurchaseBillFull('${pb.id}')" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Open</button><button onclick="openEditPBModal('${pb.id}')" class="p-1.5 bg-white border rounded-lg"><i class="fas fa-edit"></i></button><button onclick="deleteSavedPurchaseBill('${pb.id}')" class="p-1.5 bg-white border rounded-lg text-red-500"><i class="fas fa-trash"></i></button></div></div>`).join('') : `<p class="text-center text-slate-400 py-6">No saved purchase bills.</p>`; }
 
@@ -1402,11 +1604,10 @@
       activeBranch = document.getElementById('login-branch-select').value || "Main Branch"; document.getElementById('header-branch-select').value = activeBranch;
       const staff = storeData.staff.find(s => String(s.id) === String(staffId));
       if (staff && String(staff.pin) === String(pin)) {
-        currentUser = staff; const isAdmin = staff.role === 'Admin';
+        currentUser = staff;
+        selectedAttStaffId = null;
         document.getElementById('header-staff-info').innerText = `${staff.name} (${staff.role})`;
         document.getElementById('login-screen').classList.add('hidden'); document.getElementById('login-pin').value = '';
-        document.getElementById('admin-profit-card').classList.toggle('hidden', !isAdmin);
-        document.getElementById('admin-staff-panel').classList.toggle('hidden', !isAdmin);
         renderAllViews();
       } else alert("Galat PIN!");
     }
@@ -1466,7 +1667,9 @@
       const rawNote = document.getElementById('bill-note').value.trim();
       const fullNote = addr ? (rawNote ? `Addr: ${addr} | ${rawNote}` : `Addr: ${addr}`) : rawNote;
 
-      const btn = document.getElementById('checkout-btn'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving Bill...`;
+      const btn = document.getElementById('checkout-btn');
+      if (btn.disabled) return;
+      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving Bill...`;
       try {
         const cleanCartForSheet = cart.map(c => ({ id: c.id, name: c.name, mrp: c.mrp, price: c.price, costPrice: c.costPrice, qty: c.qty, isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : "" }));
         const salePayload = { staffName: currentUser ? currentUser.name : 'Staff', customerName: document.getElementById('cust-name').value.trim() || 'Walk-in Customer', customerPhone: document.getElementById('cust-phone').value.trim(), customerAddress: addr, priceMode: currentPriceMode, paymentMode: mode, cashPaid, upiPaid, udharDue, subtotal: subTotal, mrpTotal, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal), note: fullNote, customDate: document.getElementById('bill-custom-date').value.trim(), total: finalTotal, cart: cleanCartForSheet, branch: activeBranch };
@@ -1520,25 +1723,27 @@
     function reprintSavedInvoice(id) { const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; showReceiptModal(inv.id, inv.date, { customerName: inv.customer, customerPhone: inv.phone, priceMode: inv.priceMode, paymentMode: inv.paymentMode, cashPaid: inv.cashPaid, upiPaid: inv.upiPaid, udharDue: inv.udharDue, mrpTotal: inv.mrpTotal, discount: inv.discount, totalSavings: inv.totalSavings, note: inv.note, total: inv.total, branch: inv.branch, cart: (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, mrp: inv.total, price: inv.total, qty: 1 }] }); }
     function shareWhatsAppReceipt() { if (!lastReceipt) return; const itemsText = lastReceipt.cart.map(c => `• ${c.name} (x${c.qty}) - ₹${c.price * c.qty}`).join('%0A'); const dueLine = lastReceipt.udharDue > 0 ? `%0A*Baaki Udhar:* ₹${lastReceipt.udharDue}` : ''; const msg = `*KIRTIKA MOBILE (${activeBranch})*%0A*Bill No:* ${lastReceipt.invId} (${lastReceipt.dateStr})%0A*Customer:* ${lastReceipt.customerName}%0A${itemsText}%0A*Total (${lastReceipt.paymentMode}): ₹${lastReceipt.total}*${dueLine}`; const phone = lastReceipt.customerPhone ? '91' + lastReceipt.customerPhone.replace(/\D/g, '').slice(-10) : ''; window.open(`https://wa.me/${phone}?text=${msg}`, '_blank'); }
 
-    // ================= STOCK, BARCODE, PRODUCTS, SALES, REPAIRS, USED, EXPENSES, STAFF & BACKUP =================
+    // ================= STOCK, BARCODE, PRODUCTS (ADMIN ONLY EDIT/COST/DELETE) =================
     function generateRandomBarcode(inputId) { document.getElementById(inputId).value = '890' + Math.floor(100000000 + Math.random() * 900000000); }
     function openBarcodeGenModal(prodId) { currentBarcodeProd = branchProducts().find(p => String(p.id) === String(prodId)); if (!currentBarcodeProd) return; document.getElementById('barcode-gen-modal').classList.remove('hidden'); document.getElementById('barcode-gen-modal').classList.add('flex'); renderBarcodeStickers(); }
     function closeBarcodeGenModal() { document.getElementById('barcode-gen-modal').classList.add('hidden'); }
     function renderBarcodeStickers() { if (!currentBarcodeProd) return; const qty = Number(document.getElementById('barcode-qty-select').value || 4), area = document.getElementById('barcode-print-area'), codeVal = currentBarcodeProd.barcode || '890123456789'; area.className = hwPrefs.barcodeSize === 'thermal_50x25' ? "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-1 gap-2 text-center" : "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-2 gap-3 text-center"; let html = ''; for (let i = 0; i < qty; i++) html += `<div class="border border-slate-300 rounded-lg p-2 flex flex-col items-center bg-white"><p class="text-[9px] font-black uppercase">KIRTIKA MOBILE</p><p class="text-[10px] font-bold truncate max-w-[160px]">${currentBarcodeProd.name}</p><svg class="barcode-svg-${i} my-0.5"></svg><p class="text-[10px] font-black">MRP ₹${currentBarcodeProd.mrp || currentBarcodeProd.price} | Offer ₹${currentBarcodeProd.price}</p></div>`; area.innerHTML = html; for (let i = 0; i < qty; i++) { try { JsBarcode(`.barcode-svg-${i}`, String(codeVal), { format: "CODE128", width: 1.4, height: 34, fontSize: 10, margin: 2 }); } catch (e) {} } }
 
     async function addNewProduct() {
+      if (!isAdminUser()) return;
       const name = document.getElementById('prod-name').value.trim(), price = Number(document.getElementById('prod-price').value);
       if (!name || !price) { alert("Name aur Retail Price daalein!"); return; }
-      const btn = document.getElementById('add-prod-btn'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
-      try {
-        storeData = await callSheetAPI("saveProduct", { name, category: document.getElementById('prod-cat').value.trim() || 'General', barcode: document.getElementById('prod-barcode').value.trim() || ('890' + Math.floor(100000000 + Math.random() * 900000000)), costPrice: Number(document.getElementById('prod-cost').value) || 0, mrp: Number(document.getElementById('prod-mrp').value) || price, price, wholesalePrice: Number(document.getElementById('prod-wholesale').value) || price, stock: Number(document.getElementById('prod-stock').value) || 1, image: document.getElementById('prod-image-data').value, branch: activeBranch }, "Saving Product...");
-        ['prod-name', 'prod-cat', 'prod-barcode', 'prod-cost', 'prod-mrp', 'prod-price', 'prod-wholesale', 'prod-stock', 'prod-image-data'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('prod-photo-label').innerText = "Camera / Gallery Photo"; document.getElementById('prod-preview-thumb').classList.add('hidden');
-        renderAllViews(); alert("✅ Product Saved!");
-      } finally { btn.disabled = false; btn.innerText = "+ Inventory Mein Save Karein"; }
+      const btn = document.getElementById('add-prod-btn');
+      const res = await callSheetAPI("saveProduct", { name, category: document.getElementById('prod-cat').value.trim() || 'General', barcode: document.getElementById('prod-barcode').value.trim() || ('890' + Math.floor(100000000 + Math.random() * 900000000)), costPrice: Number(document.getElementById('prod-cost').value) || 0, mrp: Number(document.getElementById('prod-mrp').value) || price, price, wholesalePrice: Number(document.getElementById('prod-wholesale').value) || price, stock: Number(document.getElementById('prod-stock').value) || 1, image: document.getElementById('prod-image-data').value, branch: activeBranch }, "Saving Product...", btn);
+      if (!res) return;
+      storeData = res;
+      ['prod-name', 'prod-cat', 'prod-barcode', 'prod-cost', 'prod-mrp', 'prod-price', 'prod-wholesale', 'prod-stock', 'prod-image-data'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('prod-photo-label').innerText = "Camera / Gallery Photo"; document.getElementById('prod-preview-thumb').classList.add('hidden');
+      renderAllViews(); alert("✅ Product Saved!");
     }
     function toggleLowStockFilter() { showLowStockOnly = !showLowStockOnly; renderInventoryList(); }
     function openEditProdModal(id) {
+      if (!isAdminUser()) return;
       const p = branchProducts().find(x => String(x.id) === String(id)); if (!p) return;
       document.getElementById('edit-prod-id').value = p.id; document.getElementById('edit-prod-name').value = p.name; document.getElementById('edit-prod-cat').value = p.category; document.getElementById('edit-prod-barcode').value = p.barcode; document.getElementById('edit-prod-cost').value = p.costPrice || 0; document.getElementById('edit-prod-mrp').value = p.mrp || p.price; document.getElementById('edit-prod-price').value = p.price; document.getElementById('edit-prod-wholesale').value = p.wholesalePrice || p.price; document.getElementById('edit-prod-stock').value = p.stock; document.getElementById('edit-prod-image').value = p.image || '';
       const prev = document.getElementById('edit-prod-preview');
@@ -1546,30 +1751,33 @@
       document.getElementById('edit-prod-photo-lbl').innerText = "Photo Badlein / Lagayein";
       document.getElementById('edit-prod-modal').classList.remove('hidden'); document.getElementById('edit-prod-modal').classList.add('flex');
     }
-    async function saveEditedProduct() {
-      storeData = await callSheetAPI("updateExistingProduct", { id: document.getElementById('edit-prod-id').value, name: document.getElementById('edit-prod-name').value, category: document.getElementById('edit-prod-cat').value, barcode: document.getElementById('edit-prod-barcode').value, costPrice: Number(document.getElementById('edit-prod-cost').value), mrp: Number(document.getElementById('edit-prod-mrp').value), price: Number(document.getElementById('edit-prod-price').value), wholesalePrice: Number(document.getElementById('edit-prod-wholesale').value), stock: Number(document.getElementById('edit-prod-stock').value), image: document.getElementById('edit-prod-image').value }, "Updating Product...");
+    async function saveEditedProduct(btn) {
+      if (!isAdminUser()) return;
+      const res = await callSheetAPI("updateExistingProduct", { id: document.getElementById('edit-prod-id').value, name: document.getElementById('edit-prod-name').value, category: document.getElementById('edit-prod-cat').value, barcode: document.getElementById('edit-prod-barcode').value, costPrice: Number(document.getElementById('edit-prod-cost').value), mrp: Number(document.getElementById('edit-prod-mrp').value), price: Number(document.getElementById('edit-prod-price').value), wholesalePrice: Number(document.getElementById('edit-prod-wholesale').value), stock: Number(document.getElementById('edit-prod-stock').value), image: document.getElementById('edit-prod-image').value }, "Updating Product...", btn);
+      if (!res) return;
+      storeData = res;
       document.getElementById('edit-prod-modal').classList.add('hidden'); renderAllViews();
     }
     function renderInventoryList() {
-      const isAdmin = currentUser && currentUser.role === 'Admin', q = document.getElementById('inv-search').value.toLowerCase().trim();
+      const admin = isAdminUser(), q = document.getElementById('inv-search').value.toLowerCase().trim();
       const list = branchProducts().filter(p => (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)) && (!showLowStockOnly || p.stock <= 2));
       document.getElementById('total-prod-count').innerText = list.length; document.getElementById('select-all-stock-chk').checked = false;
-      document.getElementById('inventory-list').innerHTML = list.map(p => `<div class="py-2.5 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><input type="checkbox" value="${p.id}" onchange="updateBulkDeleteUI()" class="stock-row-chk w-4 h-4 accent-red-600 shrink-0">${p.image ? `<img src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0">` : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fas fa-box"></i></div>`}<div class="truncate"><p class="font-bold text-slate-800 truncate">${p.name}</p><p class="text-[10px] text-slate-400">MRP: ₹${p.mrp || p.price} • <span class="font-mono text-slate-600">${p.barcode}</span>${isAdmin ? ` • <span class="text-amber-700 font-bold">Cost: ₹${p.costPrice}</span>` : ''}</p></div></div><div class="flex items-center gap-2 shrink-0"><button onclick="openBarcodeGenModal('${p.id}')" class="px-2 py-1.5 bg-slate-100 border rounded-lg text-slate-700"><i class="fas fa-barcode"></i></button><div class="text-right"><p class="font-black text-indigo-600">₹${p.price}</p><p class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Qty: ${p.stock}</p></div><button onclick="openEditProdModal('${p.id}')" class="text-indigo-500 p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProd('${p.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join('');
+      document.getElementById('inventory-list').innerHTML = list.map(p => `<div class="py-2.5 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0">${admin ? `<input type="checkbox" value="${p.id}" onchange="updateBulkDeleteUI()" class="stock-row-chk w-4 h-4 accent-red-600 shrink-0">` : ''}${p.image ? `<img src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0">` : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fas fa-box"></i></div>`}<div class="truncate"><p class="font-bold text-slate-800 truncate">${p.name}</p><p class="text-[10px] text-slate-400">MRP: ₹${p.mrp || p.price} • <span class="font-mono text-slate-600">${p.barcode}</span>${admin ? ` • <span class="text-amber-700 font-bold">Cost: ₹${p.costPrice}</span>` : ''}</p></div></div><div class="flex items-center gap-2 shrink-0"><button onclick="openBarcodeGenModal('${p.id}')" class="px-2 py-1.5 bg-slate-100 border rounded-lg text-slate-700"><i class="fas fa-barcode"></i></button><div class="text-right"><p class="font-black text-indigo-600">₹${p.price}</p><p class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Qty: ${p.stock}</p></div>${admin ? `<button onclick="openEditProdModal('${p.id}')" class="text-indigo-500 p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProd('${p.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`).join('');
       updateBulkDeleteUI();
     }
-    async function deleteProd(id) { if (confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExistingProduct", id, "Deleting..."); renderAllViews(); } }
+    async function deleteProd(id) { if (isAdminUser() && confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExistingProduct", id, "Deleting..."); renderAllViews(); } }
 
-    function parseIndianInvoiceDate(dateStr) { if (!dateStr) return null; const parts = String(dateStr).trim().split(' ')[0].split('/'); if (parts.length === 3) { const parsed = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)); if (!isNaN(parsed.getTime())) return parsed; } const fallback = new Date(dateStr); return isNaN(fallback.getTime()) ? null : fallback; }
+    function parseIndianInvoiceDate(dateStr) { if (!dateStr) return null; const norm = normalizeClientDate(dateStr); const parts = norm.split('/'); if (parts.length === 3) { const parsed = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)); if (!isNaN(parsed.getTime())) return parsed; } const fallback = new Date(dateStr); return isNaN(fallback.getTime()) ? null : fallback; }
     function setSalesPeriodFilter(period) { salesPeriodFilter = period; ['all', 'today', '7days', '30days'].forEach(p => { document.getElementById('period-btn-' + p).className = (p === period) ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white" : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600"; }); renderInvoicesList(); }
     function toggleStaffSalesFilter(staffName) { staffSalesFilter = (staffSalesFilter === staffName) ? 'All' : staffName; renderInvoicesList(); }
-    function openEditInvModal(id) { if (!currentUser || currentUser.role !== 'Admin') return; const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; document.getElementById('edit-inv-id').value = inv.id; document.getElementById('edit-inv-date').value = inv.date; document.getElementById('edit-inv-cust').value = inv.customer; document.getElementById('edit-inv-phone').value = inv.phone; document.getElementById('edit-inv-total').value = inv.total; document.getElementById('edit-inv-disc').value = inv.discount; document.getElementById('edit-inv-mode').value = inv.paymentMode; document.getElementById('edit-inv-note').value = inv.note; document.getElementById('edit-inv-modal').classList.remove('hidden'); document.getElementById('edit-inv-modal').classList.add('flex'); }
-    async function saveEditedInvoice() { storeData = await callSheetAPI("updateExistingInvoice", { id: document.getElementById('edit-inv-id').value, date: document.getElementById('edit-inv-date').value.trim(), customer: document.getElementById('edit-inv-cust').value, phone: document.getElementById('edit-inv-phone').value, total: Number(document.getElementById('edit-inv-total').value), discount: Number(document.getElementById('edit-inv-disc').value), paymentMode: document.getElementById('edit-inv-mode').value, note: document.getElementById('edit-inv-note').value }, "Updating Bill..."); document.getElementById('edit-inv-modal').classList.add('hidden'); renderAllViews(); }
-    async function returnOrDeleteBill(id, mode) { if (confirm(mode === 'return' ? "Return mark karein?" : "Bill delete karein?")) { storeData = await callSheetAPI("returnOrDeleteInvoice", { id, mode }, mode === 'return' ? "Processing Return..." : "Deleting Bill..."); renderAllViews(); } }
+    function openEditInvModal(id) { if (!isAdminUser()) return; const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; document.getElementById('edit-inv-id').value = inv.id; document.getElementById('edit-inv-date').value = inv.date; document.getElementById('edit-inv-cust').value = inv.customer; document.getElementById('edit-inv-phone').value = inv.phone; document.getElementById('edit-inv-total').value = inv.total; document.getElementById('edit-inv-disc').value = inv.discount; document.getElementById('edit-inv-mode').value = inv.paymentMode; document.getElementById('edit-inv-note').value = inv.note; document.getElementById('edit-inv-modal').classList.remove('hidden'); document.getElementById('edit-inv-modal').classList.add('flex'); }
+    async function saveEditedInvoice(btn) { if (!isAdminUser()) return; const res = await callSheetAPI("updateExistingInvoice", { id: document.getElementById('edit-inv-id').value, date: document.getElementById('edit-inv-date').value.trim(), customer: document.getElementById('edit-inv-cust').value, phone: document.getElementById('edit-inv-phone').value, total: Number(document.getElementById('edit-inv-total').value), discount: Number(document.getElementById('edit-inv-disc').value), paymentMode: document.getElementById('edit-inv-mode').value, note: document.getElementById('edit-inv-note').value }, "Updating Bill...", btn); if (!res) return; storeData = res; document.getElementById('edit-inv-modal').classList.add('hidden'); renderAllViews(); }
+    async function returnOrDeleteBill(id, mode) { if (mode === 'delete' && !isAdminUser()) return; if (confirm(mode === 'return' ? "Return mark karein?" : "Bill delete karein?")) { storeData = await callSheetAPI("returnOrDeleteInvoice", { id, mode }, mode === 'return' ? "Processing Return..." : "Deleting Bill..."); renderAllViews(); } }
 
     let todayCashInCache = 0, todayExpOutCache = 0;
     function updateGallaTally() { const opening = Number(document.getElementById('galla-opening').value || 0); document.getElementById('galla-expected').innerText = opening + todayCashInCache - todayExpOutCache; }
     function renderInvoicesList() {
-      const isAdmin = currentUser && currentUser.role === 'Admin', invs = branchInvoices(), now = new Date();
+      const admin = isAdminUser(), invs = branchInvoices(), now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()), sevenDaysAgo = new Date(todayStart.getTime() - 6 * 86400000), thirtyDaysAgo = new Date(todayStart.getTime() - 29 * 86400000);
       let todaySales = 0, todayBills = 0, d7Sales = 0, d7Bills = 0, d30Sales = 0, d30Bills = 0; todayCashInCache = 0; const staffMap = {};
       invs.forEach(inv => {
@@ -1583,6 +1791,19 @@
           if (invDay >= thirtyDaysAgo) { d30Sales += amt; d30Bills++; }
         }
       });
+
+      // Add Counter Services (Chhoti Kamai) into Daily Cash & Sales Totals
+      branchCounterServices().forEach(cs => {
+        const amt = Number(cs.amount || 0);
+        const csDate = parseIndianInvoiceDate(cs.date);
+        if (csDate) {
+          const csDay = new Date(csDate.getFullYear(), csDate.getMonth(), csDate.getDate());
+          if (csDay.getTime() === todayStart.getTime()) { todaySales += amt; if (cs.paymentMode === 'Cash') todayCashInCache += amt; }
+          if (csDay >= sevenDaysAgo) d7Sales += amt;
+          if (csDay >= thirtyDaysAgo) d30Sales += amt;
+        }
+      });
+
       todayExpOutCache = 0; branchExpenses().forEach(e => { const d = parseIndianInvoiceDate(e.date); if (d && new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayStart.getTime()) todayExpOutCache += Number(e.amount || 0); });
       document.getElementById('galla-cash-in').innerText = todayCashInCache; document.getElementById('galla-exp-out').innerText = todayExpOutCache; updateGallaTally();
 
@@ -1619,38 +1840,38 @@
       document.getElementById('invoices-list').innerHTML = filtered.map(inv => {
         const hasPhoto = (inv.cart || []).some(c => c.image), due = Number(inv.udharDue || 0);
         const splitTags = (inv.paymentMode === 'Split' || due > 0) ? `<div class="text-[10px] text-slate-600 mt-0.5">Cash: ₹${inv.cashPaid} | UPI: ₹${inv.upiPaid} ${due > 0 ? `| <b class="text-red-600">Baaki: ₹${due}</b>` : ''}</div>` : '';
-        return `<div class="p-3 bg-slate-50 rounded-xl border ${due > 0 ? 'border-red-200 bg-red-50/30' : 'border-slate-100'} flex justify-between items-center gap-2 ${inv.status === 'Returned' ? 'opacity-60' : ''}"><div><p class="font-bold text-slate-800">${inv.customer} <span class="text-[10px] text-slate-400">(${inv.id} • By ${inv.staff})</span></p><p class="text-[11px] text-slate-500 mt-0.5">${inv.items}</p>${splitTags}<p class="text-[10px] text-slate-400 mt-0.5">${inv.date} ${hasPhoto ? `<button onclick="viewSoldBillPhotos('${inv.id}')" class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"><i class="fas fa-camera mr-0.5"></i>Photo</button>` : ''}</p></div><div class="flex items-center gap-1.5 shrink-0"><div class="text-right"><p class="font-black text-sm text-slate-900">₹${inv.total}</p>${due > 0 && inv.status !== 'Returned' ? `<button onclick="openUdharJamaModal('${inv.id}')" class="mt-0.5 px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-extrabold shadow-sm">+ Jama (₹${due})</button>` : `<span class="text-[10px] font-bold px-2 py-0.5 rounded ${inv.status === 'Returned' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}">${inv.status === 'Returned' ? 'Returned' : inv.paymentMode}</span>`}</div><button onclick="reprintSavedInvoice('${inv.id}')" class="text-slate-600 p-1"><i class="fas fa-receipt"></i></button>${isAdmin ? `<button onclick="openEditInvModal('${inv.id}')" class="text-indigo-600 p-1"><i class="fas fa-edit"></i></button>` : ''}${inv.status !== 'Returned' ? `<button onclick="returnOrDeleteBill('${inv.id}', 'return')" class="text-amber-600 p-1"><i class="fas fa-undo"></i></button>` : ''}${isAdmin ? `<button onclick="returnOrDeleteBill('${inv.id}', 'delete')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+        return `<div class="p-3 bg-slate-50 rounded-xl border ${due > 0 ? 'border-red-200 bg-red-50/30' : 'border-slate-100'} flex justify-between items-center gap-2 ${inv.status === 'Returned' ? 'opacity-60' : ''}"><div><p class="font-bold text-slate-800">${inv.customer} <span class="text-[10px] text-slate-400">(${inv.id} • By ${inv.staff})</span></p><p class="text-[11px] text-slate-500 mt-0.5">${inv.items}</p>${splitTags}<p class="text-[10px] text-slate-400 mt-0.5">${inv.date} ${hasPhoto ? `<button onclick="viewSoldBillPhotos('${inv.id}')" class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"><i class="fas fa-camera mr-0.5"></i>Photo</button>` : ''}</p></div><div class="flex items-center gap-1.5 shrink-0"><div class="text-right"><p class="font-black text-sm text-slate-900">₹${inv.total}</p>${due > 0 && inv.status !== 'Returned' ? `<button onclick="openUdharJamaModal('${inv.id}')" class="mt-0.5 px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-extrabold shadow-sm">+ Jama (₹${due})</button>` : `<span class="text-[10px] font-bold px-2 py-0.5 rounded ${inv.status === 'Returned' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}">${inv.status === 'Returned' ? 'Returned' : inv.paymentMode}</span>`}</div><button onclick="reprintSavedInvoice('${inv.id}')" class="text-slate-600 p-1"><i class="fas fa-receipt"></i></button>${admin ? `<button onclick="openEditInvModal('${inv.id}')" class="text-indigo-600 p-1"><i class="fas fa-edit"></i></button>` : ''}${inv.status !== 'Returned' ? `<button onclick="returnOrDeleteBill('${inv.id}', 'return')" class="text-amber-600 p-1"><i class="fas fa-undo"></i></button>` : ''}${admin ? `<button onclick="returnOrDeleteBill('${inv.id}', 'delete')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
       }).join('');
     }
 
-    async function addRepairJob() { const customer = document.getElementById('rep-cust').value.trim(), deviceModel = document.getElementById('rep-model').value.trim(), fault = document.getElementById('rep-fault').value.trim(); if (!customer || !deviceModel || !fault) return; storeData = await callSheetAPI("saveRepair", { customer, phone: document.getElementById('rep-phone').value.trim(), deviceModel, fault, estimate: Number(document.getElementById('rep-estimate').value || 0), advance: Number(document.getElementById('rep-advance').value || 0), branch: activeBranch }, "Saving Job Card..."); ['rep-cust', 'rep-phone', 'rep-model', 'rep-fault', 'rep-estimate', 'rep-advance'].forEach(id => document.getElementById(id).value = ''); renderRepairsList(); }
+    async function addRepairJob(btn) { const customer = document.getElementById('rep-cust').value.trim(), deviceModel = document.getElementById('rep-model').value.trim(), fault = document.getElementById('rep-fault').value.trim(); if (!customer || !deviceModel || !fault) return; const res = await callSheetAPI("saveRepair", { customer, phone: document.getElementById('rep-phone').value.trim(), deviceModel, fault, estimate: Number(document.getElementById('rep-estimate').value || 0), advance: Number(document.getElementById('rep-advance').value || 0), branch: activeBranch }, "Saving Job Card...", btn); if (!res) return; storeData = res; ['rep-cust', 'rep-phone', 'rep-model', 'rep-fault', 'rep-estimate', 'rep-advance'].forEach(id => document.getElementById(id).value = ''); renderRepairsList(); }
     async function changeRepairStatus(id, status) { storeData = await callSheetAPI("updateRepairStatus", { id, status }, "Updating Status..."); renderRepairsList(); }
     function sendRepairWhatsApp(id) { const r = storeData.repairs.find(x => String(x.id) === String(id)); if (!r) return; const due = Math.max(0, r.estimate - r.advance); const msg = `*KIRTIKA MOBILE - REPAIR UPDATE*%0AJob: ${r.id} | Model: ${r.deviceModel}%0AStatus: *${r.status}* | Balance Due: *₹${due}*`; const phone = r.phone ? '91' + r.phone.replace(/\D/g, '').slice(-10) : ''; window.open(`https://wa.me/${phone}?text=${msg}`, '_blank'); }
     function renderRepairsList() { document.getElementById('repairs-list').innerHTML = branchRepairs().map(r => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center gap-2"><div><p class="font-bold">${r.deviceModel} — <span class="text-indigo-600">${r.fault}</span></p><p class="text-[11px] text-slate-500">${r.customer} (${r.phone}) • Due: ₹${Math.max(0, r.estimate - r.advance)}</p></div><div class="flex items-center gap-1.5"><select onchange="changeRepairStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="Ready" ${r.status === 'Ready' ? 'selected' : ''}>Ready</option><option value="Delivered" ${r.status === 'Delivered' ? 'selected' : ''}>Delivered</option></select><button onclick="sendRepairWhatsApp('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg"><i class="fab fa-whatsapp"></i></button></div></div>`).join(''); }
 
-    async function addSupplierReturn() { const customer = document.getElementById('ret-cust').value.trim(), productName = document.getElementById('ret-prod').value.trim(); if (!customer || !productName) return; storeData = await callSheetAPI("saveSupplierReturn", { customer, phone: document.getElementById('ret-phone').value.trim(), productName, supplier: document.getElementById('ret-supplier').value.trim(), issue: document.getElementById('ret-issue').value.trim(), branch: activeBranch }, "Saving Return..."); ['ret-cust', 'ret-phone', 'ret-prod', 'ret-supplier', 'ret-issue'].forEach(id => document.getElementById(id).value = ''); renderReturnsBoxList(); }
+    async function addSupplierReturn(btn) { const customer = document.getElementById('ret-cust').value.trim(), productName = document.getElementById('ret-prod').value.trim(); if (!customer || !productName) return; const res = await callSheetAPI("saveSupplierReturn", { customer, phone: document.getElementById('ret-phone').value.trim(), productName, supplier: document.getElementById('ret-supplier').value.trim(), issue: document.getElementById('ret-issue').value.trim(), branch: activeBranch }, "Saving Return...", btn); if (!res) return; storeData = res; ['ret-cust', 'ret-phone', 'ret-prod', 'ret-supplier', 'ret-issue'].forEach(id => document.getElementById(id).value = ''); renderReturnsBoxList(); }
     async function changeReturnStatus(id, status) { storeData = await callSheetAPI("updateSupplierReturnStatus", { id, status }, "Updating Status..."); renderReturnsBoxList(); }
     function renderReturnsBoxList() { document.getElementById('returns-box-list').innerHTML = branchReturns().map(r => `<div class="p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl flex justify-between items-center"><div><p class="font-bold">${r.productName} <span class="text-amber-700">(Supplier: ${r.supplier})</span></p><p class="text-[11px] text-slate-500">${r.customer} • ${r.issue}</p></div><select onchange="changeReturnStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="Sent to Supplier" ${r.status === 'Sent to Supplier' ? 'selected' : ''}>Sent to Supplier</option><option value="Replaced" ${r.status === 'Replaced' ? 'selected' : ''}>Replaced</option></select></div>`).join(''); }
 
-    async function addUsedPhone() { const model = document.getElementById('used-model').value.trim(), imei1 = document.getElementById('used-imei1').value.trim(), buyPrice = Number(document.getElementById('used-buy-price').value || 0); if (!model || !imei1 || !buyPrice) return; storeData = await callSheetAPI("saveUsedPhone", { model, imei1, imei2: document.getElementById('used-imei2').value.trim(), buyPrice, sellerName: document.getElementById('used-seller').value.trim(), sellerPhone: document.getElementById('used-seller-phone').value.trim(), sellerIDProof: document.getElementById('used-id-proof').value.trim(), branch: activeBranch }, "Saving Used Phone..."); ['used-model', 'used-imei1', 'used-imei2', 'used-buy-price', 'used-seller', 'used-seller-phone', 'used-id-proof'].forEach(id => document.getElementById(id).value = ''); renderUsedPhonesList(); }
+    async function addUsedPhone(btn) { const model = document.getElementById('used-model').value.trim(), imei1 = document.getElementById('used-imei1').value.trim(), buyPrice = Number(document.getElementById('used-buy-price').value || 0); if (!model || !imei1 || !buyPrice) return; const res = await callSheetAPI("saveUsedPhone", { model, imei1, imei2: document.getElementById('used-imei2').value.trim(), buyPrice, sellerName: document.getElementById('used-seller').value.trim(), sellerPhone: document.getElementById('used-seller-phone').value.trim(), sellerIDProof: document.getElementById('used-id-proof').value.trim(), branch: activeBranch }, "Saving Used Phone...", btn); if (!res) return; storeData = res; ['used-model', 'used-imei1', 'used-imei2', 'used-buy-price', 'used-seller', 'used-seller-phone', 'used-id-proof'].forEach(id => document.getElementById(id).value = ''); renderUsedPhonesList(); }
     async function markUsedPhoneSold(id) { const sellPrice = prompt("Kitne rupaye (₹) mein becha?"); if (!sellPrice) return; const buyerName = prompt("Buyer ka naam:") || "Walk-in Customer"; storeData = await callSheetAPI("sellUsedPhone", { id, sellPrice: Number(sellPrice), buyerName }, "Updating Sale..."); renderUsedPhonesList(); }
     function renderUsedPhonesList() { const list = branchUsed(); document.getElementById('used-count').innerText = list.length; document.getElementById('used-phones-list').innerHTML = list.map(u => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center"><div><p class="font-bold">${u.model} (IMEI: ${u.imei1})</p><p class="text-[11px] text-slate-500">Seller: ${u.sellerName} • ID: ${u.sellerIDProof} • Buy: ₹${u.buyPrice}</p></div>${u.status === 'In Stock' ? `<button onclick="markUsedPhoneSold('${u.id}')" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Sell</button>` : `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-[10px]">Sold ₹${u.sellPrice}</span>`}</div>`).join(''); }
 
     async function addExpenseEntry() {
       const amount = Number(document.getElementById('exp-amount').value || 0); if (!amount) return;
-      const btn = document.getElementById('add-exp-btn'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
-      try {
-        storeData = await callSheetAPI("saveExpense", { category: document.getElementById('exp-cat').value, amount, note: document.getElementById('exp-note').value.trim(), staff: currentUser ? currentUser.name : 'Staff', branch: activeBranch }, "Saving Expense...");
-        document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = ''; renderExpensesList(); renderInvoicesList();
-      } finally { btn.disabled = false; btn.innerText = "+ Kharcha Save Karein"; }
+      const btn = document.getElementById('add-exp-btn');
+      const res = await callSheetAPI("saveExpense", { category: document.getElementById('exp-cat').value, amount, note: document.getElementById('exp-note').value.trim(), staff: currentUser ? currentUser.name : 'Staff', branch: activeBranch }, "Saving Expense...", btn);
+      if (!res) return;
+      storeData = res;
+      document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = ''; renderExpensesList(); renderInvoicesList();
     }
-    async function deleteExpenseEntry(id) { if (confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExpense", id, "Deleting Expense..."); renderExpensesList(); renderInvoicesList(); } }
-    function renderExpensesList() { const list = branchExpenses(); document.getElementById('stat-total-expenses').innerText = list.reduce((s, e) => s + Number(e.amount || 0), 0); document.getElementById('expenses-list').innerHTML = list.map(e => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold">${e.category} ${e.note ? `- ${e.note}` : ''}</p><p class="text-[10px] text-slate-400">${e.date} • ${e.staff}</p></div><div class="flex items-center gap-2"><span class="font-black text-red-600">₹${e.amount}</span><button onclick="deleteExpenseEntry('${e.id}')" class="text-slate-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
+    async function deleteExpenseEntry(id) { if (isAdminUser() && confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExpense", id, "Deleting Expense..."); renderExpensesList(); renderInvoicesList(); } }
+    function renderExpensesList() { const admin = isAdminUser(), list = branchExpenses(); document.getElementById('stat-total-expenses').innerText = list.reduce((s, e) => s + Number(e.amount || 0), 0); document.getElementById('expenses-list').innerHTML = list.map(e => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold">${e.category} ${e.note ? `- ${e.note}` : ''}</p><p class="text-[10px] text-slate-400">${e.date} • ${e.staff}</p></div><div class="flex items-center gap-2"><span class="font-black text-red-600">₹${e.amount}</span>${admin ? `<button onclick="deleteExpenseEntry('${e.id}')" class="text-slate-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`).join(''); }
 
-    async function addStaffMember() { const name = document.getElementById('stf-name').value.trim(), pin = document.getElementById('stf-pin').value.trim(); if (!name || pin.length !== 4) { alert("Naam aur 4-digit PIN daalein!"); return; } storeData = await callSheetAPI("saveStaffMember", { name, pin, role: document.getElementById('stf-role').value, salary: Number(document.getElementById('stf-salary').value || 0) }, "Adding Staff..."); ['stf-name', 'stf-pin', 'stf-salary'].forEach(id => document.getElementById(id).value = ''); renderStaffList(); }
-    function openEditStaffModal(id) { const s = storeData.staff.find(x => String(x.id) === String(id)); if (!s) return; document.getElementById('edit-stf-id').value = s.id; document.getElementById('edit-stf-name').value = s.name; document.getElementById('edit-stf-pin').value = s.pin; document.getElementById('edit-stf-role').value = s.role; document.getElementById('edit-stf-salary').value = s.salary || 0; document.getElementById('edit-staff-modal').classList.remove('hidden'); document.getElementById('edit-staff-modal').classList.add('flex'); }
-    async function saveEditedStaff() { const id = document.getElementById('edit-stf-id').value, name = document.getElementById('edit-stf-name').value.trim(), pin = document.getElementById('edit-stf-pin').value.trim(), role = document.getElementById('edit-stf-role').value, salary = Number(document.getElementById('edit-stf-salary').value || 0); if (!name || pin.length !== 4) return; storeData = await callSheetAPI("updateStaffMember", { id, name, pin, role, salary }, "Updating Staff..."); document.getElementById('edit-staff-modal').classList.add('hidden'); renderStaffList(); alert("✅ Staff / Admin details updated!"); }
-    async function deleteStaff(id) { if (confirm("Delete staff?")) { try { storeData = await callSheetAPI("deleteStaffMember", id, "Deleting Staff..."); renderStaffList(); } catch (e) { alert(e.message); } } }
+    async function addStaffMember(btn) { if (!isAdminUser()) return; const name = document.getElementById('stf-name').value.trim(), pin = document.getElementById('stf-pin').value.trim(); if (!name || pin.length !== 4) { alert("Naam aur 4-digit PIN daalein!"); return; } const res = await callSheetAPI("saveStaffMember", { name, pin, role: document.getElementById('stf-role').value, salary: Number(document.getElementById('stf-salary').value || 0) }, "Adding Staff...", btn); if (!res) return; storeData = res; ['stf-name', 'stf-pin', 'stf-salary'].forEach(id => document.getElementById(id).value = ''); renderStaffList(); }
+    function openEditStaffModal(id) { if (!isAdminUser()) return; const s = storeData.staff.find(x => String(x.id) === String(id)); if (!s) return; document.getElementById('edit-stf-id').value = s.id; document.getElementById('edit-stf-name').value = s.name; document.getElementById('edit-stf-pin').value = s.pin; document.getElementById('edit-stf-role').value = s.role; document.getElementById('edit-stf-salary').value = s.salary || 0; document.getElementById('edit-staff-modal').classList.remove('hidden'); document.getElementById('edit-staff-modal').classList.add('flex'); }
+    async function saveEditedStaff(btn) { if (!isAdminUser()) return; const id = document.getElementById('edit-stf-id').value, name = document.getElementById('edit-stf-name').value.trim(), pin = document.getElementById('edit-stf-pin').value.trim(), role = document.getElementById('edit-stf-role').value, salary = Number(document.getElementById('edit-stf-salary').value || 0); if (!name || pin.length !== 4) return; const res = await callSheetAPI("updateStaffMember", { id, name, pin, role, salary }, "Updating Staff...", btn); if (!res) return; storeData = res; document.getElementById('edit-staff-modal').classList.add('hidden'); renderStaffList(); alert("✅ Staff / Admin details updated!"); }
+    async function deleteStaff(id) { if (isAdminUser() && confirm("Delete staff?")) { try { storeData = await callSheetAPI("deleteStaffMember", id, "Deleting Staff..."); renderStaffList(); } catch (e) { alert(e.message); } } }
     function renderStaffList() { document.getElementById('staff-list-box').innerHTML = storeData.staff.map(s => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold text-slate-800">${s.name} <span class="text-[10px] px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded">${s.role}</span></p><p class="text-[10px] text-slate-400 font-mono">PIN: ${s.pin} ${s.salary ? `• Salary: ₹${s.salary}/mo` : ''}</p></div><div class="flex items-center gap-2"><button onclick="openEditStaffModal('${s.id}')" class="px-2.5 py-1 bg-slate-100 text-indigo-700 rounded-lg font-bold text-[11px]"><i class="fas fa-edit mr-1"></i>Edit</button><button onclick="deleteStaff('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
 
     function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); document.getElementById('backup-modal').classList.add('flex'); }
