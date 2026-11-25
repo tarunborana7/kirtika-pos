@@ -181,7 +181,7 @@
             <div class="bg-slate-900 text-white p-3 rounded-xl space-y-1 mt-2">
               <div class="flex justify-between text-[11px] text-slate-400">
                 <span>Total MRP: ₹<span id="cart-mrp-total">0</span></span>
-                <span class="text-amber-300 font-bold">Total Discount: ₹<span id="cart-total-savings">0</span></span>
+                <span class="text-amber-300 font-bold">Total Discount: -₹<span id="cart-total-savings">0</span></span>
               </div>
               <div class="flex justify-between items-center pt-1 border-t border-slate-800">
                 <span class="text-xs text-slate-300">Final Payable</span>
@@ -353,7 +353,7 @@
         <button onclick="showMoreSubView('online')" id="more-btn-online" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-shipping-fast text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Online Orders</p><p class="text-[10px] text-slate-500">AI WhatsApp + Courier</p></button>
         <button onclick="showMoreSubView('customers')" id="more-btn-customers" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-address-book text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Customers (<span id="unique-cust-count">0</span>)</p><p class="text-[10px] text-slate-500">Unique List + Excel</p></button>
         <button onclick="showMoreSubView('attendance')" id="more-btn-attendance" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-calendar-check text-rose-600 text-base mb-1"></i><p class="font-extrabold text-xs">Attendance</p><p class="text-[10px] text-slate-500">Visual Calendar</p></button>
-        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Cards & Image Share</p></button>
+        <button onclick="showMoreSubView('loyalty')" id="more-btn-loyalty" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-award text-amber-500 text-base mb-1"></i><p class="font-extrabold text-xs">VIP Loyalty</p><p class="text-[10px] text-slate-500">Cards & Photo Share</p></button>
         <button onclick="showMoreSubView('repairs')" id="more-btn-repairs" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-tools text-indigo-600 text-base mb-1"></i><p class="font-extrabold text-xs">Repairing</p><p class="text-[10px] text-slate-500">Job Cards</p></button>
         <button onclick="showMoreSubView('used')" id="more-btn-used" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-mobile-alt text-emerald-600 text-base mb-1"></i><p class="font-extrabold text-xs">Used Phones</p><p class="text-[10px] text-slate-500">IMEI & ID Register</p></button>
         <button onclick="showMoreSubView('returns')" id="more-btn-returns" class="p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"><i class="fas fa-undo-alt text-amber-600 text-base mb-1"></i><p class="font-extrabold text-xs">Return Box</p><p class="text-[10px] text-slate-500">Supplier Warranty</p></button>
@@ -442,7 +442,7 @@
         <div id="unique-customers-list" class="divide-y divide-slate-100 text-xs max-h-[60vh] overflow-y-auto"></div>
       </div>
 
-      <!-- SUBVIEW 3: SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE (PRIVACY LOCKED FOR STAFF) -->
+      <!-- SUBVIEW 3: SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE -->
       <div id="more-sub-attendance" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
           <div>
@@ -540,7 +540,7 @@
   <!-- ALL MODALS -->
   <div id="selfie-viewer-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3 text-center"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800" id="sv-title">Staff Selfie</h3><button onclick="document.getElementById('selfie-viewer-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><img id="sv-img" class="w-full max-h-80 object-cover rounded-2xl border shadow"><p id="sv-meta" class="text-xs font-bold text-slate-600"></p></div></div>
 
-  <!-- VIP LOYALTY CARD MODAL (WITH HD IMAGE DOWNLOAD / SHARE) -->
+  <!-- VIP LOYALTY CARD MODAL (BOTH PHOTO & TEXT OPTIONS) -->
   <div id="loyalty-card-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3">
       <div class="flex justify-between items-center border-b pb-2">
@@ -553,7 +553,7 @@
       </div>
       <div id="loyalty-card-preview" class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 rounded-2xl border border-amber-400/50 shadow-lg space-y-3"></div>
       <div class="grid grid-cols-2 gap-2">
-        <button onclick="downloadOrShareLoyaltyImage(this)" class="py-2.5 bg-indigo-600 text-white font-extrabold rounded-xl text-xs shadow"><i class="fas fa-image mr-1"></i>Save / Share Photo</button>
+        <button onclick="downloadOrShareLoyaltyImage(this)" class="py-2.5 bg-indigo-600 text-white font-extrabold rounded-xl text-xs shadow"><i class="fas fa-image mr-1"></i>Share Photo</button>
         <button onclick="shareLoyaltyWhatsApp()" class="py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow"><i class="fab fa-whatsapp mr-1"></i>WhatsApp Text</button>
       </div>
       <button id="claim-gift-btn" onclick="claimCustomerLoyaltyGift(this)" class="hidden w-full py-2.5 bg-amber-500 text-slate-950 font-black rounded-xl text-xs">🎁 Gift Given (Reset Card)</button>
@@ -579,27 +579,29 @@
   <div id="barcode-gen-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-barcode text-indigo-600 mr-1.5"></i>Barcode Stickers</h3><button onclick="closeBarcodeGenModal()" class="text-slate-400 font-bold text-sm">✕</button></div><div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl text-xs"><span class="font-bold">Count:</span><select id="barcode-qty-select" onchange="renderBarcodeStickers()" class="p-1.5 bg-white border rounded-lg font-bold"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option><option value="12">12</option><option value="24">24</option></select></div><div id="barcode-print-area" class="max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-2 gap-3 text-center"></div><div class="grid grid-cols-2 gap-2"><button onclick="printSection('barcode-print-area')" class="py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Print</button><button onclick="closeBarcodeGenModal()" class="py-2.5 bg-slate-200 rounded-xl font-bold text-xs">Close</button></div></div></div>
   <div id="cust-history-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-sm" id="cust-hist-title">Purchase History</h3><button onclick="document.getElementById('cust-history-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button></div><div id="cust-hist-list" class="max-h-80 overflow-y-auto space-y-2 text-xs"></div></div></div>
 
-  <!-- 8-TEMPLATE RECEIPT MODAL -->
+  <!-- 8-TEMPLATE RECEIPT MODAL (PRINT + PDF SHARE + PHOTO SHARE + TEXT WHATSAPP) -->
   <div id="receipt-modal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full p-4 shadow-2xl space-y-3">
-      <div class="space-y-1">
-        <span class="text-[10px] font-bold text-slate-400 uppercase block">8 Bill Templates (Thermal + 2 A4 Full Page):</span>
-        <div class="flex gap-1 overflow-x-auto no-scrollbar bg-slate-100 p-1 rounded-xl">
-          <button onclick="setBillTheme('thermal')" id="theme-btn-thermal" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white whitespace-nowrap">1. Thermal</button>
-          <button onclick="setBillTheme('modern')" id="theme-btn-modern" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">2. Modern</button>
-          <button onclick="setBillTheme('classic')" id="theme-btn-classic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">3. Showroom</button>
-          <button onclick="setBillTheme('dark')" id="theme-btn-dark" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">4. Luxury Dark</button>
-          <button onclick="setBillTheme('wholesale')" id="theme-btn-wholesale" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">5. B2B Challan</button>
-          <button onclick="setBillTheme('minimal')" id="theme-btn-minimal" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">6. Mini Slip</button>
-          <button onclick="setBillTheme('a4_pro')" id="theme-btn-a4_pro" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-indigo-700 bg-indigo-50 whitespace-nowrap">7. A4 Pro Invoice</button>
-          <button onclick="setBillTheme('a4_gst')" id="theme-btn-a4_gst" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-700 bg-emerald-50 whitespace-nowrap">8. A4 Tax/GST</button>
-        </div>
+      <div class="flex justify-between items-center">
+        <span class="text-[10px] font-bold text-slate-400 uppercase">8 Bill Templates (Same Template PDF / Photo / Text):</span>
+        <button onclick="document.getElementById('receipt-modal').classList.add('hidden')" class="text-slate-400 font-bold text-sm">✕</button>
       </div>
-      <div id="receipt-print-area" class="max-h-[65vh] overflow-y-auto"></div>
-      <div class="grid grid-cols-3 gap-2 pt-1">
-        <button onclick="printSection('receipt-print-area')" class="py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs"><i class="fas fa-print mr-1"></i>Print</button>
-        <button onclick="shareWhatsAppReceipt()" class="py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs"><i class="fab fa-whatsapp mr-1"></i>WhatsApp</button>
-        <button onclick="document.getElementById('receipt-modal').classList.add('hidden')" class="py-2.5 bg-slate-200 text-slate-800 rounded-xl font-bold text-xs">Close</button>
+      <div class="flex gap-1 overflow-x-auto no-scrollbar bg-slate-100 p-1 rounded-xl">
+        <button onclick="setBillTheme('thermal')" id="theme-btn-thermal" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white whitespace-nowrap">1. Thermal</button>
+        <button onclick="setBillTheme('modern')" id="theme-btn-modern" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">2. Modern</button>
+        <button onclick="setBillTheme('classic')" id="theme-btn-classic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">3. Showroom</button>
+        <button onclick="setBillTheme('dark')" id="theme-btn-dark" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">4. Luxury Dark</button>
+        <button onclick="setBillTheme('wholesale')" id="theme-btn-wholesale" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">5. B2B Challan</button>
+        <button onclick="setBillTheme('minimal')" id="theme-btn-minimal" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap">6. Mini Slip</button>
+        <button onclick="setBillTheme('a4_pro')" id="theme-btn-a4_pro" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-indigo-700 bg-indigo-50 whitespace-nowrap">7. A4 Pro Invoice</button>
+        <button onclick="setBillTheme('a4_gst')" id="theme-btn-a4_gst" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-700 bg-emerald-50 whitespace-nowrap">8. A4 Tax/GST</button>
+      </div>
+      <div id="receipt-print-area" class="max-h-[60vh] overflow-y-auto"></div>
+      <div class="grid grid-cols-4 gap-1.5 pt-1">
+        <button onclick="printSection('receipt-print-area')" class="py-2.5 bg-slate-900 text-white rounded-xl font-bold text-[11px]"><i class="fas fa-print mr-1"></i>Print</button>
+        <button onclick="shareBillPDF(this)" class="py-2.5 bg-rose-600 text-white rounded-xl font-bold text-[11px]"><i class="fas fa-file-pdf mr-1"></i>PDF</button>
+        <button onclick="shareBillImage(this)" class="py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-[11px]"><i class="fas fa-image mr-1"></i>Photo</button>
+        <button onclick="shareWhatsAppReceipt()" class="py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-[11px]"><i class="fab fa-whatsapp mr-1"></i>Text</button>
       </div>
     </div>
   </div>
@@ -624,7 +626,7 @@
     let selectedAttStaffId = null;
 
     let hwPrefs = JSON.parse(localStorage.getItem('km_hw_prefs') || '{"receiptSize":"80mm","barcodeSize":"thermal_50x25"}');
-    let scanTargetField = null, zxingCodeReader = null, activeVideoStream = null, nativeDetectorLoop = false, torchOn = false;
+    let scanTargetField = null, zxingCodeReader = null, activeVideoStream = null, nativeDetectorLoop = false, iosScanTimer = null, torchOn = false;
     let mobileSendToPC = false, pcPollInterval = null, lastProcessedRemoteId = "", lastScannedCode = "", lastScanTime = 0;
 
     function showGlobalLoader(msg = "Saving...") {
@@ -1421,6 +1423,9 @@
           link.download = fileName;
           link.href = canvas.toDataURL("image/png");
           link.click();
+          if (activeLoyaltyCardData.phone) {
+            window.open(`https://wa.me/91${activeLoyaltyCardData.phone}`, '_blank');
+          }
         }, "image/png");
       } finally {
         btn.disabled = false; btn.innerHTML = origHtml;
@@ -1551,7 +1556,7 @@
     function switchTab(tab) { ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => { document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab); const btn = document.getElementById('nav-' + t); if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); } }); }
     function showMoreSubView(sub) { ['counter', 'online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) { const wasHidden = btn.classList.contains('hidden'); btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; if (wasHidden) btn.classList.add('hidden'); } }); }
 
-    // ================= TRANSFER, HOLD & ULTRA-FAST HYBRID SCANNER =================
+    // ================= TRANSFER, HOLD & iPHONE + ANDROID HYBRID SCANNER =================
     function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
     async function executeBranchTransfer(btn) { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; const res = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock...", btn); if (!res) return; storeData = res; document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
 
@@ -1606,10 +1611,17 @@
 
       try {
         activeVideoStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            focusMode: { ideal: "continuous" }
+          },
           audio: false
         });
         const videoEl = document.getElementById('zxing-scanner-video');
+        videoEl.setAttribute('playsinline', 'true');
+        videoEl.muted = true;
         videoEl.srcObject = activeVideoStream;
         await videoEl.play();
         feedback.innerText = "Barcode ko green laser box mein rakhein";
@@ -1633,10 +1645,35 @@
           };
           requestAnimationFrame(scanFrame);
         } else {
+          // iPhone / iOS Safari High-Speed Canvas Crop + ZXing Loop
           zxingCodeReader = new ZXing.BrowserMultiFormatReader();
-          await zxingCodeReader.decodeFromVideoElement(videoEl, (result) => {
-            if (result && result.text) handleDetectedBarcode(result.text);
-          });
+          const offCanvas = document.createElement('canvas');
+          const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+          const scanImg = new Image();
+
+          iosScanTimer = setInterval(() => {
+            if (!activeVideoStream || videoEl.readyState < 2 || !videoEl.videoWidth) return;
+            try {
+              const vw = videoEl.videoWidth;
+              const vh = videoEl.videoHeight;
+              const cropW = Math.floor(vw * 0.9);
+              const cropH = Math.floor(vh * 0.45);
+              const cropX = Math.floor((vw - cropW) / 2);
+              const cropY = Math.floor((vh - cropH) / 2);
+
+              offCanvas.width = cropW;
+              offCanvas.height = cropH;
+              offCtx.drawImage(videoEl, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+              scanImg.onload = async () => {
+                try {
+                  const res = await zxingCodeReader.decodeFromImageElement(scanImg);
+                  if (res && res.text) handleDetectedBarcode(res.text);
+                } catch (e) {}
+              };
+              scanImg.src = offCanvas.toDataURL('image/jpeg', 0.85);
+            } catch (e) {}
+          }, 180);
         }
       } catch (err) {
         feedback.innerText = "Camera Error: " + err.message;
@@ -1673,6 +1710,10 @@
 
     function closeUltraFastScanner() {
       nativeDetectorLoop = false;
+      if (iosScanTimer) {
+        clearInterval(iosScanTimer);
+        iosScanTimer = null;
+      }
       if (zxingCodeReader) {
         try { zxingCodeReader.reset(); } catch (e) {}
         zxingCodeReader = null;
@@ -1704,7 +1745,19 @@
     async function sendAICopilotPrompt(presetText = null) {
       const input = document.getElementById('ai-copilot-input'), cmd = presetText || input.value.trim(); if (!cmd) return; input.value = '';
       const out = document.getElementById('ai-copilot-output'); out.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Processing...`;
-      const summary = JSON.stringify({ branch: activeBranch, products: branchProducts().map(p => ({ id: p.id, name: p.name, stock: p.stock, retail: p.price })), recentSales: branchInvoices().slice(0, 30).map(i => ({ date: i.date, customer: i.customer, items: i.items, total: i.total })), expenses: branchExpenses().slice(0, 10) });
+      const now = new Date();
+      const todayStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const todaysInvoices = branchInvoices().filter(i => i.status !== 'Returned' && normalizeClientDate(i.date) === todayStr);
+      const summary = JSON.stringify({
+        todayDate: todayStr,
+        todaysSaleCount: todaysInvoices.length,
+        todaysTotalAmount: todaysInvoices.reduce((s, x) => s + Number(x.total || 0), 0),
+        todaysBills: todaysInvoices.map(i => ({ id: i.id, date: i.date, customer: i.customer, items: i.items, total: i.total })),
+        branch: activeBranch,
+        products: branchProducts().map(p => ({ id: p.id, name: p.name, stock: p.stock, retail: p.price })),
+        recentSales: branchInvoices().slice(0, 30).map(i => ({ date: i.date, customer: i.customer, items: i.items, total: i.total })),
+        expenses: branchExpenses().slice(0, 10)
+      });
       try {
         const res = await callSheetAPI("runAICopilotCommand", { command: cmd, summary, branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" }, "AI Thinking...");
         if (res.type === "ADD_BILL" && Array.isArray(res.items)) {
@@ -1769,12 +1822,12 @@
     function addToCart(prodId) { const prod = branchProducts().find(p => String(p.id) === String(prodId)); if (!prod || prod.stock <= 0) { alert("Stock khatam hai!"); return; } const activePrice = currentPriceMode === 'Wholesale' ? (prod.wholesalePrice || prod.price) : prod.price; const existing = cart.find(c => String(c.id) === String(prodId)); if (existing) { if (existing.qty < prod.stock) existing.qty++; } else cart.push({ id: prod.id, name: prod.name, mrp: prod.mrp || activePrice, price: activePrice, costPrice: prod.costPrice || 0, image: prod.image || "", qty: 1, isCustom: false }); renderCart(); }
     function changeCartQty(idx, d) { cart[idx].qty += d; if (cart[idx].qty <= 0) cart.splice(idx, 1); renderCart(); }
     function clearCart() { cart = []; renderCart(); }
-    function renderCart() { const box = document.getElementById('cart-items'); if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-5 text-xs">Cart khaali hai. Product chunein ya upar seedha Amount (₹) daalein.</p>`; updateCartTotals(); return; } box.innerHTML = cart.map((c, idx) => `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">${c.image ? `<img src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}<div class="flex-1 min-w-0"><p class="font-bold text-xs text-slate-800 truncate">${c.name}</p><p class="text-[11px] text-slate-500">₹${c.price} × ${c.qty} = <b>₹${c.price * c.qty}</b></p></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button><span class="font-bold text-xs w-4 text-center">${c.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button></div></div>`).join(''); updateCartTotals(); }
-    function updateCartTotals() { const mrpTotal = cart.reduce((s, i) => s + ((i.mrp || i.price) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0), extraDisc = Number(document.getElementById('bill-discount').value || 0), finalTotal = Math.max(0, subTotal - extraDisc); document.getElementById('cart-mrp-total').innerText = mrpTotal; document.getElementById('cart-total-savings').innerText = Math.max(0, mrpTotal - finalTotal); document.getElementById('cart-final-total').innerText = finalTotal; if (document.getElementById('pay-mode').value === 'Split') recalcSplitRemaining(); }
+    function renderCart() { const box = document.getElementById('cart-items'); if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-5 text-xs">Cart khaali hai. Product chunein ya upar seedha Amount (₹) daalein.</p>`; updateCartTotals(); return; } box.innerHTML = cart.map((c, idx) => `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">${c.image ? `<img src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}<div class="flex-1 min-w-0"><p class="font-bold text-xs text-slate-800 truncate">${c.name}</p><p class="text-[11px] text-slate-500">${(c.mrp && c.mrp > c.price) ? `<span class="line-through text-slate-400">₹${c.mrp}</span> ` : ''}₹${c.price} × ${c.qty} = <b>₹${c.price * c.qty}</b></p></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button><span class="font-bold text-xs w-4 text-center">${c.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button></div></div>`).join(''); updateCartTotals(); }
+    function updateCartTotals() { const mrpTotal = cart.reduce((s, i) => s + (Math.max(Number(i.mrp || 0), Number(i.price || 0)) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0), extraDisc = Number(document.getElementById('bill-discount').value || 0), finalTotal = Math.max(0, subTotal - extraDisc); document.getElementById('cart-mrp-total').innerText = mrpTotal; document.getElementById('cart-total-savings').innerText = Math.max(0, mrpTotal - finalTotal); document.getElementById('cart-final-total').innerText = finalTotal; if (document.getElementById('pay-mode').value === 'Split') recalcSplitRemaining(); }
 
     async function checkoutSale() {
       if (!cart.length) { alert("Cart khaali hai!"); return; }
-      const mrpTotal = cart.reduce((s, i) => s + ((i.mrp || i.price) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const mrpTotal = cart.reduce((s, i) => s + (Math.max(Number(i.mrp || 0), Number(i.price || 0)) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
       const extraDisc = Number(document.getElementById('bill-discount').value || 0), finalTotal = Math.max(0, subTotal - extraDisc);
       const mode = document.getElementById('pay-mode').value;
       let cashPaid = 0, upiPaid = 0, udharDue = 0;
@@ -1788,7 +1841,7 @@
       if (btn.disabled) return;
       btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving Bill...`;
       try {
-        const cleanCartForSheet = cart.map(c => ({ id: c.id, name: c.name, mrp: c.mrp, price: c.price, costPrice: c.costPrice, qty: c.qty, isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : "" }));
+        const cleanCartForSheet = cart.map(c => ({ id: c.id, name: c.name, mrp: Math.max(Number(c.mrp || 0), Number(c.price || 0)), price: c.price, costPrice: c.costPrice, qty: c.qty, isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : "" }));
         const salePayload = { staffName: currentUser ? currentUser.name : 'Staff', customerName: document.getElementById('cust-name').value.trim() || 'Walk-in Customer', customerPhone: document.getElementById('cust-phone').value.trim(), customerAddress: addr, priceMode: currentPriceMode, paymentMode: mode, cashPaid, upiPaid, udharDue, subtotal: subTotal, mrpTotal, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal), note: fullNote, customDate: document.getElementById('bill-custom-date').value.trim(), total: finalTotal, cart: cleanCartForSheet, branch: activeBranch };
         const res = await callSheetAPI("processSale", salePayload, "Saving Bill...");
         storeData = res.updatedData; showReceiptModal(res.invoiceId, res.date, salePayload);
@@ -1799,7 +1852,7 @@
       finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Bill Save & Print Karein`; }
     }
 
-    // ================= 8 BILL TEMPLATES =================
+    // ================= 8 BILL TEMPLATES + SAME-TEMPLATE PDF, PHOTO & TEXT SHARE =================
     function showReceiptModal(invId, dateStr, sale) { lastReceipt = { invId, dateStr, ...sale }; document.getElementById('receipt-modal').classList.remove('hidden'); document.getElementById('receipt-modal').classList.add('flex'); renderReceiptTheme(); }
     function setBillTheme(theme) {
       currentBillTheme = theme;
@@ -1810,30 +1863,97 @@
       renderReceiptTheme();
     }
     function renderReceiptTheme() {
-      if (!lastReceipt) return; const r = lastReceipt, mrpTotal = Number(r.mrpTotal || r.total), savings = Number(r.totalSavings || Math.max(0, mrpTotal - r.total));
+      if (!lastReceipt) return;
+      const r = lastReceipt;
+      const calcMrp = r.cart.reduce((s, c) => s + (Math.max(Number(c.mrp || 0), Number(c.price || 0)) * Number(c.qty || 1)), 0);
+      const mrpTotal = Math.max(Number(r.mrpTotal || 0), calcMrp, Number(r.total || 0));
+      const savings = Math.max(0, mrpTotal - Number(r.total || 0));
       const box = document.getElementById('receipt-print-area');
       const brObj = storeData.branches.find(b => b.name === (r.branch || activeBranch)) || { name: "Kirtika Mobile", address: "Madhuban, Jodhpur", phone: "8209618586" };
       const widthClass = hwPrefs.receiptSize === '58mm' ? 'max-w-[230px] mx-auto text-[11px]' : (hwPrefs.receiptSize === '80mm' ? 'max-w-[310px] mx-auto text-xs' : 'w-full text-xs');
-      const splitInfo = (r.paymentMode === 'Split' || r.udharDue > 0) ? `<div class="text-[10px] bg-slate-100 p-1.5 rounded">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | <b>Baaki Udhar: ₹${r.udharDue || 0}</b></div>` : '';
+      const splitInfo = (r.paymentMode === 'Split' || r.udharDue > 0) ? `<div class="text-[10px] bg-slate-100 p-1.5 rounded text-slate-800">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | <b>Baaki Udhar: ₹${r.udharDue || 0}</b></div>` : '';
       const custAddrLine = r.customerAddress ? `<div class="text-[10px] text-slate-600">Address: ${r.customerAddress}</div>` : '';
+      const discountSummaryRow = savings > 0 ? `<div class="flex justify-between text-[11px] text-emerald-700 font-bold"><span>Total MRP: ₹${mrpTotal}</span><span>Total Discount: - ₹${savings}</span></div>` : '';
 
       if (currentBillTheme === 'thermal') {
-        box.innerHTML = `<div class="${widthClass} p-3 font-mono space-y-2 border border-slate-200 rounded-xl bg-white text-slate-900"><div class="text-center border-b border-dashed border-slate-300 pb-2"><h2 class="font-black text-sm">KIRTIKA MOBILE (${brObj.name})</h2><p class="text-[10px]">${brObj.address || 'Madhuban, Jodhpur'} • ${brObj.phone || '8209618586'}</p></div><div class="flex justify-between text-[10px]"><span>${r.invId} (${r.priceMode || 'Retail'})</span><span>${r.dateStr}</span></div><div class="text-[10px]">Customer: <b>${r.customerName}</b> ${r.customerPhone ? '(' + r.customerPhone + ')' : ''}</div>${custAddrLine}<div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1">${r.cart.map(c => `<div class="flex justify-between font-bold"><span>${c.name} x${c.qty}</span><span>₹${c.price * c.qty}</span></div>`).join('')}</div>${savings > 0 ? `<div class="bg-slate-100 p-1.5 rounded text-[10px] flex justify-between font-bold"><span>Total Bachat:</span><span>- ₹${savings}</span></div>` : ''}<div class="flex justify-between font-black text-sm pt-1"><span>TOTAL (${r.paymentMode})</span><span>₹${r.total}</span></div>${splitInfo}${r.note ? `<p class="text-[10px] text-slate-600">Note: ${r.note}</p>` : ''}</div>`;
+        box.innerHTML = `<div class="${widthClass} p-3 font-mono space-y-2 border border-slate-200 rounded-xl bg-white text-slate-900"><div class="text-center border-b border-dashed border-slate-300 pb-2"><h2 class="font-black text-sm">KIRTIKA MOBILE (${brObj.name})</h2><p class="text-[10px]">${brObj.address || 'Madhuban, Jodhpur'} • ${brObj.phone || '8209618586'}</p></div><div class="flex justify-between text-[10px]"><span>${r.invId} (${r.priceMode || 'Retail'})</span><span>${r.dateStr}</span></div><div class="text-[10px]">Customer: <b>${r.customerName}</b> ${r.customerPhone ? '(' + r.customerPhone + ')' : ''}</div>${custAddrLine}<div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1">${r.cart.map(c => `<div class="flex justify-between font-bold"><span>${c.name} x${c.qty} ${(c.mrp && c.mrp > c.price) ? `<span class="font-normal text-[9px] text-slate-400">(MRP ₹${c.mrp})</span>` : ''}</span><span>₹${c.price * c.qty}</span></div>`).join('')}</div>${savings > 0 ? `<div class="bg-slate-100 p-1.5 rounded text-[10px] space-y-0.5"><div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div><div class="flex justify-between font-bold text-emerald-700"><span>Total Discount (Bachat):</span><span>- ₹${savings}</span></div></div>` : ''}<div class="flex justify-between font-black text-sm pt-1"><span>TOTAL (${r.paymentMode})</span><span>₹${r.total}</span></div>${splitInfo}${r.note ? `<p class="text-[10px] text-slate-600">Note: ${r.note}</p>` : ''}</div>`;
       } else if (currentBillTheme === 'modern') {
-        box.innerHTML = `<div class="border border-indigo-200 rounded-xl overflow-hidden bg-white text-slate-800 text-xs"><div class="bg-indigo-600 text-white p-4 flex justify-between items-center"><div><h2 class="font-black text-base">KIRTIKA MOBILE</h2><p class="text-[10px] text-indigo-100">${brObj.name} • ${brObj.address}</p></div><span class="bg-white/20 px-2.5 py-1 rounded-lg font-bold text-[10px]">${r.priceMode || 'RETAIL'}</span></div><div class="p-4 space-y-3"><div class="flex justify-between bg-slate-50 p-2.5 rounded-lg text-[11px]"><div><b>${r.customerName}</b><br>${r.customerPhone || ''} ${r.customerAddress ? `<br><span class="text-slate-500">${r.customerAddress}</span>` : ''}</div><div class="text-right"><b>${r.invId}</b><br>${r.dateStr}</div></div><table class="w-full text-left"><thead><tr class="border-b text-[10px] text-slate-400"><th>Item</th><th class="text-center">Rate</th><th class="text-right">Total</th></tr></thead><tbody class="divide-y">${r.cart.map(c => `<tr><td class="py-1.5 font-semibold">${c.name} ×${c.qty}</td><td class="text-center">₹${c.price}</td><td class="text-right font-bold">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${splitInfo}<div class="border-t pt-2 text-right"><p class="text-base font-black text-indigo-600">Grand Total: ₹${r.total}</p></div></div></div>`;
+        box.innerHTML = `<div class="border border-indigo-200 rounded-xl overflow-hidden bg-white text-slate-800 text-xs"><div class="bg-indigo-600 text-white p-4 flex justify-between items-center"><div><h2 class="font-black text-base">KIRTIKA MOBILE</h2><p class="text-[10px] text-indigo-100">${brObj.name} • ${brObj.address}</p></div><span class="bg-white/20 px-2.5 py-1 rounded-lg font-bold text-[10px]">${r.priceMode || 'RETAIL'}</span></div><div class="p-4 space-y-3"><div class="flex justify-between bg-slate-50 p-2.5 rounded-lg text-[11px]"><div><b>${r.customerName}</b><br>${r.customerPhone || ''} ${r.customerAddress ? `<br><span class="text-slate-500">${r.customerAddress}</span>` : ''}</div><div class="text-right"><b>${r.invId}</b><br>${r.dateStr}</div></div><table class="w-full text-left"><thead><tr class="border-b text-[10px] text-slate-400"><th>Item</th><th class="text-center">MRP</th><th class="text-center">Rate</th><th class="text-right">Total</th></tr></thead><tbody class="divide-y">${r.cart.map(c => `<tr><td class="py-1.5 font-semibold">${c.name} ×${c.qty}</td><td class="text-center text-slate-400">₹${c.mrp || c.price}</td><td class="text-center">₹${c.price}</td><td class="text-right font-bold">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${discountSummaryRow}${splitInfo}<div class="border-t pt-2 text-right"><p class="text-base font-black text-indigo-600">Grand Total: ₹${r.total}</p></div></div></div>`;
       } else if (currentBillTheme === 'classic') {
-        box.innerHTML = `<div class="border-2 border-slate-900 p-4 bg-white text-slate-900 text-xs space-y-3"><div class="text-center border-b-2 border-slate-900 pb-2"><h2 class="font-black text-lg">KIRTIKA MOBILE - ${brObj.name}</h2><p class="text-[11px]">${brObj.address} • Ph: ${brObj.phone}</p></div><div class="flex justify-between border-b pb-2"><span><b>M/s:</b> ${r.customerName} ${r.customerAddress ? `(${r.customerAddress})` : ''}</span><span><b>Bill:</b> ${r.invId} | ${r.dateStr}</span></div><div class="space-y-1">${r.cart.map((c, idx) => `<div class="flex justify-between"><span>${idx + 1}. ${c.name} × ${c.qty}</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>${splitInfo}<div class="border-t-2 border-slate-900 pt-2 flex justify-between font-black"><span>Mode: ${r.paymentMode}</span><span>NET TOTAL: ₹${r.total}/-</span></div></div>`;
+        box.innerHTML = `<div class="border-2 border-slate-900 p-4 bg-white text-slate-900 text-xs space-y-3"><div class="text-center border-b-2 border-slate-900 pb-2"><h2 class="font-black text-lg">KIRTIKA MOBILE - ${brObj.name}</h2><p class="text-[11px]">${brObj.address} • Ph: ${brObj.phone}</p></div><div class="flex justify-between border-b pb-2"><span><b>M/s:</b> ${r.customerName} ${r.customerAddress ? `(${r.customerAddress})` : ''}</span><span><b>Bill:</b> ${r.invId} | ${r.dateStr}</span></div><div class="space-y-1">${r.cart.map((c, idx) => `<div class="flex justify-between"><span>${idx + 1}. ${c.name} × ${c.qty} ${(c.mrp && c.mrp > c.price) ? `(MRP ₹${c.mrp})` : ''}</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>${discountSummaryRow}${splitInfo}<div class="border-t-2 border-slate-900 pt-2 flex justify-between font-black"><span>Mode: ${r.paymentMode}</span><span>NET TOTAL: ₹${r.total}/-</span></div></div>`;
       } else if (currentBillTheme === 'dark') {
-        box.innerHTML = `<div class="rounded-2xl overflow-hidden bg-slate-950 text-white border border-amber-500/40 text-xs"><div class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 border-b border-amber-500/30 flex justify-between items-center"><div><h2 class="font-black text-base text-amber-400">KIRTIKA MOBILE</h2><p class="text-[10px] text-slate-400">${brObj.name}</p></div><span class="px-2.5 py-1 bg-amber-400/10 text-amber-300 rounded-lg font-bold text-[10px]">${r.invId}</span></div><div class="p-4 space-y-3"><div class="flex justify-between text-[11px] text-slate-300"><span>Customer: <b class="text-white">${r.customerName}</b> ${r.customerAddress ? `<br>${r.customerAddress}` : ''}</span><span>${r.dateStr}</span></div><div class="divide-y divide-slate-800">${r.cart.map(c => `<div class="py-2 flex justify-between"><span>${c.name} ×${c.qty}</span><b class="text-amber-300">₹${c.price * c.qty}</b></div>`).join('')}</div><div class="pt-2 border-t border-slate-800 flex justify-between items-center"><span class="text-slate-400">${r.paymentMode}</span><span class="text-lg font-black text-emerald-400">₹${r.total}</span></div></div></div>`;
+        box.innerHTML = `<div class="rounded-2xl overflow-hidden bg-slate-950 text-white border border-amber-500/40 text-xs"><div class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 border-b border-amber-500/30 flex justify-between items-center"><div><h2 class="font-black text-base text-amber-400">KIRTIKA MOBILE</h2><p class="text-[10px] text-slate-400">${brObj.name}</p></div><span class="px-2.5 py-1 bg-amber-400/10 text-amber-300 rounded-lg font-bold text-[10px]">${r.invId}</span></div><div class="p-4 space-y-3"><div class="flex justify-between text-[11px] text-slate-300"><span>Customer: <b class="text-white">${r.customerName}</b> ${r.customerAddress ? `<br>${r.customerAddress}` : ''}</span><span>${r.dateStr}</span></div><div class="divide-y divide-slate-800">${r.cart.map(c => `<div class="py-2 flex justify-between"><span>${c.name} ×${c.qty} ${(c.mrp && c.mrp > c.price) ? `<span class="text-slate-400 text-[10px]">(MRP ₹${c.mrp})</span>` : ''}</span><b class="text-amber-300">₹${c.price * c.qty}</b></div>`).join('')}</div>${savings > 0 ? `<div class="flex justify-between text-[11px] text-amber-300 font-bold"><span>Total MRP: ₹${mrpTotal}</span><span>Total Discount: - ₹${savings}</span></div>` : ''}<div class="pt-2 border-t border-slate-800 flex justify-between items-center"><span class="text-slate-400">${r.paymentMode}</span><span class="text-lg font-black text-emerald-400">₹${r.total}</span></div></div></div>`;
       } else if (currentBillTheme === 'wholesale') {
-        box.innerHTML = `<div class="border border-slate-400 p-3 bg-white text-slate-900 text-[11px] space-y-2"><div class="flex justify-between items-center border-b border-slate-400 pb-1.5"><div><h2 class="font-black text-sm">KIRTIKA MOBILE (B2B CHALLAN)</h2><p class="text-[10px]">${brObj.name}</p></div><div class="text-right font-mono"><b>${r.invId}</b><br>${r.dateStr}</div></div><div><b>Party:</b> ${r.customerName} ${r.customerAddress ? `• ${r.customerAddress}` : ''}</div><table class="w-full border-collapse border border-slate-300 text-left"><thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1">#</th><th class="border border-slate-300 p-1">Particulars</th><th class="border border-slate-300 p-1 text-center">Qty</th><th class="border border-slate-300 p-1 text-right">Rate</th><th class="border border-slate-300 p-1 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, i) => `<tr><td class="border border-slate-300 p-1">${i + 1}</td><td class="border border-slate-300 p-1 font-semibold">${c.name}</td><td class="border border-slate-300 p-1 text-center">${c.qty}</td><td class="border border-slate-300 p-1 text-right">${c.price}</td><td class="border border-slate-300 p-1 text-right font-bold">${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${splitInfo}<div class="flex justify-between font-black text-xs pt-1"><span>Payment: ${r.paymentMode}</span><span>Total: ₹${r.total}/-</span></div></div>`;
+        box.innerHTML = `<div class="border border-slate-400 p-3 bg-white text-slate-900 text-[11px] space-y-2"><div class="flex justify-between items-center border-b border-slate-400 pb-1.5"><div><h2 class="font-black text-sm">KIRTIKA MOBILE (B2B CHALLAN)</h2><p class="text-[10px]">${brObj.name}</p></div><div class="text-right font-mono"><b>${r.invId}</b><br>${r.dateStr}</div></div><div><b>Party:</b> ${r.customerName} ${r.customerAddress ? `• ${r.customerAddress}` : ''}</div><table class="w-full border-collapse border border-slate-300 text-left"><thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1">#</th><th class="border border-slate-300 p-1">Particulars</th><th class="border border-slate-300 p-1 text-center">MRP</th><th class="border border-slate-300 p-1 text-center">Qty</th><th class="border border-slate-300 p-1 text-right">Rate</th><th class="border border-slate-300 p-1 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, i) => `<tr><td class="border border-slate-300 p-1">${i + 1}</td><td class="border border-slate-300 p-1 font-semibold">${c.name}</td><td class="border border-slate-300 p-1 text-center text-slate-500">₹${c.mrp || c.price}</td><td class="border border-slate-300 p-1 text-center">${c.qty}</td><td class="border border-slate-300 p-1 text-right">${c.price}</td><td class="border border-slate-300 p-1 text-right font-bold">${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${discountSummaryRow}${splitInfo}<div class="flex justify-between font-black text-xs pt-1"><span>Payment: ${r.paymentMode}</span><span>Total: ₹${r.total}/-</span></div></div>`;
       } else if (currentBillTheme === 'minimal') {
-        box.innerHTML = `<div class="max-w-[240px] mx-auto p-3 border border-slate-300 rounded-lg bg-white text-slate-900 font-sans text-[11px] space-y-1.5"><div class="font-black text-center text-xs">KIRTIKA MOBILE</div><div class="text-center text-[9px] text-slate-500">${r.invId} • ${r.dateStr}</div><div class="border-t border-b py-1.5 space-y-1">${r.cart.map(c => `<div class="flex justify-between"><span>${c.name} (${c.qty})</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div><div class="flex justify-between font-black text-xs"><span>Paid (${r.paymentMode})</span><span>₹${r.total}</span></div></div>`;
+        box.innerHTML = `<div class="max-w-[240px] mx-auto p-3 border border-slate-300 rounded-lg bg-white text-slate-900 font-sans text-[11px] space-y-1.5"><div class="font-black text-center text-xs">KIRTIKA MOBILE</div><div class="text-center text-[9px] text-slate-500">${r.invId} • ${r.dateStr}</div><div class="border-t border-b py-1.5 space-y-1">${r.cart.map(c => `<div class="flex justify-between"><span>${c.name} (${c.qty})</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>${savings > 0 ? `<div class="flex justify-between text-[10px] text-emerald-700 font-bold"><span>Discount:</span><span>- ₹${savings}</span></div>` : ''}<div class="flex justify-between font-black text-xs"><span>Paid (${r.paymentMode})</span><span>₹${r.total}</span></div></div>`;
       } else if (currentBillTheme === 'a4_pro') {
-        box.innerHTML = `<div class="w-full min-h-[520px] p-6 border-2 border-slate-800 bg-white text-slate-900 text-xs flex flex-col justify-between"><div class="space-y-4"><div class="flex justify-between items-start border-b-2 border-slate-900 pb-4"><div><h1 class="text-2xl font-black tracking-tight text-indigo-900">KIRTIKA MOBILE</h1><p class="font-bold text-slate-600">The TB Store • ${brObj.name}</p><p class="text-[11px] text-slate-500">${brObj.address || 'Madhuban, Jodhpur, Rajasthan'} • Mob: ${brObj.phone || '8209618586'}</p></div><div class="text-right"><span class="px-3 py-1 bg-slate-900 text-white font-black uppercase text-[11px] rounded">INVOICE</span><p class="mt-2 font-mono font-bold">No: ${r.invId}</p><p class="text-[11px]">Date: ${r.dateStr}</p></div></div><div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-xl border"><div><p class="text-[10px] font-bold text-slate-400 uppercase">Billed To:</p><p class="font-extrabold text-sm">${r.customerName}</p><p class="text-slate-600">${r.customerPhone || 'Walk-in Customer'}</p>${r.customerAddress ? `<p class="text-slate-600 text-[11px]">${r.customerAddress}</p>` : ''}</div><div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Payment Details:</p><p class="font-bold">Mode: ${r.paymentMode} (${r.priceMode || 'Retail'})</p><p class="text-slate-600">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | Due: ₹${r.udharDue || 0}</p></div></div><table class="w-full border-collapse border border-slate-300"><thead><tr class="bg-slate-900 text-white"><th class="p-2 text-left">S.No</th><th class="p-2 text-left">Product / Description</th><th class="p-2 text-center">MRP</th><th class="p-2 text-center">Qty</th><th class="p-2 text-right">Unit Price</th><th class="p-2 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, idx) => `<tr class="border-b"><td class="p-2">${idx + 1}</td><td class="p-2 font-bold">${c.name}</td><td class="p-2 text-center text-slate-400">₹${c.mrp || c.price}</td><td class="p-2 text-center font-bold">${c.qty}</td><td class="p-2 text-right">₹${c.price}</td><td class="p-2 text-right font-black">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table></div><div class="space-y-4 pt-4"><div class="flex justify-end"><div class="w-56 space-y-1 text-right"><div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div><div class="flex justify-between text-emerald-700 font-bold"><span>Discount / Savings:</span><span>- ₹${savings}</span></div><div class="flex justify-between text-base font-black border-t-2 border-slate-900 pt-1"><span>GRAND TOTAL:</span><span>₹${r.total}/-</span></div></div></div><div class="flex justify-between items-end border-t pt-4 text-[10px] text-slate-500"><div><b>Terms & Conditions:</b><br>1. Goods once sold will not be returned for cash.<br>2. Replacement within 7 days only with original box & bill.<br>3. Physical / liquid damage not covered under warranty.</div><div class="text-right font-bold text-slate-800">For Kirtika Mobile<br><br>Authorized Signatory</div></div></div></div>`;
+        box.innerHTML = `<div class="w-full min-h-[520px] p-6 border-2 border-slate-800 bg-white text-slate-900 text-xs flex flex-col justify-between"><div class="space-y-4"><div class="flex justify-between items-start border-b-2 border-slate-900 pb-4"><div><h1 class="text-2xl font-black tracking-tight text-indigo-900">KIRTIKA MOBILE</h1><p class="font-bold text-slate-600">The TB Store • ${brObj.name}</p><p class="text-[11px] text-slate-500">${brObj.address || 'Madhuban, Jodhpur, Rajasthan'} • Mob: ${brObj.phone || '8209618586'}</p></div><div class="text-right"><span class="px-3 py-1 bg-slate-900 text-white font-black uppercase text-[11px] rounded">INVOICE</span><p class="mt-2 font-mono font-bold">No: ${r.invId}</p><p class="text-[11px]">Date: ${r.dateStr}</p></div></div><div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-xl border"><div><p class="text-[10px] font-bold text-slate-400 uppercase">Billed To:</p><p class="font-extrabold text-sm">${r.customerName}</p><p class="text-slate-600">${r.customerPhone || 'Walk-in Customer'}</p>${r.customerAddress ? `<p class="text-slate-600 text-[11px]">${r.customerAddress}</p>` : ''}</div><div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Payment Details:</p><p class="font-bold">Mode: ${r.paymentMode} (${r.priceMode || 'Retail'})</p><p class="text-slate-600">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | Due: ₹${r.udharDue || 0}</p></div></div><table class="w-full border-collapse border border-slate-300"><thead><tr class="bg-slate-900 text-white"><th class="p-2 text-left">S.No</th><th class="p-2 text-left">Product / Description</th><th class="p-2 text-center">MRP</th><th class="p-2 text-center">Qty</th><th class="p-2 text-right">Unit Price</th><th class="p-2 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, idx) => `<tr class="border-b"><td class="p-2">${idx + 1}</td><td class="p-2 font-bold">${c.name}</td><td class="p-2 text-center text-slate-400">₹${c.mrp || c.price}</td><td class="p-2 text-center font-bold">${c.qty}</td><td class="p-2 text-right">₹${c.price}</td><td class="p-2 text-right font-black">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table></div><div class="space-y-4 pt-4"><div class="flex justify-end"><div class="w-60 space-y-1 text-right"><div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div><div class="flex justify-between text-emerald-700 font-bold"><span>Total Discount (Bachat):</span><span>- ₹${savings}</span></div><div class="flex justify-between text-base font-black border-t-2 border-slate-900 pt-1"><span>GRAND TOTAL:</span><span>₹${r.total}/-</span></div></div></div><div class="flex justify-between items-end border-t pt-4 text-[10px] text-slate-500"><div><b>Terms & Conditions:</b><br>1. Goods once sold will not be returned for cash.<br>2. Replacement within 7 days only with original box & bill.<br>3. Physical / liquid damage not covered under warranty.</div><div class="text-right font-bold text-slate-800">For Kirtika Mobile<br><br>Authorized Signatory</div></div></div></div>`;
       } else {
         const taxable = (r.total / 1.18).toFixed(2), gstAmt = (r.total - taxable).toFixed(2);
         box.innerHTML = `<div class="w-full min-h-[520px] p-5 border-2 border-emerald-900 bg-white text-slate-900 text-xs flex flex-col justify-between"><div class="space-y-3"><div class="text-center border-b-2 border-emerald-900 pb-2"><p class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">TAX INVOICE / BILL OF SUPPLY</p><h1 class="text-xl font-black">KIRTIKA MOBILE - THE TB STORE</h1><p class="text-[11px]">${brObj.address || 'Madhuban, Jodhpur'} • Contact: ${brObj.phone || '8209618586'}</p></div><div class="grid grid-cols-2 border border-slate-400"><div class="p-2.5 border-r border-slate-400"><b>Party Name:</b> ${r.customerName}<br><b>Mobile:</b> ${r.customerPhone || '--'}<br><b>Address:</b> ${r.customerAddress || '--'}</div><div class="p-2.5"><b>Invoice No:</b> ${r.invId}<br><b>Date:</b> ${r.dateStr}<br><b>Payment:</b> ${r.paymentMode}</div></div><table class="w-full border-collapse border border-slate-400"><thead><tr class="bg-emerald-50"><th class="border border-slate-400 p-1.5">#</th><th class="border border-slate-400 p-1.5 text-left">Item Description</th><th class="border border-slate-400 p-1.5">HSN</th><th class="border border-slate-400 p-1.5">Qty</th><th class="border border-slate-400 p-1.5 text-right">Rate</th><th class="border border-slate-400 p-1.5 text-right">Total</th></tr></thead><tbody>${r.cart.map((c, idx) => `<tr><td class="border border-slate-400 p-1.5 text-center">${idx + 1}</td><td class="border border-slate-400 p-1.5 font-bold">${c.name}</td><td class="border border-slate-400 p-1.5 text-center">8517</td><td class="border border-slate-400 p-1.5 text-center">${c.qty}</td><td class="border border-slate-400 p-1.5 text-right">${c.price}</td><td class="border border-slate-400 p-1.5 text-right font-bold">${c.price * c.qty}</td></tr>`).join('')}</tbody></table></div><div class="space-y-3 pt-4"><div class="grid grid-cols-2 border border-slate-400 p-2.5 bg-slate-50"><div class="text-[10px]"><b>Tax Breakup (Inclusive):</b><br>Taxable Value: ₹${taxable}<br>CGST (9%) + SGST (9%): ₹${gstAmt}</div><div class="text-right font-black text-base self-center text-emerald-900">NET PAYABLE: ₹${r.total}/-</div></div><div class="flex justify-between text-[10px] pt-2"><span>Customer Signature</span><span class="font-bold">For Kirtika Mobile (Authorized Stamp)</span></div></div></div>`;
+      }
+    }
+
+    async function shareBillImage(btn) {
+      const area = document.getElementById('receipt-print-area');
+      const targetEl = area?.firstElementChild || area;
+      if (!targetEl || !lastReceipt) return;
+      const origHtml = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+      try {
+        const canvas = await html2canvas(targetEl, { scale: 2, useCORS: true });
+        const fileName = `${lastReceipt.invId}_${lastReceipt.customerName.replace(/\s+/g, '_')}.png`;
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], fileName, { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({ files: [file], title: `Bill ${lastReceipt.invId}`, text: `Kirtika Mobile Bill - ${lastReceipt.invId}` });
+              return;
+            } catch (e) {}
+          }
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          const ph = lastReceipt.customerPhone ? '91' + lastReceipt.customerPhone.replace(/\D/g, '').slice(-10) : '';
+          if (ph.length >= 12) window.open(`https://wa.me/${ph}`, '_blank');
+        }, "image/png");
+      } finally {
+        btn.disabled = false; btn.innerHTML = origHtml;
+      }
+    }
+
+    async function shareBillPDF(btn) {
+      const area = document.getElementById('receipt-print-area');
+      const targetEl = area?.firstElementChild || area;
+      if (!targetEl || !lastReceipt) return;
+      const origHtml = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+      try {
+        const canvas = await html2canvas(targetEl, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdfW = 210;
+        const pdfH = Math.max(120, Math.round((canvas.height * pdfW) / canvas.width));
+        const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [pdfW, pdfH] });
+        doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+
+        const fileName = `${lastReceipt.invId}_${lastReceipt.customerName.replace(/\s+/g, '_')}.pdf`;
+        const pdfBlob = doc.output('blob');
+        const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          try {
+            await navigator.share({ files: [pdfFile], title: `Invoice ${lastReceipt.invId}`, text: `Kirtika Mobile Invoice - ${lastReceipt.invId}` });
+            return;
+          } catch (e) {}
+        }
+        doc.save(fileName);
+        const ph = lastReceipt.customerPhone ? '91' + lastReceipt.customerPhone.replace(/\D/g, '').slice(-10) : '';
+        if (ph.length >= 12) window.open(`https://wa.me/${ph}`, '_blank');
+      } finally {
+        btn.disabled = false; btn.innerHTML = origHtml;
       }
     }
 
