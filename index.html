@@ -146,12 +146,12 @@
           <div class="space-y-2 border-t border-slate-100 pt-3 text-sm">
             <div class="grid grid-cols-2 gap-2 relative">
               <div class="relative">
-                <input type="tel" id="cust-phone" oninput="handlePhoneSuggestionInput('cust-phone', 'cust-phone-suggest', 'cust-name', 'cust-address'); lookupCustomerHistory(false);" onkeydown="handlePhoneSuggestionKey(event, 'cust-phone', 'cust-phone-suggest', 'cust-name', 'cust-address', () => lookupCustomerHistory(true))" onblur="setTimeout(() => hidePhoneSuggestions('cust-phone-suggest'), 180)" placeholder="Mobile No. (Type/Enter)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                <input type="tel" id="cust-phone" autocomplete="off" oninput="handlePhoneSuggestionInput('cust-phone', 'cust-phone-suggest', 'cust-name', 'cust-address'); lookupCustomerHistory(false);" onkeydown="handlePhoneSuggestionKey(event, 'cust-phone', 'cust-phone-suggest', 'cust-name', 'cust-address', () => lookupCustomerHistory(true))" onblur="setTimeout(() => hidePhoneSuggestions('cust-phone-suggest'), 180)" placeholder="Mobile No. (Type/Enter)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                 <div id="cust-phone-suggest" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-indigo-200 rounded-xl shadow-xl z-40 max-h-44 overflow-y-auto text-xs"></div>
               </div>
-              <input type="text" id="cust-name" placeholder="Customer / Party Name" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+              <input type="text" id="cust-name" autocomplete="off" placeholder="Customer / Party Name" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
             </div>
-            <input type="text" id="cust-address" placeholder="Customer Address / Gaon / City (Optional)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+            <input type="text" id="cust-address" autocomplete="off" placeholder="Customer Address / Gaon / City (Optional)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
 
             <div id="cust-history-banner" class="hidden bg-indigo-50 border border-indigo-200 p-2 rounded-lg space-y-1 text-[11px]">
               <div class="flex justify-between items-center">
@@ -185,7 +185,10 @@
 
             <div class="grid grid-cols-2 gap-2">
               <input type="text" id="bill-note" placeholder="IMEI / Warranty Note" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-              <input type="text" id="bill-custom-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2 bg-amber-50/70 border border-amber-200 rounded-lg text-xs">
+              <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-lg px-1.5">
+                <input type="text" id="bill-custom-date" placeholder="dd/mm/yyyy" class="w-full py-1.5 bg-transparent text-xs focus:outline-none">
+                <input type="date" onchange="syncPickerToText(this.value, 'bill-custom-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+              </div>
             </div>
 
             <div class="bg-slate-900 text-white p-3 rounded-xl space-y-1 mt-2">
@@ -281,7 +284,7 @@
         <div id="stock-history-list" class="hidden divide-y divide-slate-100 text-xs"></div>
       </div>
     </section>
-    <!-- ==================== TAB 3: SALES + GALLA / WALLET / BANK + UDHAR KHATA ==================== -->
+    <!-- ==================== TAB 3: SALES + GALLA / WALLET / BANK + UDHAR KHATA + 3M/6M REPORT ==================== -->
     <section id="tab-invoices" class="hidden space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div onclick="setSalesPeriodFilter('today')" class="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-3.5 rounded-2xl shadow-sm cursor-pointer">
@@ -331,10 +334,38 @@
           </select>
           <input type="number" id="cf-amount" placeholder="Amount (₹) *" class="p-2 bg-slate-50 border rounded-xl font-black text-indigo-700">
           <input type="text" id="cf-note" placeholder="Note (Optional)" class="p-2 bg-slate-50 border rounded-xl">
-          <input type="text" id="cf-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2 bg-amber-50/70 border border-amber-200 rounded-xl">
+          <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-1.5">
+            <input type="text" id="cf-date" placeholder="dd/mm/yyyy" class="w-full py-1.5 bg-transparent text-xs focus:outline-none">
+            <input type="date" onchange="syncPickerToText(this.value, 'cf-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+          </div>
           <button onclick="saveCashTransferEntry(this)" class="px-3 py-2 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Transfer Record</button>
         </div>
         <div id="cash-transfers-list" class="divide-y divide-slate-100 text-xs max-h-40 overflow-y-auto"></div>
+      </div>
+
+      <!-- TOP SELLING & HIGHEST MARGIN REPORT (3M / 6M / ALL) -->
+      <div id="admin-analytics-report-box" class="bg-white p-4 rounded-2xl border border-violet-200 shadow-sm space-y-3">
+        <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
+          <div>
+            <h3 class="font-extrabold text-xs uppercase text-violet-900"><i class="fas fa-chart-pie mr-1.5"></i>Top Selling & Highest Margin Report</h3>
+            <p class="text-[10px] text-slate-500">Sabse zyada bikne wale items aur sabse zyada margin/profit wale items</p>
+          </div>
+          <div class="flex gap-1">
+            <button onclick="setAnalyticsWindow('3m')" id="ana-btn-3m" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-violet-600 text-white">3 Mahine</button>
+            <button onclick="setAnalyticsWindow('6m')" id="ana-btn-6m" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-700">6 Mahine</button>
+            <button onclick="setAnalyticsWindow('all')" id="ana-btn-all" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-700">All</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-xl border space-y-2">
+            <p class="font-extrabold text-slate-800"><i class="fas fa-fire text-amber-500 mr-1"></i>Sabse Zyada Bikne Wale Products (Qty)</p>
+            <div id="top-selling-products-list" class="divide-y divide-slate-200/70"></div>
+          </div>
+          <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-200 space-y-2">
+            <p class="font-extrabold text-emerald-900"><i class="fas fa-coins text-emerald-600 mr-1"></i>Sabse Zyada Margin / Profit Wale Products</p>
+            <div id="top-margin-products-list" class="divide-y divide-emerald-200/70"></div>
+          </div>
+        </div>
       </div>
 
       <div id="admin-staff-sales-box" class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
@@ -406,7 +437,10 @@
           </select>
           <input type="number" id="exp-amount" placeholder="Amount (₹) *" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
           <input type="text" id="exp-note" placeholder="Detail / Note (Optional)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-          <input type="text" id="exp-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
+          <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2">
+            <input type="text" id="exp-date" placeholder="dd/mm/yyyy" class="w-full py-2 bg-transparent text-xs focus:outline-none">
+            <input type="date" onchange="syncPickerToText(this.value, 'exp-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+          </div>
         </div>
         <button onclick="addExpenseEntry()" id="add-exp-btn" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Kharcha Save Karein</button>
         <div id="expenses-list" class="divide-y divide-slate-100 text-xs pt-2"></div>
@@ -453,7 +487,10 @@
             <option value="Cash">Cash</option>
             <option value="UPI">UPI</option>
           </select>
-          <input type="text" id="cs-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
+          <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2">
+            <input type="text" id="cs-date" placeholder="dd/mm/yyyy" class="w-full py-2 bg-transparent text-xs focus:outline-none">
+            <input type="date" onchange="syncPickerToText(this.value, 'cs-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+          </div>
         </div>
         <button onclick="saveCounterServiceEntry(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Entry Save Karein</button>
         <div id="counter-services-list" class="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto pt-1"></div>
@@ -481,18 +518,21 @@
         <h4 class="font-extrabold text-xs uppercase text-slate-600 pt-1">Online Order Details (Verify & Save):</h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           <select id="onl-platform" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Instagram">Instagram</option><option value="WhatsApp">WhatsApp</option><option value="Website">Website / Other</option></select>
-          <input type="text" id="onl-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
+          <input type="text" id="onl-cust" autocomplete="off" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold">
           <div class="relative">
-            <input type="tel" id="onl-phone" oninput="handlePhoneSuggestionInput('onl-phone', 'onl-phone-suggest', 'onl-cust', 'onl-address')" onkeydown="handlePhoneSuggestionKey(event, 'onl-phone', 'onl-phone-suggest', 'onl-cust', 'onl-address')" onblur="setTimeout(() => hidePhoneSuggestions('onl-phone-suggest'), 180)" placeholder="Mobile Number (Type/Enter)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+            <input type="tel" id="onl-phone" autocomplete="off" oninput="handlePhoneSuggestionInput('onl-phone', 'onl-phone-suggest', 'onl-cust', 'onl-address')" onkeydown="handlePhoneSuggestionKey(event, 'onl-phone', 'onl-phone-suggest', 'onl-cust', 'onl-address')" onblur="setTimeout(() => hidePhoneSuggestions('onl-phone-suggest'), 180)" placeholder="Mobile Number (Type/Enter)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
             <div id="onl-phone-suggest" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-indigo-200 rounded-xl shadow-xl z-40 max-h-44 overflow-y-auto text-xs"></div>
           </div>
-          <input type="text" id="onl-address" placeholder="Full Shipping Address & Pincode *" class="p-2.5 bg-slate-50 border rounded-xl text-xs sm:col-span-2">
+          <input type="text" id="onl-address" autocomplete="off" placeholder="Full Shipping Address & Pincode *" class="p-2.5 bg-slate-50 border rounded-xl text-xs sm:col-span-2">
           <input type="text" id="onl-items" placeholder="Ordered Items *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
           <input type="number" id="onl-amount" placeholder="Order Amount (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-black text-indigo-700">
           <select id="onl-pay" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><option value="Prepaid (UPI)">Prepaid (UPI)</option><option value="COD">Cash on Delivery (COD)</option></select>
           <input type="text" id="onl-courier" placeholder="Courier / Shiprocket (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
           <input type="text" id="onl-awb" placeholder="Tracking / AWB No. (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono">
-          <input type="text" id="onl-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
+          <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2">
+            <input type="text" id="onl-date" placeholder="dd/mm/yyyy" class="w-full py-2 bg-transparent text-xs focus:outline-none">
+            <input type="date" onchange="syncPickerToText(this.value, 'onl-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+          </div>
         </div>
         <button onclick="saveNewOnlineOrder(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Online Order Save Karein</button>
 
@@ -613,9 +653,9 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
-          <input type="text" id="rep-cust" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="text" id="rep-cust" autocomplete="off" placeholder="Customer Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
           <div class="relative">
-            <input type="tel" id="rep-phone" oninput="handlePhoneSuggestionInput('rep-phone', 'rep-phone-suggest', 'rep-cust', null)" onkeydown="handlePhoneSuggestionKey(event, 'rep-phone', 'rep-phone-suggest', 'rep-cust', null)" onblur="setTimeout(() => hidePhoneSuggestions('rep-phone-suggest'), 180)" placeholder="WhatsApp No. (Type/Enter) *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+            <input type="tel" id="rep-phone" autocomplete="off" oninput="handlePhoneSuggestionInput('rep-phone', 'rep-phone-suggest', 'rep-cust', null)" onkeydown="handlePhoneSuggestionKey(event, 'rep-phone', 'rep-phone-suggest', 'rep-cust', null)" onblur="setTimeout(() => hidePhoneSuggestions('rep-phone-suggest'), 180)" placeholder="WhatsApp No. (Type/Enter) *" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
             <div id="rep-phone-suggest" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-indigo-200 rounded-xl shadow-xl z-40 max-h-44 overflow-y-auto text-xs"></div>
           </div>
           <input type="text" id="rep-model" placeholder="Mobile Model *" class="p-2.5 bg-slate-50 border rounded-xl text-xs">
@@ -628,7 +668,10 @@
             <option value="Cash">Cash</option>
             <option value="UPI">UPI</option>
           </select>
-          <input type="text" id="rep-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
+          <div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2">
+            <input type="text" id="rep-date" placeholder="dd/mm/yyyy" class="w-full py-2 bg-transparent text-xs focus:outline-none">
+            <input type="date" onchange="syncPickerToText(this.value, 'rep-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar">
+          </div>
           <input type="text" id="rep-note" placeholder="Note (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs sm:col-span-2">
         </div>
         <button onclick="addRepairJob(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Job Card Save Karein</button>
@@ -638,8 +681,8 @@
         </div>
       </div>
 
-      <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5"><input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs"><input type="text" id="used-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs"></div><button onclick="addUsedPhone(this)" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Register Mein Save Karein</button><div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div></div>
-      <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3"><h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty Return Box</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"><input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-prod" placeholder="Defective Item *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-issue" placeholder="Problem" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-date" placeholder="Backdate (dd/mm/yyyy)" class="p-2 bg-amber-50/70 border border-amber-200 rounded-xl text-xs"></div><button onclick="addSupplierReturn(this)" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Box Mein Daalein</button><div id="returns-box-list" class="space-y-2 text-xs pt-1"></div></div>
+      <div id="more-sub-used" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-mobile-alt text-emerald-600 mr-1.5"></i>Second-Hand Phone Register (<span id="used-count">0</span>)</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5"><input type="text" id="used-model" placeholder="Phone Model & Storage *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-imei1" placeholder="IMEI 1 Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="text" id="used-imei2" placeholder="IMEI 2 (Optional)" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><input type="number" id="used-buy-price" placeholder="Purchase Price (₹) *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-seller" placeholder="Seller Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="used-seller-phone" placeholder="Seller Mobile Number *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="text" id="used-id-proof" placeholder="Aadhaar / ID No. *" class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs"><div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2"><input type="text" id="used-date" placeholder="dd/mm/yyyy" class="w-full py-2 bg-transparent text-xs focus:outline-none"><input type="date" onchange="syncPickerToText(this.value, 'used-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar"></div></div><button onclick="addUsedPhone(this)" class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm">+ Register Mein Save Karein</button><div id="used-phones-list" class="space-y-2.5 text-xs pt-2"></div></div>
+      <div id="more-sub-returns" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-amber-200 space-y-3"><h3 class="font-extrabold text-sm text-amber-900"><i class="fas fa-undo-alt text-amber-600 mr-1.5"></i>Supplier Warranty Return Box</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"><input type="text" id="ret-cust" placeholder="Customer Name *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="ret-phone" placeholder="Customer Phone" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-prod" placeholder="Defective Item *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-supplier" placeholder="Wholesaler / Distributor *" class="p-2 bg-slate-50 border rounded-xl text-xs"><input type="text" id="ret-issue" placeholder="Problem" class="p-2 bg-slate-50 border rounded-xl text-xs"><div class="flex items-center gap-1 bg-amber-50/70 border border-amber-200 rounded-xl px-2"><input type="text" id="ret-date" placeholder="dd/mm/yyyy" class="w-full py-1.5 bg-transparent text-xs focus:outline-none"><input type="date" onchange="syncPickerToText(this.value, 'ret-date')" class="w-6 text-[10px] bg-transparent cursor-pointer" title="Calendar"></div></div><button onclick="addSupplierReturn(this)" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">+ Box Mein Daalein</button><div id="returns-box-list" class="space-y-2 text-xs pt-1"></div></div>
       <div id="more-sub-transfer" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-indigo-200 space-y-3"><h3 class="font-extrabold text-sm text-indigo-900"><i class="fas fa-exchange-alt text-indigo-600 mr-1.5"></i>Stock Transfer (<span class="active-branch-label">Main Branch</span> Se Doosri Branch)</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2"><select id="trf-prod-select" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold sm:col-span-2"></select><select id="trf-to-branch" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-indigo-700"></select><div class="flex gap-1.5"><input type="number" id="trf-qty" placeholder="Qty" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold"><button onclick="executeBranchTransfer(this)" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs">Transfer</button></div></div></div>
       <div id="more-sub-pbills" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><h3 class="font-extrabold text-sm text-slate-800"><i class="fas fa-file-invoice text-violet-600 mr-1.5"></i>Saved Supplier Purchase Bills</h3><div id="purchase-bills-list" class="space-y-2.5 text-xs"></div></div>
       <div id="more-sub-staff" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3"><div id="admin-staff-panel" class="space-y-3"><h3 class="font-extrabold text-sm">Staff & Admin Name, PIN & Salary</h3><div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5"><input type="text" id="stf-name" placeholder="Staff / Admin Name *" class="p-2.5 bg-slate-50 border rounded-xl text-xs"><input type="tel" id="stf-pin" maxlength="4" placeholder="4-Digit PIN *" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-mono"><select id="stf-role" class="p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold"><option value="Staff">Staff</option><option value="Manager">Manager</option><option value="Admin">Admin</option></select><input type="number" id="stf-salary" placeholder="Monthly Salary (₹)" class="p-2.5 bg-slate-50 border rounded-xl text-xs"></div><button onclick="addStaffMember(this)" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs">+ Naya Staff Save Karein</button><div id="staff-list-box" class="divide-y divide-slate-100 text-xs"></div></div></div>
@@ -826,12 +869,12 @@
   </nav>
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
-    const LOCAL_CACHE_KEY = "KM_STORE_CACHE_V2";
+    const LOCAL_CACHE_KEY = "KM_STORE_CACHE_V3";
     const OFFLINE_QUEUE_KEY = "KM_OFFLINE_QUEUE_V1";
 
     let storeData = { staff: [], attendance: [], branches: [], products: [], stockLogs: [], invoices: [], counterServices: [], onlineOrders: [], repairs: [], usedPhones: [], expenses: [], cashTransfers: [], transfers: [], returnsBox: [], purchaseBills: [], loyaltyRules: [], loyaltyClaims: [] };
     let currentUser = null, activeBranch = "Main Branch", cart = [], heldBills = [], currentPriceMode = 'Retail', selectedCategory = 'All';
-    let showLowStockOnly = false, stockViewMode = 'list', salesPeriodFilter = 'all', staffSalesFilter = 'All', lastReceipt = null, currentBillTheme = 'thermal', currentBarcodeProd = null;
+    let showLowStockOnly = false, stockViewMode = 'list', salesPeriodFilter = 'all', analyticsWindow = '3m', staffSalesFilter = 'All', lastReceipt = null, currentBillTheme = 'thermal', currentBarcodeProd = null;
     let posPageLimit = 30, invPageLimit = 30, repPageLimit = 30;
     let aiParsedData = { supplierName: "", supplierBillNo: "", items: [], billImage: "" }, isSavingAIItems = false;
     let activeLoyaltyCardData = null, activeCustomerCardsList = [];
@@ -865,7 +908,27 @@
     const debouncedInvSearch = debounceFn(() => { invPageLimit = 30; renderInventoryList(); }, 180);
     const debouncedInvListSearch = debounceFn(() => { invPageLimit = 30; renderInvoicesList(); }, 180);
 
-    // PWA Install Prompt & Service Worker
+    // Calendar date picker (yyyy-mm-dd) -> Type box (dd/mm/yyyy)
+    function syncPickerToText(isoVal, targetInputId) {
+      if (!isoVal) return;
+      const parts = isoVal.split('-');
+      if (parts.length !== 3) return;
+      const ddmm = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      const el = document.getElementById(targetInputId);
+      if (el) el.value = ddmm;
+    }
+
+    // Strict real customer name check (blocks "Walk-in Customer", empty, or 1-letter names like "T")
+    function isRealCustomerName(nameVal) {
+      const clean = String(nameVal || "").trim();
+      if (clean.length < 2) return false;
+      const low = clean.toLowerCase();
+      if (low === "walk-in customer" || low === "walkin customer" || low === "cash customer" || low === "customer" || low === "na" || low === "n/a") {
+        return false;
+      }
+      return true;
+    }
+
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPWAPrompt = e;
@@ -891,7 +954,7 @@
       });
     }
 
-    // ================= OFFLINE SYNC QUEUE =================
+    // Offline Sync Queue
     function getOfflineQueue() {
       try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || "[]"); } catch (e) { return []; }
     }
@@ -948,7 +1011,6 @@
 
     window.addEventListener("online", () => flushOfflineQueue(false));
 
-    // Fast Keyboard Shortcuts (safe when typing in input/textarea/select)
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         ['selfie-viewer-modal', 'edit-repair-modal', 'exchange-bill-modal', 'loyalty-card-modal', 'add-stock-inward-modal', 'udhar-jama-modal', 'view-pb-modal', 'edit-pb-modal', 'edit-staff-modal', 'quick-photo-cart-modal', 'view-bill-photos-modal', 'edit-inv-modal', 'edit-prod-modal', 'hardware-modal', 'ai-copilot-modal', 'add-branch-modal', 'held-bills-modal', 'backup-modal', 'cust-history-modal', 'receipt-modal'].forEach(closeModalById);
@@ -1078,6 +1140,7 @@
       document.getElementById('admin-stock-summary-grid').classList.toggle('hidden', !admin);
       document.getElementById('admin-stock-summary-grid').classList.toggle('grid', !!admin);
       document.getElementById('admin-profit-card').classList.toggle('hidden', !admin);
+      document.getElementById('admin-analytics-report-box').classList.toggle('hidden', !admin);
       document.getElementById('admin-staff-panel').classList.toggle('hidden', !admin);
       document.getElementById('admin-ai-stock-banner').classList.toggle('hidden', !admin);
       document.getElementById('admin-add-product-box').classList.toggle('hidden', !admin);
@@ -1148,38 +1211,85 @@
       document.querySelectorAll('.active-branch-label').forEach(el => el.innerText = activeBranch);
       document.getElementById('saved-pb-count').innerText = branchPurchaseBills().length;
       renderCategories(); renderPosProducts(); renderInventoryList(); renderStockHistoryList(); renderTransferDropdowns();
-      renderInvoicesList(); renderUdharKhataList(); renderCashTransfersList(); renderCounterServicesList(); renderOnlineOrdersList(); renderUniqueCustomersView();
+      renderInvoicesList(); renderAnalyticsReport(); renderUdharKhataList(); renderCashTransfersList(); renderCounterServicesList(); renderOnlineOrdersList(); renderUniqueCustomersView();
       renderRepairsList(); renderReturnsBoxList(); renderUsedPhonesList();
       renderPurchaseBillsList(); renderExpensesList(); renderStaffList(); renderAttendanceView(); renderLoyaltyView();
     }
 
-    function printSection(elementId) {
-      document.querySelectorAll('.print-target').forEach(el => el.classList.remove('print-target'));
-      const target = document.getElementById(elementId);
-      if (target) { target.classList.add('print-target'); window.print(); }
+    // ================= 3M / 6M TOP SELLING & HIGHEST MARGIN REPORT =================
+    function setAnalyticsWindow(win) {
+      analyticsWindow = win;
+      ['3m', '6m', 'all'].forEach(w => {
+        const btn = document.getElementById('ana-btn-' + w);
+        if (btn) btn.className = (w === win)
+          ? "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-violet-600 text-white"
+          : "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-700";
+      });
+      renderAnalyticsReport();
     }
 
-    function compressImageToInput(event, hiddenInputId, labelId, previewImgId) {
-      const file = event.target.files[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); const max = 260;
-          let w = img.width, h = img.height;
-          if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; }
-          canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-          document.getElementById(hiddenInputId).value = dataUrl;
-          if (labelId) document.getElementById(labelId).innerText = "✅ Photo Selected";
-          if (previewImgId) { const p = document.getElementById(previewImgId); p.src = dataUrl; p.classList.remove('hidden'); }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    function renderAnalyticsReport() {
+      const sellBox = document.getElementById('top-selling-products-list');
+      const marginBox = document.getElementById('top-margin-products-list');
+      if (!sellBox || !marginBox || !isAdminUser()) return;
+
+      const now = new Date();
+      let cutoff = null;
+      if (analyticsWindow === '3m') cutoff = new Date(now.getTime() - 90 * 86400000);
+      else if (analyticsWindow === '6m') cutoff = new Date(now.getTime() - 182 * 86400000);
+
+      const costById = {}, costByName = {};
+      branchProducts().forEach(p => {
+        const c = Number(p.costPrice || 0);
+        if (p.id) costById[String(p.id)] = c;
+        if (p.name) costByName[String(p.name).toLowerCase().trim()] = c;
+      });
+
+      const stats = {};
+      branchInvoices().forEach(inv => {
+        if (inv.status === 'Returned' || isRepairInvoice(inv)) return;
+        const d = parseIndianInvoiceDate(inv.date);
+        if (cutoff && (!d || d < cutoff)) return;
+
+        const items = Array.isArray(inv.cart) ? inv.cart : [];
+        items.forEach(it => {
+          const qty = Number(it.qty || 1);
+          const sellPrice = Number(it.price || 0);
+          const lineSales = sellPrice * qty;
+          const unitCost = (it.costPrice !== undefined && Number(it.costPrice) > 0)
+            ? Number(it.costPrice)
+            : (costById[String(it.id)] || costByName[String(it.name || "").toLowerCase().trim()] || 0);
+          const lineMargin = unitCost > 0 ? (sellPrice - unitCost) * qty : 0;
+
+          const key = String(it.name || "Item").trim();
+          if (!stats[key]) stats[key] = { name: key, qty: 0, sales: 0, margin: 0, hasCost: unitCost > 0 };
+          stats[key].qty += qty;
+          stats[key].sales += lineSales;
+          stats[key].margin += lineMargin;
+          if (unitCost > 0) stats[key].hasCost = true;
+        });
+      });
+
+      const allStats = Object.values(stats);
+      const topQty = [...allStats].sort((a, b) => b.qty - a.qty).slice(0, 6);
+      const topMargin = [...allStats].filter(x => x.hasCost).sort((a, b) => b.margin - a.margin).slice(0, 6);
+
+      sellBox.innerHTML = topQty.length ? topQty.map((x, idx) => `
+        <div class="py-1.5 flex justify-between items-center gap-2">
+          <span class="font-bold text-slate-800 truncate">${idx + 1}. ${x.name}</span>
+          <span class="shrink-0 font-black text-indigo-700">${x.qty} Sold <span class="text-slate-500 font-semibold">(₹${x.sales})</span></span>
+        </div>
+      `).join('') : `<p class="text-slate-400 py-3 text-center">Is period mein koi item sale nahi hui.</p>`;
+
+      marginBox.innerHTML = topMargin.length ? topMargin.map((x, idx) => `
+        <div class="py-1.5 flex justify-between items-center gap-2">
+          <span class="font-bold text-slate-800 truncate">${idx + 1}. ${x.name}</span>
+          <span class="shrink-0 font-black text-emerald-700">+₹${Math.round(x.margin)} <span class="text-[10px] text-slate-500 font-semibold">(${x.qty} qty)</span></span>
+        </div>
+      `).join('') : `<p class="text-slate-400 py-3 text-center">Cost price bhare items ki margin report yahan dikhegi.</p>`;
     }
 
-    // ================= LIVE PHONE SUGGESTION DROPDOWN + ENTER AUTO-FILL =================
+    // ================= FIXED PHONE SUGGESTION DROPDOWN + KEYBOARD + CLICK =================
     function getMatchingCustomerProfiles(rawPhone) {
       const digits = String(rawPhone || "").replace(/\D/g, '');
       if (digits.length < 2) return [];
@@ -1187,14 +1297,18 @@
       const map = {};
 
       const addProf = (name, phone, address) => {
+        if (!isRealCustomerName(name)) return;
         const ph = String(phone || "").replace(/\D/g, '').slice(-10);
-        if (!ph) return;
+        if (ph.length < 3) return;
         const matchesQuery = ph.includes(digits) || ph.endsWith(suffix) || digits.includes(ph);
         if (!matchesQuery) return;
-        if (!map[ph]) map[ph] = { name: String(name || "").trim(), phone: ph, address: String(address || "").trim() };
-        else {
-          if (name && (!map[ph].name || map[ph].name === "Walk-in Customer")) map[ph].name = String(name).trim();
-          if (address && address.length > map[ph].address.length) map[ph].address = String(address).trim();
+        const cleanName = String(name).trim();
+        const cleanAddr = String(address || "").trim();
+        if (!map[ph]) {
+          map[ph] = { name: cleanName, phone: ph, address: cleanAddr };
+        } else {
+          if (cleanName.length >= map[ph].name.length) map[ph].name = cleanName;
+          if (cleanAddr.length > map[ph].address.length) map[ph].address = cleanAddr;
         }
       };
 
@@ -1217,11 +1331,11 @@
 
     function applySuggestedCustomer(idx, phoneInputId, suggestBoxId, nameInputId, addrInputId, afterSelectFn = null) {
       const item = phoneSuggestMatches[idx];
-      if (!item) return;
+      if (!item || !isRealCustomerName(item.name)) return;
       const pEl = document.getElementById(phoneInputId);
       if (pEl) pEl.value = item.phone;
       const nEl = document.getElementById(nameInputId);
-      if (nEl && item.name) nEl.value = item.name;
+      if (nEl) nEl.value = item.name;
       if (addrInputId) {
         const aEl = document.getElementById(addrInputId);
         if (aEl && item.address) aEl.value = item.address;
@@ -1230,26 +1344,33 @@
       if (typeof afterSelectFn === "function") afterSelectFn();
     }
 
-    function handlePhoneSuggestionInput(phoneInputId, suggestBoxId, nameInputId, addrInputId) {
+    function renderPhoneSuggestionsBox(phoneInputId, suggestBoxId, nameInputId, addrInputId) {
       const box = document.getElementById(suggestBoxId);
       if (!box) return;
-      const val = document.getElementById(phoneInputId)?.value || "";
-      phoneSuggestMatches = getMatchingCustomerProfiles(val);
-      phoneSuggestIndex = phoneSuggestMatches.length ? 0 : -1;
       if (!phoneSuggestMatches.length) {
         box.classList.add('hidden');
         return;
       }
+      const afterFnStr = phoneInputId === 'cust-phone' ? `() => lookupCustomerHistory(true)` : 'null';
       box.innerHTML = phoneSuggestMatches.map((m, idx) => `
-        <div onmousedown="applySuggestedCustomer(${idx}, '${phoneInputId}', '${suggestBoxId}', '${nameInputId}', ${addrInputId ? `'${addrInputId}'` : 'null'}, ${phoneInputId === 'cust-phone' ? `() => lookupCustomerHistory(true)` : 'null'})" class="p-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-100 last:border-none ${idx === phoneSuggestIndex ? 'bg-indigo-50/80' : ''}">
+        <div id="${suggestBoxId}-item-${idx}" onmousedown="event.preventDefault(); applySuggestedCustomer(${idx}, '${phoneInputId}', '${suggestBoxId}', '${nameInputId}', ${addrInputId ? `'${addrInputId}'` : 'null'}, ${afterFnStr})" class="p-2 hover:bg-indigo-100 cursor-pointer border-b border-slate-100 last:border-none ${idx === phoneSuggestIndex ? 'bg-indigo-100 ring-1 ring-inset ring-indigo-400' : ''}">
           <div class="flex justify-between items-center">
             <span class="font-mono font-extrabold text-indigo-700">${m.phone}</span>
-            <span class="font-bold text-slate-800 truncate ml-1">${m.name || 'Customer'}</span>
+            <span class="font-bold text-slate-900 truncate ml-1">${m.name}</span>
           </div>
           ${m.address ? `<p class="text-[10px] text-slate-500 truncate">${m.address}</p>` : ''}
         </div>
       `).join('');
       box.classList.remove('hidden');
+      const activeEl = document.getElementById(`${suggestBoxId}-item-${phoneSuggestIndex}`);
+      if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
+    }
+
+    function handlePhoneSuggestionInput(phoneInputId, suggestBoxId, nameInputId, addrInputId) {
+      const val = document.getElementById(phoneInputId)?.value || "";
+      phoneSuggestMatches = getMatchingCustomerProfiles(val);
+      phoneSuggestIndex = phoneSuggestMatches.length ? 0 : -1;
+      renderPhoneSuggestionsBox(phoneInputId, suggestBoxId, nameInputId, addrInputId);
     }
 
     function handlePhoneSuggestionKey(e, phoneInputId, suggestBoxId, nameInputId, addrInputId, afterSelectFn = null) {
@@ -1258,13 +1379,13 @@
       if (e.key === 'ArrowDown' && isOpen) {
         e.preventDefault();
         phoneSuggestIndex = (phoneSuggestIndex + 1) % phoneSuggestMatches.length;
-        handlePhoneSuggestionInput(phoneInputId, suggestBoxId, nameInputId, addrInputId);
+        renderPhoneSuggestionsBox(phoneInputId, suggestBoxId, nameInputId, addrInputId);
         return;
       }
       if (e.key === 'ArrowUp' && isOpen) {
         e.preventDefault();
         phoneSuggestIndex = (phoneSuggestIndex - 1 + phoneSuggestMatches.length) % phoneSuggestMatches.length;
-        handlePhoneSuggestionInput(phoneInputId, suggestBoxId, nameInputId, addrInputId);
+        renderPhoneSuggestionsBox(phoneInputId, suggestBoxId, nameInputId, addrInputId);
         return;
       }
       if (e.key === 'Enter') {
@@ -1289,9 +1410,9 @@
     function autofillFromCustomerPhone(phoneInputId, nameInputId, addrInputId, forceOverwrite = false) {
       const phVal = document.getElementById(phoneInputId)?.value || "";
       const prof = findCustomerProfileByPhone(phVal);
-      if (!prof) return;
+      if (!prof || !isRealCustomerName(prof.name)) return;
       const nameEl = document.getElementById(nameInputId);
-      if (nameEl && prof.name && (forceOverwrite || !nameEl.value.trim())) {
+      if (nameEl && (forceOverwrite || !nameEl.value.trim())) {
         nameEl.value = prof.name;
       }
       if (addrInputId) {
@@ -1302,7 +1423,7 @@
       }
     }
 
-    // ================= CUSTOMER COMBINED UDHAR KHATA =================
+    // Customer Combined Udhar Khata
     function toggleUdharKhataView() {
       const listEl = document.getElementById('udhar-khata-list');
       const btnEl = document.getElementById('khata-toggle-btn');
@@ -1346,7 +1467,7 @@
       `).join('') : `<p class="text-center text-slate-400 py-3">Kisi customer par udhar baaki nahi hai.</p>`;
     }
 
-    // ================= GALLA -> WALLET -> BANK CASH FLOW =================
+    // Galla -> Wallet -> Bank Cash Flow
     async function saveCashTransferEntry(btn) {
       const route = document.getElementById('cf-route').value;
       const amount = Number(document.getElementById('cf-amount').value || 0);
@@ -1406,7 +1527,7 @@
       `).join('') : `<p class="text-center text-slate-400 py-3">Abhi koi Galla / Wallet / Bank transfer nahi hua.</p>`;
     }
 
-    // ================= 0. CHHOTI KAMAI / COUNTER SERVICES =================
+    // Chhoti Kamai / Counter Services
     async function saveCounterServiceEntry(btn) {
       const serviceType = document.getElementById('cs-type').value;
       const customerNumber = document.getElementById('cs-number').value.trim();
@@ -1466,14 +1587,14 @@
       `).join('') : `<p class="text-center text-slate-400 py-5">Abhi koi recharge / photocopy entry nahi hai.</p>`;
     }
 
-    // ================= 1. ONLINE ORDERS =================
+    // Online Orders
     function fillOnlineOrderFormFromAI(res) {
       if (res.platform) {
         const sel = document.getElementById('onl-platform');
         if ([...sel.options].some(o => o.value.toLowerCase() === res.platform.toLowerCase())) sel.value = res.platform;
         else sel.value = "WhatsApp";
       }
-      if (res.customer) document.getElementById('onl-cust').value = res.customer;
+      if (res.customer && isRealCustomerName(res.customer)) document.getElementById('onl-cust').value = res.customer;
       if (res.phone) document.getElementById('onl-phone').value = String(res.phone).replace(/\D/g, '').slice(-10);
       if (res.address) document.getElementById('onl-address').value = res.address;
       if (res.items) document.getElementById('onl-items').value = res.items;
@@ -1597,18 +1718,18 @@
       `).join('') : `<p class="text-center text-slate-400 py-6">Abhi koi online order save nahi hai.</p>`;
     }
 
-    // ================= 2. UNIQUE CUSTOMERS DIRECTORY (SALES + ONLINE + REPAIR) =================
+    // Unique Customers Directory
     function getUniqueCustomersList() {
       const map = {};
       const addRecord = (name, phone, address, amount, source, date) => {
         const cleanPh = String(phone || "").replace(/\D/g, '').slice(-10);
-        const cleanName = String(name || "Walk-in Customer").trim();
-        if (!cleanPh && cleanName.toLowerCase() === "walk-in customer") return;
+        const cleanName = isRealCustomerName(name) ? String(name).trim() : "Walk-in Customer";
+        if (!cleanPh && cleanName === "Walk-in Customer") return;
         const key = cleanPh.length >= 8 ? cleanPh : ("NAME_" + cleanName.toLowerCase());
         if (!map[key]) {
           map[key] = { name: cleanName, phone: cleanPh || "--", address: address || "", totalOrders: 0, totalSpent: 0, lastVisit: date || "", sources: new Set() };
         }
-        if (cleanName && cleanName.toLowerCase() !== "walk-in customer") map[key].name = cleanName;
+        if (cleanName !== "Walk-in Customer") map[key].name = cleanName;
         if (address && address.length > map[key].address.length) map[key].address = address;
         map[key].totalOrders += 1;
         map[key].totalSpent += Number(amount || 0);
@@ -1619,17 +1740,11 @@
       storeData.invoices.forEach(inv => {
         if (inv.status === 'Returned') return;
         let extractedAddr = "";
-        if (inv.note && inv.note.includes("Addr:")) {
-          extractedAddr = inv.note.split("Addr:")[1].split("|")[0].trim();
-        }
+        if (inv.note && inv.note.includes("Addr:")) extractedAddr = inv.note.split("Addr:")[1].split("|")[0].trim();
         addRecord(inv.customer, inv.phone, extractedAddr, inv.total, "Store", inv.date);
       });
-      (storeData.onlineOrders || []).forEach(o => {
-        addRecord(o.customer, o.phone, o.address, o.amount, "Online", o.date);
-      });
-      (storeData.repairs || []).forEach(r => {
-        addRecord(r.customer, r.phone, "", r.estimate, "Repair", r.date);
-      });
+      (storeData.onlineOrders || []).forEach(o => addRecord(o.customer, o.phone, o.address, o.amount, "Online", o.date));
+      (storeData.repairs || []).forEach(r => addRecord(r.customer, r.phone, "", r.estimate, "Repair", r.date));
 
       return Object.values(map).map(c => ({ ...c, sourceLabel: Array.from(c.sources).join(" + ") })).sort((a, b) => b.totalSpent - a.totalSpent);
     }
@@ -1657,21 +1772,15 @@
       const list = getUniqueCustomersList();
       if (!list.length) { alert("Download karne ke liye koi customer data nahi hai!"); return; }
       const rows = list.map((c, idx) => ({
-        "S.No": idx + 1,
-        "Customer Name": c.name,
-        "Mobile Number": c.phone,
-        "Address": c.address || "Not Provided",
-        "Total Entries": c.totalOrders,
-        "Total Value (INR)": c.totalSpent,
-        "Channel": c.sourceLabel,
-        "Last Visit": c.lastVisit
+        "S.No": idx + 1, "Customer Name": c.name, "Mobile Number": c.phone,
+        "Address": c.address || "Not Provided", "Total Entries": c.totalOrders,
+        "Total Value (INR)": c.totalSpent, "Channel": c.sourceLabel, "Last Visit": c.lastVisit
       }));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Customers");
       XLSX.writeFile(wb, `Kirtika_Mobile_Customers_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
-
-    // ================= 3. SHOP GPS + VISUAL MONTHLY CALENDAR ATTENDANCE =================
+   // Shop GPS + Visual Monthly Calendar Attendance
     function normalizeClientDate(val) {
       if (!val) return "";
       const s = String(val).replace(/^'/, "").trim().split(' ')[0];
@@ -1954,7 +2063,7 @@
       `).join('') : `<p class="text-center text-slate-400 py-4">${filterDateStr ? `${filterDateStr} ko koi attendance entry nahi hai.` : 'Abhi koi attendance record nahi hai.'}</p>`;
     }
 
-    // ================= 4. MULTI-CARD VIP LOYALTY PROGRAM =================
+    // Multi-Card VIP Loyalty Program
     function saveLoyaltyOverlapPref() {
       loyaltyOverlapEnabled = document.getElementById('loy-overlap-toggle').checked;
       localStorage.setItem('km_loy_overlap', loyaltyOverlapEnabled ? 'true' : 'false');
@@ -2140,7 +2249,7 @@
       }).join('') : `<p class="text-center text-slate-400 py-4">Mobile number ke saath bill banate hi customers ke cards yahan dikhenge.</p>`;
     }
 
-    // ================= DIRECT AMOUNT CART ITEM, SPLIT PAYMENT, UDHAR JAMA & DAY-END REPORT =================
+    // Direct Amount Cart Item, Cart Rate Edit, Split Payment & Day-End Report
     function addDirectAmountToCart() {
       const price = Number(document.getElementById('quick-amt-price').value || 0);
       if (price <= 0) { alert("Amount (₹) daalein!"); return; }
@@ -2149,6 +2258,13 @@
       document.getElementById('quick-amt-name').value = '';
       document.getElementById('quick-amt-price').value = '';
       renderCart();
+    }
+
+    function editCartItemRate(idx, newRateStr) {
+      const rate = Math.max(0, Number(newRateStr || 0));
+      if (!cart[idx]) return;
+      cart[idx].price = rate;
+      updateCartTotals();
     }
 
     function toggleSplitPaymentBox() {
@@ -2186,7 +2302,7 @@
       window.open(`https://wa.me/?text=*KIRTIKA MOBILE - ORDER LIST (${activeBranch})*%0A%0A${lines}`, '_blank');
     }
 
-    // ================= BULK STOCK DELETE & QUICK PHOTO CART =================
+    // Bulk Stock Delete & Quick Photo Cart
     function updateBulkDeleteUI() { const checked = document.querySelectorAll('.stock-row-chk:checked'); document.getElementById('selected-stock-count').innerText = checked.length; document.getElementById('bulk-del-stock-btn').classList.toggle('hidden', !isAdminUser() || checked.length === 0); }
     function toggleSelectAllStock(isChecked) { document.querySelectorAll('.stock-row-chk').forEach(cb => cb.checked = isChecked); updateBulkDeleteUI(); }
     async function bulkDeleteSelectedStock() {
@@ -2203,11 +2319,11 @@
     function addQuickPhotoItemToCart() { const price = Number(document.getElementById('qp-price').value || 0), qty = Math.max(1, Number(document.getElementById('qp-qty').value || 1)); if (!price) return; cart.push({ id: "CUSTOM-" + Date.now(), name: document.getElementById('qp-name').value.trim() || "Photo Item", mrp: price, price, costPrice: 0, image: document.getElementById('qp-image-data').value, qty, isCustom: true }); closeQuickPhotoCartModal(); renderCart(); }
     function viewSoldBillPhotos(invId) { const inv = storeData.invoices.find(x => String(x.id) === String(invId)); if (!inv) return; const photoItems = (inv.cart || []).filter(c => c.image); document.getElementById('vbp-title').innerText = `${inv.id} — Photos (${photoItems.length})`; document.getElementById('vbp-grid').innerHTML = photoItems.map(c => `<div class="border rounded-xl p-2 bg-slate-50 text-center space-y-1"><img loading="lazy" src="${c.image}" class="w-full h-32 object-cover rounded-lg border"><p class="font-bold text-xs">${c.name}</p><p class="text-[11px] font-black text-indigo-600">₹${c.price} × ${c.qty}</p></div>`).join(''); document.getElementById('view-bill-photos-modal').classList.remove('hidden'); document.getElementById('view-bill-photos-modal').classList.add('flex'); }
 
-    // ================= TABS & MORE SUBVIEWS =================
+    // Tabs & More Subviews
     function switchTab(tab) { ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => { document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab); const btn = document.getElementById('nav-' + t); if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); } }); }
     function showMoreSubView(sub) { ['counter', 'online', 'customers', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'transfer', 'pbills', 'staff'].forEach(s => { document.getElementById('more-sub-' + s).classList.toggle('hidden', s !== sub); const btn = document.getElementById('more-btn-' + s); if (btn) { const wasHidden = btn.classList.contains('hidden'); btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm"; if (wasHidden) btn.classList.add('hidden'); } }); }
 
-    // ================= TRANSFER, HOLD & iPHONE + ANDROID HYBRID SCANNER =================
+    // Transfer, Hold & Scanner
     function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
     async function executeBranchTransfer(btn) { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; const res = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
 
@@ -2262,12 +2378,7 @@
 
       try {
         activeVideoStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            focusMode: { ideal: "continuous" }
-          },
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 }, focusMode: { ideal: "continuous" } },
           audio: false
         });
         const videoEl = document.getElementById('zxing-scanner-video');
@@ -2278,18 +2389,14 @@
         feedback.innerText = "Barcode ko green laser box mein rakhein";
 
         if ('BarcodeDetector' in window) {
-          const detector = new BarcodeDetector({
-            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code', 'itf']
-          });
+          const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code', 'itf'] });
           nativeDetectorLoop = true;
           const scanFrame = async () => {
             if (!nativeDetectorLoop || !activeVideoStream) return;
             try {
               if (videoEl.readyState >= 2) {
                 const barcodes = await detector.detect(videoEl);
-                if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-                  await handleDetectedBarcode(barcodes[0].rawValue);
-                }
+                if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) await handleDetectedBarcode(barcodes[0].rawValue);
               }
             } catch (e) {}
             if (nativeDetectorLoop) requestAnimationFrame(scanFrame);
@@ -2304,17 +2411,11 @@
           iosScanTimer = setInterval(() => {
             if (!activeVideoStream || videoEl.readyState < 2 || !videoEl.videoWidth) return;
             try {
-              const vw = videoEl.videoWidth;
-              const vh = videoEl.videoHeight;
-              const cropW = Math.floor(vw * 0.9);
-              const cropH = Math.floor(vh * 0.45);
-              const cropX = Math.floor((vw - cropW) / 2);
-              const cropY = Math.floor((vh - cropH) / 2);
-
-              offCanvas.width = cropW;
-              offCanvas.height = cropH;
+              const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
+              const cropW = Math.floor(vw * 0.9), cropH = Math.floor(vh * 0.45);
+              const cropX = Math.floor((vw - cropW) / 2), cropY = Math.floor((vh - cropH) / 2);
+              offCanvas.width = cropW; offCanvas.height = cropH;
               offCtx.drawImage(videoEl, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-
               scanImg.onload = async () => {
                 try {
                   const res = await zxingCodeReader.decodeFromImageElement(scanImg);
@@ -2353,31 +2454,20 @@
       if (track?.getCapabilities?.().torch) {
         torchOn = !torchOn;
         await track.applyConstraints({ advanced: [{ torch: torchOn }] });
-      } else {
-        alert("Is device par camera flash available nahi hai.");
-      }
+      } else alert("Is device par camera flash available nahi hai.");
     }
 
     function closeUltraFastScanner() {
       nativeDetectorLoop = false;
-      if (iosScanTimer) {
-        clearInterval(iosScanTimer);
-        iosScanTimer = null;
-      }
-      if (zxingCodeReader) {
-        try { zxingCodeReader.reset(); } catch (e) {}
-        zxingCodeReader = null;
-      }
-      if (activeVideoStream) {
-        activeVideoStream.getTracks().forEach(t => t.stop());
-        activeVideoStream = null;
-      }
+      if (iosScanTimer) { clearInterval(iosScanTimer); iosScanTimer = null; }
+      if (zxingCodeReader) { try { zxingCodeReader.reset(); } catch (e) {} zxingCodeReader = null; }
+      if (activeVideoStream) { activeVideoStream.getTracks().forEach(t => t.stop()); activeVideoStream = null; }
       const videoEl = document.getElementById('zxing-scanner-video');
       if (videoEl) videoEl.srcObject = null;
       document.getElementById('live-scanner-modal').classList.add('hidden');
     }
 
-    // ================= AI BILL SCANNER & AI COPILOT =================
+    // AI Bill Scanner & AI Copilot
     function compressBillDataUrl(rawDataUrl, callback) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const max = 420; let w = img.width, h = img.height; if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6)); }; img.src = rawDataUrl; }
     function handleAIBillUpload(event) { const file = event.target.files[0]; if (!file) return; const statusBox = document.getElementById('ai-scan-status'); statusBox.classList.remove('hidden'); statusBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI bill padh raha hai...`; const reader = new FileReader(); reader.onload = async function(e) { try { const res = await callSheetAPI("parseBillImageWithAI", e.target.result, "AI Scanning Bill..."); const items = Array.isArray(res) ? res : (res.items || []); compressBillDataUrl(e.target.result, (compressedImg) => { aiParsedData = { supplierName: res.supplierName || "", supplierBillNo: res.supplierBillNo || "", items, billImage: compressedImg }; statusBox.classList.add('hidden'); renderAIExtractedEditor(); }); } catch (err) { statusBox.innerText = "Error: " + err.message; } }; reader.readAsDataURL(file); event.target.value = ""; }
     function renderAIExtractedEditor() { const box = document.getElementById('ai-extracted-box'); box.classList.remove('hidden'); box.innerHTML = `<div class="flex justify-between items-center border-b pb-2"><p class="font-extrabold text-xs text-indigo-700">✅ ${aiParsedData.items.length} Items Mile:</p><button onclick="closeAIExtractedBox()" class="px-2.5 py-1 bg-red-100 text-red-600 rounded-lg font-bold text-xs">✕ Close</button></div><div class="grid grid-cols-2 gap-2 bg-indigo-50/70 p-2.5 rounded-xl border"><div><span class="text-[10px] font-bold">Supplier</span><input type="text" id="ai-pb-supplier" value="${String(aiParsedData.supplierName).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-bold"></div><div><span class="text-[10px] font-bold">Bill No.</span><input type="text" id="ai-pb-billno" value="${String(aiParsedData.supplierBillNo).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-mono"></div></div><div class="space-y-2 max-h-72 overflow-y-auto">${aiParsedData.items.map((it, idx) => `<div class="p-2.5 bg-slate-50 rounded-xl border space-y-1.5"><div class="flex items-center gap-2"><input type="checkbox" id="ai-chk-${idx}" checked class="w-4 h-4"><input type="text" id="ai-name-${idx}" value="${String(it.name).replace(/"/g, '&quot;')}" class="flex-1 p-1.5 bg-white border rounded-lg text-xs font-bold"><input type="text" id="ai-cat-${idx}" value="${it.category || 'General'}" class="w-24 p-1.5 bg-white border rounded-lg text-[11px]"></div><div class="grid grid-cols-5 gap-1.5 text-[10px]"><div><span>Cost</span><input type="number" id="ai-cost-${idx}" value="${it.costPrice || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>MRP</span><input type="number" id="ai-mrp-${idx}" value="${it.mrp || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Retail</span><input type="number" id="ai-price-${idx}" value="${it.price || 0}" class="w-full p-1 bg-white border rounded font-bold text-indigo-600"></div><div><span>Whlsl</span><input type="number" id="ai-whl-${idx}" value="${it.wholesalePrice || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Qty</span><input type="number" id="ai-qty-${idx}" value="${it.stock || 1}" class="w-full p-1 bg-white border rounded font-bold text-emerald-600"></div></div></div>`).join('')}</div><div class="space-y-1 pt-1 border-t"><label class="flex items-center gap-2 text-xs font-bold"><input type="checkbox" id="ai-save-pb-chk" checked> Purchase Bill save karein</label><label class="flex items-center gap-2 text-xs font-bold text-indigo-700"><input type="checkbox" id="ai-save-pb-photo-chk" checked> Bill ki Photo bhi save rakhein</label></div><button id="ai-save-btn" onclick="saveSelectedAIItems()" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">✅ Selected Items & Bill Save Karein</button>`; }
@@ -2412,13 +2502,13 @@
         const res = await callSheetAPI("runAICopilotCommand", { command: cmd, summary, branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" }, "AI Thinking...");
         if (res.type === "ADD_BILL" && Array.isArray(res.items)) {
           res.items.forEach(it => { const match = branchProducts().find(p => String(p.id) === String(it.id) || p.name.toLowerCase().includes(String(it.name || it.query || "").toLowerCase())); if (match) for (let q = 0; q < (it.qty || 1); q++) addToCart(match.id); });
-          if (res.customer) document.getElementById('cust-name').value = res.customer;
+          if (res.customer && isRealCustomerName(res.customer)) document.getElementById('cust-name').value = res.customer;
           closeModalById('ai-copilot-modal'); switchTab('pos');
         } else { out.innerText = res.reply || "Done!"; if (res.updatedData) { storeData = res.updatedData; saveLocalStoreCache(storeData); renderAllViews(); } }
       } catch (err) { out.innerText = "Error: " + err.message; }
     }
 
-    // ================= AUTH, POS, STOCK, SALES & 8 BILL TEMPLATES =================
+    // Auth, POS, Stock & Sales
     function attemptLogin() {
       const staffId = document.getElementById('login-staff-select').value, pin = document.getElementById('login-pin').value.trim();
       activeBranch = document.getElementById('login-branch-select').value || "Main Branch"; document.getElementById('header-branch-select').value = activeBranch;
@@ -2480,7 +2570,7 @@
     function addToCart(prodId) { const prod = branchProducts().find(p => String(p.id) === String(prodId)); if (!prod || prod.stock <= 0) { alert("Stock khatam hai!"); return; } const activePrice = currentPriceMode === 'Wholesale' ? (prod.wholesalePrice || prod.price) : prod.price; const existing = cart.find(c => String(c.id) === String(prodId)); if (existing) { if (existing.qty < prod.stock) existing.qty++; } else cart.push({ id: prod.id, name: prod.name, mrp: prod.mrp || activePrice, price: activePrice, costPrice: prod.costPrice || 0, image: prod.image || "", qty: 1, isCustom: false }); renderCart(); }
     function changeCartQty(idx, d) { cart[idx].qty += d; if (cart[idx].qty <= 0) cart.splice(idx, 1); renderCart(); }
     function clearCart() { cart = []; renderCart(); }
-    function renderCart() { const box = document.getElementById('cart-items'); if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-5 text-xs">Cart khaali hai. Product chunein ya upar seedha Amount (₹) daalein.</p>`; updateCartTotals(); return; } box.innerHTML = cart.map((c, idx) => `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">${c.image ? `<img loading="lazy" src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}<div class="flex-1 min-w-0"><p class="font-bold text-xs text-slate-800 truncate">${c.name}</p><p class="text-[11px] text-slate-500">${(c.mrp && c.mrp > c.price) ? `<span class="line-through text-slate-400">₹${c.mrp}</span> ` : ''}₹${c.price} × ${c.qty} = <b>₹${c.price * c.qty}</b></p></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button><span class="font-bold text-xs w-4 text-center">${c.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button></div></div>`).join(''); updateCartTotals(); }
+    function renderCart() { const box = document.getElementById('cart-items'); if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-5 text-xs">Cart khaali hai. Product chunein ya upar seedha Amount (₹) daalein.</p>`; updateCartTotals(); return; } box.innerHTML = cart.map((c, idx) => `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">${c.image ? `<img loading="lazy" src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}<div class="flex-1 min-w-0"><p class="font-bold text-xs text-slate-800 truncate">${c.name}</p><div class="flex items-center gap-1 mt-0.5 text-[11px] text-slate-600"><span>₹</span><input type="number" value="${c.price}" onchange="editCartItemRate(${idx}, this.value)" class="w-16 px-1 py-0.5 bg-white border rounded font-bold text-indigo-700 text-[11px]"><span>× ${c.qty} = <b>₹${c.price * c.qty}</b></span></div></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button><span class="font-bold text-xs w-4 text-center">${c.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button></div></div>`).join(''); updateCartTotals(); }
     function updateCartTotals() {
       const mrpTotal = cart.reduce((s, i) => s + (Math.max(Number(i.mrp || 0), Number(i.price || 0)) * i.qty), 0);
       const subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -2511,7 +2601,9 @@
       btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving Bill...`;
       try {
         const cleanCartForSheet = cart.map(c => ({ id: c.id, name: c.name, mrp: Math.max(Number(c.mrp || 0), Number(c.price || 0)), price: c.price, costPrice: c.costPrice, qty: c.qty, isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : "" }));
-        const salePayload = { staffName: currentUser ? currentUser.name : 'Staff', customerName: document.getElementById('cust-name').value.trim() || 'Walk-in Customer', customerPhone: document.getElementById('cust-phone').value.trim(), customerAddress: addr, priceMode: currentPriceMode, paymentMode: mode, cashPaid, upiPaid, udharDue, subtotal: subTotal, mrpTotal, rateSavings, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal), note: fullNote, customDate: document.getElementById('bill-custom-date').value.trim(), total: finalTotal, cart: cleanCartForSheet, branch: activeBranch };
+        const rawCustName = document.getElementById('cust-name').value.trim();
+        const finalCustName = isRealCustomerName(rawCustName) ? rawCustName : 'Walk-in Customer';
+        const salePayload = { staffName: currentUser ? currentUser.name : 'Staff', customerName: finalCustName, customerPhone: document.getElementById('cust-phone').value.trim(), customerAddress: addr, priceMode: currentPriceMode, paymentMode: mode, cashPaid, upiPaid, udharDue, subtotal: subTotal, mrpTotal, rateSavings, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal), note: fullNote, customDate: document.getElementById('bill-custom-date').value.trim(), total: finalTotal, cart: cleanCartForSheet, branch: activeBranch };
         const res = await callSheetAPI("processSale", salePayload, "Saving Bill...");
         if (res.queuedOffline) {
           const fakeId = "OFF-" + Date.now().toString().slice(-5);
@@ -2530,7 +2622,7 @@
       finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Bill Save & Print Karein`; }
     }
 
-    // ================= 8 BILL TEMPLATES + EXTRA DISCOUNT BREAKDOWN + SMART DOWNLOAD/SHARE =================
+    // 8 Bill Templates + Smart Share/Download
     function showReceiptModal(invId, dateStr, sale) { lastReceipt = { invId, dateStr, ...sale }; document.getElementById('receipt-modal').classList.remove('hidden'); document.getElementById('receipt-modal').classList.add('flex'); renderReceiptTheme(); }
     function setBillTheme(theme) {
       currentBillTheme = theme;
@@ -2656,7 +2748,7 @@
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
-    // ================= EXCHANGE / RETURN FLOW =================
+    // Exchange / Return Flow
     function openExchangeModal(invId) {
       const inv = storeData.invoices.find(x => String(x.id) === String(invId));
       if (!inv) return;
@@ -2698,7 +2790,7 @@
       alert("✅ Return / Exchange Update Ho Gaya!");
     }
 
-    // ================= STOCK, ADD STOCK INWARD, HISTORY, BARCODE & PRODUCTS =================
+    // Stock, Add Stock Inward, History, Barcode & Products
     function toggleStockViewMode(mode) {
       stockViewMode = mode;
       document.getElementById('stk-mode-list').className = mode === 'list' ? "px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[11px] font-bold" : "px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[11px] font-bold";
@@ -2906,7 +2998,7 @@
       renderUdharKhataList();
     }
 
-    // ================= ADVANCE REPAIRING + STAFF PRIVACY + SALES SYNC =================
+    // Advance Repairing + Staff Privacy + Sales Sync
     async function addRepairJob(btn) {
       const customer = document.getElementById('rep-cust').value.trim();
       const deviceModel = document.getElementById('rep-model').value.trim();
@@ -3055,7 +3147,7 @@
     async function deleteStaff(id) { if (isAdminUser() && confirm("Delete staff?")) { try { storeData = await callSheetAPI("deleteStaffMember", id, "Deleting Staff..."); saveLocalStoreCache(storeData); renderStaffList(); } catch (e) { alert(e.message); } } }
     function renderStaffList() { document.getElementById('staff-list-box').innerHTML = storeData.staff.map(s => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold text-slate-800">${s.name} <span class="text-[10px] px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded">${s.role}</span></p><p class="text-[10px] text-slate-400 font-mono">PIN: ${s.pin} ${s.salary ? `• Salary: ₹${s.salary}/mo` : ''}</p></div><div class="flex items-center gap-2"><button onclick="openEditStaffModal('${s.id}')" class="px-2.5 py-1 bg-slate-100 text-indigo-700 rounded-lg font-bold text-[11px]"><i class="fas fa-edit mr-1"></i>Edit</button><button onclick="deleteStaff('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
 
-    // ================= FULL BACKUP (.JSON), RESTORE, EXCEL & PDF =================
+    // Full Backup (.JSON), Restore, Excel & PDF
     function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); document.getElementById('backup-modal').classList.add('flex'); }
     function getFilteredBackupData() {
       const period = document.getElementById('backup-period-select').value, now = new Date(); let cutoff = null, label = "Lifetime";
@@ -3078,12 +3170,7 @@
 
     function exportFullJSONBackup() {
       const data = getFilteredBackupData();
-      const payload = {
-        app: "Kirtika_Mobile_ERP",
-        exportedAt: new Date().toISOString(),
-        branch: activeBranch,
-        ...data
-      };
+      const payload = { app: "Kirtika_Mobile_ERP", exportedAt: new Date().toISOString(), branch: activeBranch, ...data };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
