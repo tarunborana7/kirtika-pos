@@ -1138,7 +1138,7 @@
     <button onclick="switchTab('expenses')" id="nav-expenses" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-wallet text-base mb-0.5"></i><span>Expense</span></button>
     <button onclick="switchTab('more')" id="nav-more" class="flex flex-col items-center text-slate-400 font-bold text-[11px]"><i class="fas fa-th-large text-base mb-0.5"></i><span>More</span></button>
   </nav>
-  <script>
+ <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxj07TNFJlzVDNP-0X3LqOIU7mX8mTqA2EzYiOztIZda_dUmJcxfDtFkOvZVWZMvtor/exec";
     const LOCAL_CACHE_KEY = "KM_STORE_CACHE_V4";
     const OFFLINE_QUEUE_KEY = "KM_OFFLINE_QUEUE_V1";
@@ -1244,7 +1244,6 @@
       return true;
     }
 
-    // Public Customer Self-Complaint Portal (?complaint=1)
     function openPublicComplaintPortal() {
       const brSel = document.getElementById('pub-cmp-branch');
       const list = storeData.branches.length ? storeData.branches : [{ name: "Main Branch" }];
@@ -1584,7 +1583,6 @@
       updateMobileFloatingCartBar();
     }
 
-    // Expense Custom Category (+ Cat)
     function getAllExpenseCategories() {
       let saved = [];
       try { saved = JSON.parse(localStorage.getItem(CUSTOM_EXP_CAT_KEY) || "[]"); } catch (e) {}
@@ -1615,7 +1613,6 @@
       alert(`✅ "${name}" category add ho gayi!`);
     }
 
-    // Mobile Floating Cart Bar
     function updateMobileFloatingCartBar() {
       const bar = document.getElementById('mobile-floating-cart-bar');
       if (!bar) return;
@@ -1633,7 +1630,6 @@
       document.getElementById('billing-cart-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Duplicate Barcode Warning, Bulk CSV Upload, Stock Export, Receiving Checklist & Dead Stock
     function checkDuplicateBarcodeWarning(codeVal, warnElId) {
       const el = document.getElementById(warnElId);
       if (!el) return;
@@ -1859,7 +1855,578 @@
 
       box.innerHTML = slowItems.length ? slowItems.map(p => `<div class="py-2 flex justify-between items-center"><div><p class="font-bold text-slate-800">${p.name}</p><p class="text-[10px] text-slate-500">Stock: <b>${p.stock}</b> • Retail: ₹${p.price} • Cost: ₹${p.costPrice || 0}</p></div><span class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded text-[10px] font-bold">${deadStockDays}d+ Unsold</span></div>`).join('') : `<p class="text-center text-slate-400 py-4">${deadStockDays} din se unsold koi stock nahi mila.</p>`;
     }
-   // Phone Autofill + Clean Name Filter (No Walk-in Customer or 1-letter names)
+
+    function addDirectAmountToCart() {
+      const amt = Number(document.getElementById('quick-amt-price').value || 0);
+      if (!amt) { alert("Amount (₹) daalein!"); return; }
+      const label = document.getElementById('quick-amt-name').value.trim() || "Quick Amount";
+      cart.push({ id: "AMT-" + Date.now(), name: label, mrp: amt, price: amt, costPrice: 0, qty: 1, isCustom: true });
+      document.getElementById('quick-amt-name').value = '';
+      document.getElementById('quick-amt-price').value = '';
+      renderCart();
+    }
+
+    function editCartItemRate(idx, newRateStr) {
+      const rate = Math.max(0, Number(newRateStr || 0));
+      if (!cart[idx]) return;
+      cart[idx].price = rate;
+      updateCartTotals();
+    }
+
+    function toggleSplitPaymentBox() {
+      const mode = document.getElementById('pay-mode').value, box = document.getElementById('split-payment-box');
+      if (mode === 'Split') { box.classList.remove('hidden'); document.getElementById('split-cash').value = ''; document.getElementById('split-upi').value = ''; recalcSplitRemaining(); }
+      else box.classList.add('hidden');
+    }
+    function recalcSplitRemaining() {
+      const finalTotal = Number(document.getElementById('cart-final-total').innerText || 0);
+      document.getElementById('split-udhar').value = Math.max(0, finalTotal - (Number(document.getElementById('split-cash').value || 0) + Number(document.getElementById('split-upi').value || 0)));
+    }
+    function openUdharJamaModal(invId) {
+      const inv = storeData.invoices.find(x => String(x.id) === String(invId)); if (!inv) return;
+      document.getElementById('jama-inv-id').value = inv.id; document.getElementById('jama-cust-label').innerText = `${inv.customer} (${inv.id})`; document.getElementById('jama-due-amount').innerText = inv.udharDue; document.getElementById('jama-recv-input').value = '';
+      document.getElementById('udhar-jama-modal').classList.remove('hidden'); document.getElementById('udhar-jama-modal').classList.add('flex');
+    }
+    async function submitUdharJama(btn) {
+      const id = document.getElementById('jama-inv-id').value, amount = Number(document.getElementById('jama-recv-input').value || 0), receiveMode = document.getElementById('jama-mode-select').value;
+      if (amount <= 0) { alert("Amount daalein!"); return; }
+      const res = await callSheetAPI("recordUdharPayment", { id, amount, receiveMode }, "Updating Udhar...", btn);
+      if (!res) return;
+      storeData = res; saveLocalStoreCache(storeData); closeModalById('udhar-jama-modal'); renderAllViews(); alert(`✅ ₹${amount} (${receiveMode}) jama ho gaya!`);
+    }
+
+    function sendUdharReminderWhatsApp(invId) {
+      const inv = storeData.invoices.find(x => String(x.id) === String(invId));
+      if (!inv) return;
+      const ph = inv.phone ? '91' + String(inv.phone).replace(/\D/g, '').slice(-10) : '';
+      const msg = `*KIRTIKA MOBILE (${activeBranch}) - UDHAR REMINDER*%0ANamaste ${inv.customer}, aapke bill *${inv.id}* (${inv.date}) par *₹${inv.udharDue}* baaki hain.%0AKripaya suvidhanusar jama karwayein. Dhanyawad! (8209618586)`;
+      window.open(`https://wa.me/${ph}?text=${msg}`, '_blank');
+    }
+
+    function sendDayEndWhatsAppReport() {
+      const msg = `*📊 KIRTIKA MOBILE (${activeBranch}) - DAY END REPORT*%0A*Date:* ${new Date().toLocaleDateString('en-IN')}%0A*Total Bills:* ${document.getElementById('stat-today-bills').innerText}%0A*Aaj Ki Total Sale:* ₹${document.getElementById('stat-today-sales').innerText}%0A*Aaj Cash Sale + Services:* ₹${document.getElementById('galla-cash-in').innerText}%0A*Aaj Kharcha:* ₹${document.getElementById('galla-exp-out').innerText}%0A*Galla Cash Balance:* ₹${document.getElementById('galla-expected').innerText}`;
+      window.open(`https://wa.me/918209618586?text=${msg}`, '_blank');
+    }
+
+    function shareLowStockWhatsApp() {
+      const lowItems = branchProducts().filter(p => p.stock <= 2);
+      if (!lowItems.length) { alert("Sabhi items ka stock 2 se zyada hai!"); return; }
+      const lines = lowItems.map((p, i) => `${i + 1}. ${p.name} (Baaki: ${p.stock})`).join('%0A');
+      window.open(`https://wa.me/?text=*KIRTIKA MOBILE - ORDER LIST (${activeBranch})*%0A%0A${lines}`, '_blank');
+    }
+
+    function updateBulkDeleteUI() { const checked = document.querySelectorAll('.stock-row-chk:checked'); document.getElementById('selected-stock-count').innerText = checked.length; document.getElementById('bulk-del-stock-btn').classList.toggle('hidden', !isAdminUser() || checked.length === 0); }
+    function toggleSelectAllStock(isChecked) { document.querySelectorAll('.stock-row-chk').forEach(cb => cb.checked = isChecked); updateBulkDeleteUI(); }
+    async function bulkDeleteSelectedStock() {
+      if (!isAdminUser()) return;
+      const ids = Array.from(document.querySelectorAll('.stock-row-chk:checked')).map(cb => cb.value);
+      if (!ids.length || !confirm(`${ids.length} items delete karein?`)) return;
+      storeData = await callSheetAPI("bulkDeleteProducts", ids, `Deleting ${ids.length} items...`);
+      saveLocalStoreCache(storeData); document.getElementById('select-all-stock-chk').checked = false; renderAllViews();
+    }
+
+    function openQuickPhotoCartModal() { ['qp-image-data', 'qp-name', 'qp-price'].forEach(id => document.getElementById(id).value = ''); document.getElementById('qp-qty').value = '1'; document.getElementById('qp-preview-img').classList.add('hidden'); document.getElementById('qp-photo-text').innerHTML = `<i class="fas fa-images mr-1"></i>Camera ya Gallery Se Photo Chunein`; document.getElementById('quick-photo-cart-modal').classList.remove('hidden'); document.getElementById('quick-photo-cart-modal').classList.add('flex'); }
+    function closeQuickPhotoCartModal() { closeModalById('quick-photo-cart-modal'); }
+    function addQuickPhotoItemToCart() { const price = Number(document.getElementById('qp-price').value || 0), qty = Math.max(1, Number(document.getElementById('qp-qty').value || 1)); if (!price) return; cart.push({ id: "CUSTOM-" + Date.now(), name: document.getElementById('qp-name').value.trim() || "Photo Item", mrp: price, price, costPrice: 0, image: document.getElementById('qp-image-data').value, qty, isCustom: true }); closeQuickPhotoCartModal(); renderCart(); }
+    function viewSoldBillPhotos(invId) { const inv = storeData.invoices.find(x => String(x.id) === String(invId)); if (!inv) return; const photoItems = (inv.cart || []).filter(c => c.image); document.getElementById('vbp-title').innerText = `${inv.id} — Photos (${photoItems.length})`; document.getElementById('vbp-grid').innerHTML = photoItems.map(c => `<div class="border rounded-xl p-2 bg-slate-50 text-center space-y-1"><img loading="lazy" src="${c.image}" class="w-full h-32 object-cover rounded-lg border"><p class="font-bold text-xs">${c.name}</p><p class="text-[11px] font-black text-indigo-600">₹${c.price} × ${c.qty}</p></div>`).join(''); document.getElementById('view-bill-photos-modal').classList.remove('hidden'); document.getElementById('view-bill-photos-modal').classList.add('flex'); }
+
+    function switchTab(tab) {
+      ['pos', 'inventory', 'invoices', 'expenses', 'more'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('nav-' + t);
+        if (btn) { btn.classList.toggle('text-indigo-600', t === tab); btn.classList.toggle('text-slate-400', t !== tab); }
+      });
+      updateMobileFloatingCartBar();
+    }
+
+    function showMoreSubView(sub) {
+      ['counter', 'online', 'customers', 'feedback', 'complaints', 'followups', 'reservations', 'attendance', 'loyalty', 'repairs', 'used', 'returns', 'suppay', 'transfer', 'pbills', 'staff'].forEach(s => {
+        const el = document.getElementById('more-sub-' + s);
+        if (el) el.classList.toggle('hidden', s !== sub);
+        const btn = document.getElementById('more-btn-' + s);
+        if (btn) {
+          const wasHidden = btn.classList.contains('hidden');
+          btn.className = (s === sub) ? "p-3 bg-indigo-600 text-white rounded-2xl text-left shadow-sm" : "p-3 bg-white text-slate-800 border border-slate-200 rounded-2xl text-left shadow-sm";
+          if (wasHidden) btn.classList.add('hidden');
+        }
+      });
+    }
+
+    function renderTransferDropdowns() { const prods = branchProducts(); document.getElementById('trf-prod-select').innerHTML = prods.length ? prods.map(p => `<option value="${p.id}">${p.name} (Qty: ${p.stock})</option>`).join('') : `<option value="">No Stock</option>`; const otherBranches = storeData.branches.filter(b => b.name !== activeBranch); document.getElementById('trf-to-branch').innerHTML = otherBranches.length ? otherBranches.map(b => `<option value="${b.name}">To: ${b.name}</option>`).join('') : `<option value="">Pehle +Shop se 2nd Branch banayein</option>`; }
+    async function executeBranchTransfer(btn) { const productId = document.getElementById('trf-prod-select').value, toBranch = document.getElementById('trf-to-branch').value, qty = Number(document.getElementById('trf-qty').value || 0); if (!productId || !toBranch || qty <= 0) return; const res = await callSheetAPI("transferStockBranch", { productId, fromBranch: activeBranch, toBranch, qty, staff: currentUser ? currentUser.name : "Admin" }, "Transferring Stock...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); document.getElementById('trf-qty').value = ''; renderAllViews(); alert(`✅ Transferred!`); }
+
+    function holdCurrentBill() { if (!cart.length) return; heldBills.push({ id: "HOLD-" + (heldBills.length + 1), customer: document.getElementById('cust-name').value.trim() || "Walk-in Customer", phone: document.getElementById('cust-phone').value.trim(), address: document.getElementById('cust-address').value.trim(), cart: JSON.parse(JSON.stringify(cart)), time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }); cart = []; document.getElementById('cust-name').value = ''; document.getElementById('cust-phone').value = ''; document.getElementById('cust-address').value = ''; renderCart(); updateHeldBillsBadge(); }
+    function updateHeldBillsBadge() { document.getElementById('held-count').innerText = heldBills.length; document.getElementById('held-bills-btn').classList.toggle('hidden', heldBills.length === 0); }
+    function openHeldBillsModal() { document.getElementById('held-bills-list').innerHTML = heldBills.map((h, idx) => `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl flex justify-between items-center"><div><p class="font-bold">${h.customer} (${h.time})</p><p class="text-[11px] text-slate-600">${h.cart.length} Items</p></div><button onclick="resumeHeldBill(${idx})" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-xs">Resume</button></div>`).join(''); document.getElementById('held-bills-modal').classList.remove('hidden'); document.getElementById('held-bills-modal').classList.add('flex'); }
+    function resumeHeldBill(idx) { const h = heldBills.splice(idx, 1)[0]; cart = h.cart; document.getElementById('cust-name').value = h.customer === "Walk-in Customer" ? "" : h.customer; document.getElementById('cust-phone').value = h.phone; document.getElementById('cust-address').value = h.address || ''; renderCart(); updateHeldBillsBadge(); closeModalById('held-bills-modal'); }
+
+    function togglePCRemoteListener() { const btn = document.getElementById('pc-remote-btn'); if (pcPollInterval) { clearInterval(pcPollInterval); pcPollInterval = null; btn.className = "px-3 py-2.5 bg-slate-800 text-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5"; return; } btn.className = "px-3 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 animate-pulse"; pcPollInterval = setInterval(async () => { try { const res = await fetch(`${GOOGLE_API_URL}?pollScan=1&branch=${encodeURIComponent(activeBranch)}`); const data = await res.json(); if (data.scan && data.scan.id !== lastProcessedRemoteId && (Date.now() - data.scan.ts) < 15000) { lastProcessedRemoteId = data.scan.id; const exactProd = branchProducts().find(p => String(p.barcode).trim() === String(data.scan.barcode).trim()); if (exactProd) { playBeepAndVibrate(); addToCart(exactProd.id); } } } catch (e) {} }, 2200); }
+    function toggleMobileSendToPC() { mobileSendToPC = !mobileSendToPC; const btn = document.getElementById('mobile-send-pc-btn'); btn.innerHTML = `<i class="fas fa-desktop mr-1"></i>Send to PC: ${mobileSendToPC ? 'ON' : 'OFF'}`; }
+    function playBeepAndVibrate() { try { if (navigator.vibrate) navigator.vibrate(75); } catch (e) {} try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = "sine"; osc.frequency.setValueAtTime(1400, ctx.currentTime); gain.gain.setValueAtTime(0.28, ctx.currentTime); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1); } catch (e) {} }
+
+    async function handleDetectedBarcode(decodedText) {
+      const cleanCode = String(decodedText).trim();
+      if (!cleanCode) return;
+      const now = Date.now();
+      if (cleanCode === lastScannedCode && (now - lastScanTime) < 1500) return;
+      lastScannedCode = cleanCode; lastScanTime = now;
+      playBeepAndVibrate();
+      document.getElementById('live-scan-feedback').innerText = "✅ Scanned: " + cleanCode;
+      if (mobileSendToPC) { callSheetAPI("pushRemoteScan", { barcode: cleanCode, branch: activeBranch }, null).catch(() => {}); return; }
+      if (scanTargetField === 'pos-search') {
+        const exactProd = branchProducts().find(p => String(p.barcode).trim() === cleanCode);
+        if (exactProd) addToCart(exactProd.id);
+        else { closeUltraFastScanner(); document.getElementById('pos-search').value = cleanCode; renderPosProducts(); }
+      } else { document.getElementById(scanTargetField).value = cleanCode; closeUltraFastScanner(); }
+    }
+
+    async function openUltraFastScanner(targetId) {
+      scanTargetField = targetId; torchOn = false; lastScannedCode = ""; lastScanTime = 0;
+      const modal = document.getElementById('live-scanner-modal'), feedback = document.getElementById('live-scan-feedback');
+      modal.classList.remove('hidden'); modal.classList.add('flex'); feedback.innerText = "Camera start ho raha hai...";
+      try {
+        activeVideoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 }, focusMode: { ideal: "continuous" } }, audio: false });
+        const videoEl = document.getElementById('zxing-scanner-video');
+        videoEl.setAttribute('playsinline', 'true'); videoEl.muted = true; videoEl.srcObject = activeVideoStream; await videoEl.play();
+        feedback.innerText = "Barcode ko green laser box mein rakhein";
+        if ('BarcodeDetector' in window) {
+          const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code', 'itf'] });
+          nativeDetectorLoop = true;
+          const scanFrame = async () => {
+            if (!nativeDetectorLoop || !activeVideoStream) return;
+            try { if (videoEl.readyState >= 2) { const barcodes = await detector.detect(videoEl); if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) await handleDetectedBarcode(barcodes[0].rawValue); } } catch (e) {}
+            if (nativeDetectorLoop) requestAnimationFrame(scanFrame);
+          };
+          requestAnimationFrame(scanFrame);
+        } else {
+          zxingCodeReader = new ZXing.BrowserMultiFormatReader();
+          const offCanvas = document.createElement('canvas'), offCtx = offCanvas.getContext('2d', { willReadFrequently: true }), scanImg = new Image();
+          iosScanTimer = setInterval(() => {
+            if (!activeVideoStream || videoEl.readyState < 2 || !videoEl.videoWidth) return;
+            try {
+              const vw = videoEl.videoWidth, vh = videoEl.videoHeight, cropW = Math.floor(vw * 0.9), cropH = Math.floor(vh * 0.45), cropX = Math.floor((vw - cropW) / 2), cropY = Math.floor((vh - cropH) / 2);
+              offCanvas.width = cropW; offCanvas.height = cropH; offCtx.drawImage(videoEl, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+              scanImg.onload = async () => { try { const res = await zxingCodeReader.decodeFromImageElement(scanImg); if (res && res.text) handleDetectedBarcode(res.text); } catch (e) {} };
+              scanImg.src = offCanvas.toDataURL('image/jpeg', 0.85);
+            } catch (e) {}
+          }, 180);
+        }
+      } catch (err) { feedback.innerText = "Camera Error: " + err.message; }
+    }
+
+    function setScannerZoom(zoomVal) {
+      const z = Number(zoomVal); document.getElementById('zoom-level-label').innerText = z.toFixed(1) + "x";
+      const videoEl = document.getElementById('zxing-scanner-video');
+      if (activeVideoStream) { const track = activeVideoStream.getVideoTracks()[0]; const caps = track?.getCapabilities?.(); if (caps && caps.zoom) { track.applyConstraints({ advanced: [{ zoom: Math.min(caps.zoom.max, Math.max(caps.zoom.min, z)) }] }).catch(() => {}); videoEl.style.transform = "scale(1)"; return; } }
+      videoEl.style.transform = `scale(${z})`;
+    }
+
+    async function toggleScannerTorch() { if (!activeVideoStream) return; const track = activeVideoStream.getVideoTracks()[0]; if (track?.getCapabilities?.().torch) { torchOn = !torchOn; await track.applyConstraints({ advanced: [{ torch: torchOn }] }); } else alert("Is device par camera flash available nahi hai."); }
+    function closeUltraFastScanner() { nativeDetectorLoop = false; if (iosScanTimer) { clearInterval(iosScanTimer); iosScanTimer = null; } if (zxingCodeReader) { try { zxingCodeReader.reset(); } catch (e) {} zxingCodeReader = null; } if (activeVideoStream) { activeVideoStream.getTracks().forEach(t => t.stop()); activeVideoStream = null; } const videoEl = document.getElementById('zxing-scanner-video'); if (videoEl) videoEl.srcObject = null; document.getElementById('live-scanner-modal').classList.add('hidden'); }
+
+    function compressBillDataUrl(rawDataUrl, callback) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const max = 420; let w = img.width, h = img.height; if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6)); }; img.src = rawDataUrl; }
+    function handleAIBillUpload(event) { const file = event.target.files[0]; if (!file) return; const statusBox = document.getElementById('ai-scan-status'); statusBox.classList.remove('hidden'); statusBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> AI bill padh raha hai...`; const reader = new FileReader(); reader.onload = async function(e) { try { const res = await callSheetAPI("parseBillImageWithAI", e.target.result, "AI Scanning Bill..."); const items = Array.isArray(res) ? res : (res.items || []); compressBillDataUrl(e.target.result, (compressedImg) => { aiParsedData = { supplierName: res.supplierName || "", supplierBillNo: res.supplierBillNo || "", items, billImage: compressedImg }; statusBox.classList.add('hidden'); renderAIExtractedEditor(); }); } catch (err) { statusBox.innerText = "Error: " + err.message; } }; reader.readAsDataURL(file); event.target.value = ""; }
+    function renderAIExtractedEditor() { const box = document.getElementById('ai-extracted-box'); box.classList.remove('hidden'); box.innerHTML = `<div class="flex justify-between items-center border-b pb-2"><p class="font-extrabold text-xs text-indigo-700">✅ ${aiParsedData.items.length} Items Mile:</p><button onclick="closeAIExtractedBox()" class="px-2.5 py-1 bg-red-100 text-red-600 rounded-lg font-bold text-xs">✕ Close</button></div><div class="grid grid-cols-2 gap-2 bg-indigo-50/70 p-2.5 rounded-xl border"><div><span class="text-[10px] font-bold">Supplier</span><input type="text" id="ai-pb-supplier" value="${String(aiParsedData.supplierName).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-bold"></div><div><span class="text-[10px] font-bold">Bill No.</span><input type="text" id="ai-pb-billno" value="${String(aiParsedData.supplierBillNo).replace(/"/g, '&quot;')}" class="w-full p-1.5 bg-white border rounded-lg text-xs font-mono"></div></div><div class="space-y-2 max-h-72 overflow-y-auto">${aiParsedData.items.map((it, idx) => `<div class="p-2.5 bg-slate-50 rounded-xl border space-y-1.5"><div class="flex items-center gap-2"><input type="checkbox" id="ai-chk-${idx}" checked class="w-4 h-4"><input type="text" id="ai-name-${idx}" value="${String(it.name).replace(/"/g, '&quot;')}" class="flex-1 p-1.5 bg-white border rounded-lg text-xs font-bold"><input type="text" id="ai-cat-${idx}" value="${it.category || 'General'}" class="w-24 p-1.5 bg-white border rounded-lg text-[11px]"></div><div class="grid grid-cols-5 gap-1.5 text-[10px]"><div><span>Cost</span><input type="number" id="ai-cost-${idx}" value="${it.costPrice || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>MRP</span><input type="number" id="ai-mrp-${idx}" value="${it.mrp || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Retail</span><input type="number" id="ai-price-${idx}" value="${it.price || 0}" class="w-full p-1 bg-white border rounded font-bold text-indigo-600"></div><div><span>Whlsl</span><input type="number" id="ai-whl-${idx}" value="${it.wholesalePrice || it.price || 0}" class="w-full p-1 bg-white border rounded font-bold"></div><div><span>Qty</span><input type="number" id="ai-qty-${idx}" value="${it.stock || 1}" class="w-full p-1 bg-white border rounded font-bold text-emerald-600"></div></div></div>`).join('')}</div><div class="space-y-1 pt-1 border-t"><label class="flex items-center gap-2 text-xs font-bold"><input type="checkbox" id="ai-save-pb-chk" checked> Purchase Bill save karein</label><label class="flex items-center gap-2 text-xs font-bold text-indigo-700"><input type="checkbox" id="ai-save-pb-photo-chk" checked> Bill ki Photo bhi save rakhein</label></div><button id="ai-save-btn" onclick="saveSelectedAIItems()" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">✅ Selected Items & Bill Save Karein</button>`; }
+    function closeAIExtractedBox() { document.getElementById('ai-extracted-box').classList.add('hidden'); }
+    async function saveSelectedAIItems() { if (isSavingAIItems) return; const selected = []; aiParsedData.items.forEach((_, idx) => { if (document.getElementById(`ai-chk-${idx}`)?.checked) selected.push({ name: document.getElementById(`ai-name-${idx}`).value.trim(), category: document.getElementById(`ai-cat-${idx}`).value.trim() || "General", costPrice: Number(document.getElementById(`ai-cost-${idx}`).value || 0), mrp: Number(document.getElementById(`ai-mrp-${idx}`).value || 0), price: Number(document.getElementById(`ai-price-${idx}`).value || 0), wholesalePrice: Number(document.getElementById(`ai-whl-${idx}`).value || 0), stock: Number(document.getElementById(`ai-qty-${idx}`).value || 1) }); }); if (!selected.length) return; isSavingAIItems = true; const btn = document.getElementById('ai-save-btn'); btn.disabled = true; btn.innerText = "Saving..."; try { storeData = await callSheetAPI("bulkSaveAIProductsAndPurchaseBill", { items: selected, supplierName: document.getElementById('ai-pb-supplier').value.trim(), supplierBillNo: document.getElementById('ai-pb-billno').value.trim(), savePurchaseBill: document.getElementById('ai-save-pb-chk').checked, billImage: document.getElementById('ai-save-pb-photo-chk')?.checked ? aiParsedData.billImage : "", branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" }, `Saving ${selected.length} Items...`); saveLocalStoreCache(storeData); closeAIExtractedBox(); renderAllViews(); alert(`✅ ${selected.length} items added!`); } finally { isSavingAIItems = false; } }
+
+    function openPurchaseBillFull(pbId) { const pb = branchPurchaseBills().find(x => String(x.id) === String(pbId)); if (!pb) return; document.getElementById('vpb-title').innerText = `${pb.supplierName} (${pb.id})`; document.getElementById('vpb-content').innerHTML = `<div class="p-3 bg-slate-50 rounded-xl border"><div class="flex justify-between"><span>Date: <b>${pb.date}</b></span><span>Bill No: <b>${pb.supplierBillNo || '--'}</b></span></div><div class="text-sm font-black text-indigo-700 mt-1">Total: ₹${pb.totalAmount}</div></div>${pb.billImage ? `<img loading="lazy" src="${pb.billImage}" class="w-full rounded-lg border">` : ''}<table class="w-full text-left text-[11px] border"><thead class="bg-slate-100"><tr><th class="p-2">Item</th><th class="p-2">Qty</th><th class="p-2">Cost</th><th class="p-2">Sell</th></tr></thead><tbody class="divide-y">${pb.items.map(i => `<tr><td class="p-2 font-bold">${i.name}</td><td class="p-2">${i.stock}</td><td class="p-2">₹${i.costPrice}</td><td class="p-2">₹${i.price}</td></tr>`).join('')}</tbody></table>`; document.getElementById('view-pb-modal').classList.remove('hidden'); document.getElementById('view-pb-modal').classList.add('flex'); }
+    function openEditPBModal(pbId) { const pb = branchPurchaseBills().find(x => String(x.id) === String(pbId)); if (!pb) return; document.getElementById('edit-pb-id').value = pb.id; document.getElementById('edit-pb-supplier').value = pb.supplierName; document.getElementById('edit-pb-billno').value = pb.supplierBillNo; document.getElementById('edit-pb-total').value = pb.totalAmount; document.getElementById('edit-pb-modal').classList.remove('hidden'); document.getElementById('edit-pb-modal').classList.add('flex'); }
+    async function saveEditedPurchaseBill(btn) { const res = await callSheetAPI("updatePurchaseBill", { id: document.getElementById('edit-pb-id').value, supplierName: document.getElementById('edit-pb-supplier').value.trim(), supplierBillNo: document.getElementById('edit-pb-billno').value.trim(), totalAmount: Number(document.getElementById('edit-pb-total').value || 0) }, "Updating Bill...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('edit-pb-modal'); renderAllViews(); }
+    async function deleteSavedPurchaseBill(pbId) { if (confirm("Delete purchase bill?")) { storeData = await callSheetAPI("deletePurchaseBill", pbId, "Deleting Bill..."); saveLocalStoreCache(storeData); renderAllViews(); } }
+    function renderPurchaseBillsList() { const list = branchPurchaseBills(); document.getElementById('purchase-bills-list').innerHTML = list.length ? list.map(pb => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center gap-2"><div class="min-w-0"><p class="font-bold truncate">${pb.supplierName} ${pb.supplierBillNo ? `(#${pb.supplierBillNo})` : ''} ${pb.billImage ? '<i class="fas fa-image text-indigo-500 ml-1"></i>' : ''}</p><p class="text-[10px] text-slate-400">${pb.date} • ${pb.itemsCount} Items • <b class="text-indigo-600">₹${pb.totalAmount}</b></p></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="openPurchaseBillFull('${pb.id}')" class="px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Open</button><button onclick="openEditPBModal('${pb.id}')" class="p-1.5 bg-white border rounded-lg"><i class="fas fa-edit"></i></button><button onclick="deleteSavedPurchaseBill('${pb.id}')" class="p-1.5 bg-white border rounded-lg text-red-500"><i class="fas fa-trash"></i></button></div></div>`).join('') : `<p class="text-center text-slate-400 py-6">No saved purchase bills.</p>`; }
+
+    function openAICopilotModal() { document.getElementById('ai-copilot-modal').classList.remove('hidden'); document.getElementById('ai-copilot-modal').classList.add('flex'); }
+    function startVoiceRecognition() { document.getElementById('ai-copilot-input').focus(); }
+    async function sendAICopilotPrompt(presetText = null) {
+      const input = document.getElementById('ai-copilot-input'), cmd = presetText || input.value.trim(); if (!cmd) return; input.value = '';
+      const out = document.getElementById('ai-copilot-output'); out.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Processing...`;
+      const now = new Date();
+      const todayStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const todaysInvoices = branchInvoices().filter(i => i.status !== 'Returned' && normalizeClientDate(i.date) === todayStr);
+      const summary = JSON.stringify({ todayDate: todayStr, todaysSaleCount: todaysInvoices.length, todaysTotalAmount: todaysInvoices.reduce((s, x) => s + Number(x.total || 0), 0), todaysBills: todaysInvoices.map(i => ({ id: i.id, date: i.date, customer: i.customer, items: i.items, total: i.total })), branch: activeBranch, products: branchProducts().map(p => ({ id: p.id, name: p.name, stock: p.stock, retail: p.price })), recentSales: branchInvoices().slice(0, 30).map(i => ({ date: i.date, customer: i.customer, items: i.items, total: i.total })), expenses: branchExpenses().slice(0, 10) });
+      try {
+        const res = await callSheetAPI("runAICopilotCommand", { command: cmd, summary, branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" }, "AI Thinking...");
+        if (res.type === "ADD_BILL" && Array.isArray(res.items)) {
+          res.items.forEach(it => { const match = branchProducts().find(p => String(p.id) === String(it.id) || p.name.toLowerCase().includes(String(it.name || it.query || "").toLowerCase())); if (match) for (let q = 0; q < (it.qty || 1); q++) addToCart(match.id); });
+          if (res.customer && isRealCustomerName(res.customer)) document.getElementById('cust-name').value = res.customer;
+          closeModalById('ai-copilot-modal'); switchTab('pos');
+        } else { out.innerText = res.reply || "Done!"; if (res.updatedData) { storeData = res.updatedData; saveLocalStoreCache(storeData); renderAllViews(); } }
+      } catch (err) { out.innerText = "Error: " + err.message; }
+    }
+
+    function attemptLogin() {
+      const staffId = document.getElementById('login-staff-select').value, pin = document.getElementById('login-pin').value.trim();
+      activeBranch = document.getElementById('login-branch-select').value || "Main Branch"; document.getElementById('header-branch-select').value = activeBranch;
+      const staff = storeData.staff.find(s => String(s.id) === String(staffId));
+      if (staff && String(staff.pin) === String(pin)) {
+        currentUser = staff; selectedAttStaffId = null;
+        document.getElementById('header-staff-info').innerText = `${staff.name} (${staff.role})`;
+        document.getElementById('login-screen').classList.add('hidden'); document.getElementById('login-pin').value = '';
+        renderAllViews();
+      } else alert("Galat PIN!");
+    }
+    function logout() { currentUser = null; document.getElementById('login-screen').classList.remove('hidden'); }
+
+    function setPriceMode(mode) { currentPriceMode = mode; document.getElementById('cart-mode-badge').innerText = mode; ['Retail', 'Wholesale'].forEach(m => { document.getElementById('mode-btn-' + m).className = (m === mode) ? "px-2.5 py-1 rounded-md text-xs font-extrabold bg-white text-indigo-700 shadow-sm" : "px-2.5 py-1 rounded-md text-xs font-bold text-slate-600"; }); cart.forEach(c => { if (!c.isCustom) { const p = branchProducts().find(x => String(x.id) === String(c.id)); if (p) c.price = mode === 'Wholesale' ? (p.wholesalePrice || p.price) : p.price; } }); renderPosProducts(); renderCart(); }
+
+    function lookupCustomerHistory(forceFill = false) {
+      const phoneInput = document.getElementById('cust-phone').value, phone = phoneInput.replace(/\D/g, ''), banner = document.getElementById('cust-history-banner');
+      autofillFromCustomerPhone('cust-phone', 'cust-name', 'cust-address', forceFill);
+      if (phone.length < 5) { banner.classList.add('hidden'); return; }
+      const matches = storeData.invoices.filter(inv => String(inv.phone).replace(/\D/g, '').includes(phone));
+      const cards = getCustomerAllLoyaltyCards(phone, document.getElementById('cust-name').value || "Customer");
+      if (matches.length > 0 || phone.length >= 10) {
+        const totalDue = matches.reduce((s, x) => s + Number(x.udharDue || 0), 0);
+        document.getElementById('cust-history-summary').innerText = `Purane ${matches.length} Bills ${totalDue > 0 ? `• Baaki: ₹${totalDue}` : ''}`;
+        document.getElementById('cust-loyalty-status').innerText = cards.map(c => `${c.title}: ${c.currentStamps}/${c.targetVisits}${c.unlocked ? ' 🎁' : ''}`).join(' | ');
+        banner.classList.remove('hidden');
+      } else banner.classList.add('hidden');
+    }
+
+    function openCustomerHistoryModal() {
+      const phone = document.getElementById('cust-phone').value.replace(/\D/g, '');
+      const matches = storeData.invoices.filter(inv => String(inv.phone).replace(/\D/g, '').includes(phone));
+      document.getElementById('cust-hist-title').innerText = `Purchase History (${matches.length} Bills)`;
+      document.getElementById('cust-hist-list').innerHTML = matches.map(inv => `<div class="p-2.5 bg-slate-50 rounded-xl border"><div class="flex justify-between font-bold"><span>${inv.id} • ${inv.date}</span><span class="text-indigo-600">₹${inv.total}</span></div><p class="text-slate-600 mt-1">${inv.items}</p></div>`).join('');
+      document.getElementById('cust-history-modal').classList.remove('hidden'); document.getElementById('cust-history-modal').classList.add('flex');
+    }
+
+    function renderCategories() { const prods = branchProducts(), hasFav = prods.some(p => p.isFavorite); const cats = ['All', ...(hasFav ? ['★ Favorites'] : []), ...new Set(prods.map(p => p.category || 'General'))]; document.getElementById('pos-categories').innerHTML = cats.map(c => `<button onclick="selectedCategory='${c}';posPageLimit=30;renderCategories();renderPosProducts();" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${selectedCategory === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'}">${c}</button>`).join(''); }
+    function renderPosProducts() {
+      const q = document.getElementById('pos-search').value.toLowerCase().trim();
+      const filtered = branchProducts().filter(p => (selectedCategory === 'All' || (selectedCategory === '★ Favorites' ? p.isFavorite : p.category === selectedCategory)) && (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)));
+      const grid = document.getElementById('pos-products-grid'), wrap = document.getElementById('pos-load-more-wrap');
+      if (!filtered.length) { grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Koi product nahi mila.</div>`; wrap.classList.add('hidden'); return; }
+      const visible = filtered.slice(0, posPageLimit); wrap.classList.toggle('hidden', filtered.length <= posPageLimit);
+      grid.innerHTML = visible.map(p => {
+        const activePrice = currentPriceMode === 'Wholesale' ? (p.wholesalePrice || p.price) : p.price, mrp = p.mrp || activePrice;
+        return `<div onclick="addToCart('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer flex flex-col justify-between relative"><button onclick="event.stopPropagation();toggleFav('${p.id}')" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 shadow text-xs ${p.isFavorite ? 'text-amber-500' : 'text-slate-300'}">★</button><div>${p.image ? `<img loading="lazy" src="${p.image}" class="w-full h-24 object-cover rounded-xl mb-2 bg-slate-100" onerror="this.style.display='none'">` : ''}<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">${p.category}</span><h4 class="font-bold text-xs text-slate-800 mt-1.5">${p.name}</h4><p class="text-[10px] font-mono text-slate-400 mt-0.5">${p.barcode}</p></div><div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-50"><div>${mrp > activePrice ? `<span class="text-[10px] line-through text-slate-400 mr-1">₹${mrp}</span>` : ''}<span class="font-black text-sm text-indigo-600">₹${activePrice}</span></div><span class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Stock: ${p.stock}</span></div></div>`;
+      }).join('');
+    }
+    async function toggleFav(id) { const p = storeData.products.find(x => String(x.id) === String(id)); if (p) { p.isFavorite = !p.isFavorite; renderCategories(); renderPosProducts(); } await callSheetAPI("toggleProductFavorite", id, null); }
+    function addToCart(prodId) { const prod = branchProducts().find(p => String(p.id) === String(prodId)); if (!prod || prod.stock <= 0) { alert("Stock khatam hai!"); return; } const activePrice = currentPriceMode === 'Wholesale' ? (prod.wholesalePrice || prod.price) : prod.price; const existing = cart.find(c => String(c.id) === String(prodId)); if (existing) { if (existing.qty < prod.stock) existing.qty++; } else cart.push({ id: prod.id, name: prod.name, mrp: prod.mrp || activePrice, price: activePrice, costPrice: prod.costPrice || 0, image: prod.image || "", qty: 1, isCustom: false }); renderCart(); }
+    function changeCartQty(idx, d) { cart[idx].qty += d; if (cart[idx].qty <= 0) cart.splice(idx, 1); renderCart(); }
+    function clearCart() { cart = []; renderCart(); }
+    function renderCart() {
+      const box = document.getElementById('cart-items');
+      if (!cart.length) { box.innerHTML = `<p class="text-center text-slate-400 py-5 text-xs">Cart khaali hai. Product chunein ya upar seedha Amount (₹) daalein.</p>`; updateCartTotals(); return; }
+      box.innerHTML = cart.map((c, idx) => `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 gap-2">${c.image ? `<img loading="lazy" src="${c.image}" class="w-10 h-10 rounded-lg object-cover border shrink-0">` : ''}<div class="flex-1 min-w-0"><p class="font-bold text-xs text-slate-800 truncate">${c.name}</p><div class="flex items-center gap-1 mt-0.5 text-[11px] text-slate-600"><span>₹</span><input type="number" value="${c.price}" onchange="editCartItemRate(${idx}, this.value)" class="w-16 px-1 py-0.5 bg-white border rounded font-bold text-indigo-700 text-[11px]"><span>× ${c.qty} = <b>₹${c.price * c.qty}</b></span></div></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded-lg font-bold text-xs">-</button><span class="font-bold text-xs w-4 text-center">${c.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 bg-indigo-600 text-white rounded-lg font-bold text-xs">+</button></div></div>`).join('');
+      updateCartTotals();
+    }
+    function updateCartTotals() {
+      const mrpTotal = cart.reduce((s, i) => s + (Math.max(Number(i.mrp || 0), Number(i.price || 0)) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0), extraDisc = Number(document.getElementById('bill-discount').value || 0), finalTotal = Math.max(0, subTotal - extraDisc);
+      document.getElementById('cart-mrp-total').innerText = mrpTotal; document.getElementById('cart-extra-disc').innerText = extraDisc; document.getElementById('cart-total-savings').innerText = Math.max(0, mrpTotal - finalTotal); document.getElementById('cart-final-total').innerText = finalTotal;
+      if (document.getElementById('pay-mode').value === 'Split') recalcSplitRemaining();
+      updateMobileFloatingCartBar();
+    }
+
+    async function checkoutSale() {
+      if (!cart.length) { alert("Cart khaali hai!"); return; }
+      const mrpTotal = cart.reduce((s, i) => s + (Math.max(Number(i.mrp || 0), Number(i.price || 0)) * i.qty), 0), subTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0), extraDisc = Number(document.getElementById('bill-discount').value || 0), finalTotal = Math.max(0, subTotal - extraDisc), mode = document.getElementById('pay-mode').value;
+      let cashPaid = 0, upiPaid = 0, udharDue = 0;
+      if (mode === 'Cash') cashPaid = finalTotal; else if (mode === 'UPI') upiPaid = finalTotal; else if (mode === 'Udhar') udharDue = finalTotal; else if (mode === 'Split') { cashPaid = Number(document.getElementById('split-cash').value || 0); upiPaid = Number(document.getElementById('split-upi').value || 0); if (cashPaid + upiPaid > finalTotal) { alert("Cash + UPI bill amount se zyada nahi ho sakta!"); return; } udharDue = Math.max(0, finalTotal - (cashPaid + upiPaid)); }
+      const addr = document.getElementById('cust-address').value.trim(), rawNote = document.getElementById('bill-note').value.trim(), fullNote = addr ? (rawNote ? `Addr: ${addr} | ${rawNote}` : `Addr: ${addr}`) : rawNote;
+      const btn = document.getElementById('checkout-btn'); if (btn.disabled) return; btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving Bill...`;
+      try {
+        const cleanCartForSheet = cart.map(c => ({ id: c.id, name: c.name, mrp: Math.max(Number(c.mrp || 0), Number(c.price || 0)), price: c.price, costPrice: c.costPrice, qty: c.qty, isCustom: !!c.isCustom, image: c.isCustom ? (c.image || "") : "" }));
+        const rawCustName = document.getElementById('cust-name').value.trim(), finalCustName = isRealCustomerName(rawCustName) ? rawCustName : 'Walk-in Customer';
+        const salePayload = { staffName: currentUser ? currentUser.name : 'Staff', customerName: finalCustName, customerPhone: document.getElementById('cust-phone').value.trim(), customerAddress: addr, priceMode: currentPriceMode, paymentMode: mode, cashPaid, upiPaid, udharDue, subtotal: subTotal, mrpTotal, discount: extraDisc, totalSavings: Math.max(0, mrpTotal - finalTotal), note: fullNote, customDate: document.getElementById('bill-custom-date').value.trim(), total: finalTotal, cart: cleanCartForSheet, branch: activeBranch };
+        const res = await callSheetAPI("processSale", salePayload, "Saving Bill...");
+        if (res.queuedOffline) {
+          const fakeId = "OFF-" + Date.now().toString().slice(-5), dStr = salePayload.customDate || normalizeClientDate(new Date().toISOString());
+          storeData.invoices.unshift({ id: fakeId, date: dStr, staff: salePayload.staffName, customer: salePayload.customerName, phone: salePayload.customerPhone, items: salePayload.cart.map(x => `${x.name} (x${x.qty})`).join(", "), discount: extraDisc, total: finalTotal, paymentMode: mode, note: fullNote, cart: cleanCartForSheet, priceMode: currentPriceMode, mrpTotal, totalSavings: salePayload.totalSavings, profit: 0, status: "Completed", branch: activeBranch, cashPaid, upiPaid, udharDue, activityType: "Sale" });
+          saveLocalStoreCache(storeData); showReceiptModal(fakeId, dStr, salePayload);
+        } else { storeData = res.updatedData; saveLocalStoreCache(storeData); showReceiptModal(res.invoiceId, res.date, salePayload); }
+        cart = []; ['cust-name', 'cust-phone', 'cust-address', 'bill-discount', 'bill-note', 'bill-custom-date', 'split-cash', 'split-upi'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('pay-mode').value = 'UPI'; toggleSplitPaymentBox(); document.getElementById('cust-history-banner').classList.add('hidden'); renderAllViews();
+      } catch (err) { alert("Error: " + err.message); }
+      finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Bill Save & Print Karein`; }
+    }
+
+    function showReceiptModal(invId, dateStr, sale) { lastReceipt = { invId, dateStr, ...sale }; document.getElementById('receipt-modal').classList.remove('hidden'); document.getElementById('receipt-modal').classList.add('flex'); renderReceiptTheme(); }
+    function setBillTheme(theme) { currentBillTheme = theme; ['thermal', 'modern', 'classic', 'dark', 'wholesale', 'minimal', 'a4_pro', 'a4_gst'].forEach(t => { const btn = document.getElementById('theme-btn-' + t); if (btn) btn.className = (t === theme) ? "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white whitespace-nowrap" : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 whitespace-nowrap"; }); renderReceiptTheme(); }
+    function getBillDiscountMeta(r) { const calcMrp = (r.cart || []).reduce((s, c) => s + (Math.max(Number(c.mrp || 0), Number(c.price || 0)) * Number(c.qty || 1)), 0), calcSub = (r.cart || []).reduce((s, c) => s + (Number(c.price || 0) * Number(c.qty || 1)), 0), mrpTotal = Math.max(Number(r.mrpTotal || 0), calcMrp, Number(r.total || 0)), extraDisc = Number(r.discount || 0), rateDisc = Math.max(0, mrpTotal - (calcSub || (Number(r.total || 0) + extraDisc))), totalSavings = Math.max(0, mrpTotal - Number(r.total || 0)); return { mrpTotal, rateDisc, extraDisc, totalSavings }; }
+
+    function renderReceiptTheme() {
+      if (!lastReceipt) return;
+      const r = lastReceipt, { mrpTotal, rateDisc, extraDisc, totalSavings } = getBillDiscountMeta(r), box = document.getElementById('receipt-print-area');
+      const brObj = storeData.branches.find(b => b.name === (r.branch || activeBranch)) || { name: "Kirtika Mobile", address: "Madhuban, Jodhpur", phone: "8209618586" };
+      const widthClass = hwPrefs.receiptSize === '58mm' ? 'max-w-[230px] mx-auto text-[11px]' : (hwPrefs.receiptSize === '80mm' ? 'max-w-[310px] mx-auto text-xs' : 'w-full text-xs');
+      const splitInfo = (r.paymentMode === 'Split' || r.udharDue > 0) ? `<div class="text-[10px] bg-slate-100 p-1.5 rounded text-slate-800">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | <b>Baaki Udhar: ₹${r.udharDue || 0}</b></div>` : '';
+      const custAddrLine = r.customerAddress ? `<div class="text-[10px] text-slate-600">Address: ${r.customerAddress}</div>` : '';
+      const discBoxHtml = (totalSavings > 0 || extraDisc > 0) ? `<div class="bg-slate-100 p-1.5 rounded text-[10px] space-y-0.5 text-slate-800"><div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div>${rateDisc > 0 ? `<div class="flex justify-between text-indigo-700"><span>Item / Rate Disc:</span><span>- ₹${rateDisc}</span></div>` : ''}${extraDisc > 0 ? `<div class="flex justify-between text-rose-700 font-bold"><span>Extra Discount:</span><span>- ₹${extraDisc}</span></div>` : ''}<div class="flex justify-between font-extrabold text-emerald-800 border-t border-slate-300 pt-0.5"><span>Total Bachat:</span><span>- ₹${totalSavings}</span></div></div>` : '';
+
+      if (currentBillTheme === 'thermal') box.innerHTML = `<div class="${widthClass} p-3 font-mono space-y-2 border border-slate-200 rounded-xl bg-white text-slate-900"><div class="text-center border-b border-dashed border-slate-300 pb-2"><h2 class="font-black text-sm">KIRTIKA MOBILE (${brObj.name})</h2><p class="text-[10px]">${brObj.address || 'Madhuban, Jodhpur'} • ${brObj.phone || '8209618586'}</p></div><div class="flex justify-between text-[10px]"><span>${r.invId} (${r.priceMode || 'Retail'})</span><span>${r.dateStr}</span></div><div class="text-[10px]">Customer: <b>${r.customerName}</b> ${r.customerPhone ? '(' + r.customerPhone + ')' : ''}</div>${custAddrLine}<div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1">${r.cart.map(c => `<div class="flex justify-between font-bold"><span>${c.name} x${c.qty} ${(c.mrp && c.mrp > c.price) ? `<span class="font-normal text-[9px] text-slate-400">(MRP ₹${c.mrp})</span>` : ''}</span><span>₹${c.price * c.qty}</span></div>`).join('')}</div>${discBoxHtml}<div class="flex justify-between font-black text-sm pt-1"><span>TOTAL (${r.paymentMode})</span><span>₹${r.total}</span></div>${splitInfo}${r.note ? `<p class="text-[10px] text-slate-600">Note: ${r.note}</p>` : ''}</div>`;
+      else if (currentBillTheme === 'modern') box.innerHTML = `<div class="border border-indigo-200 rounded-xl overflow-hidden bg-white text-slate-800 text-xs"><div class="bg-indigo-600 text-white p-4 flex justify-between items-center"><div><h2 class="font-black text-base">KIRTIKA MOBILE</h2><p class="text-[10px] text-indigo-100">${brObj.name} • ${brObj.address}</p></div><span class="bg-white/20 px-2.5 py-1 rounded-lg font-bold text-[10px]">${r.priceMode || 'RETAIL'}</span></div><div class="p-4 space-y-3"><div class="flex justify-between bg-slate-50 p-2.5 rounded-lg text-[11px]"><div><b>${r.customerName}</b><br>${r.customerPhone || ''} ${r.customerAddress ? `<br><span class="text-slate-500">${r.customerAddress}</span>` : ''}</div><div class="text-right"><b>${r.invId}</b><br>${r.dateStr}</div></div><table class="w-full text-left"><thead><tr class="border-b text-[10px] text-slate-400"><th>Item</th><th class="text-center">MRP</th><th class="text-center">Rate</th><th class="text-right">Total</th></tr></thead><tbody class="divide-y">${r.cart.map(c => `<tr><td class="py-1.5 font-semibold">${c.name} ×${c.qty}</td><td class="text-center text-slate-400">₹${c.mrp || c.price}</td><td class="text-center">₹${c.price}</td><td class="text-right font-bold">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${discBoxHtml}${splitInfo}<div class="border-t pt-2 text-right"><p class="text-base font-black text-indigo-600">Grand Total: ₹${r.total}</p></div></div></div>`;
+      else if (currentBillTheme === 'classic') box.innerHTML = `<div class="border-2 border-slate-900 p-4 bg-white text-slate-900 text-xs space-y-3"><div class="text-center border-b-2 border-slate-900 pb-2"><h2 class="font-black text-lg">KIRTIKA MOBILE - ${brObj.name}</h2><p class="text-[11px]">${brObj.address} • Ph: ${brObj.phone}</p></div><div class="flex justify-between border-b pb-2"><span><b>M/s:</b> ${r.customerName} ${r.customerAddress ? `(${r.customerAddress})` : ''}</span><span><b>Bill:</b> ${r.invId} | ${r.dateStr}</span></div><div class="space-y-1">${r.cart.map((c, idx) => `<div class="flex justify-between"><span>${idx + 1}. ${c.name} × ${c.qty} ${(c.mrp && c.mrp > c.price) ? `(MRP ₹${c.mrp})` : ''}</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>${discBoxHtml}${splitInfo}<div class="border-t-2 border-slate-900 pt-2 flex justify-between font-black"><span>Mode: ${r.paymentMode}</span><span>NET TOTAL: ₹${r.total}/-</span></div></div>`;
+      else if (currentBillTheme === 'dark') box.innerHTML = `<div class="rounded-2xl overflow-hidden bg-slate-950 text-white border border-amber-500/40 text-xs"><div class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 border-b border-amber-500/30 flex justify-between items-center"><div><h2 class="font-black text-base text-amber-400">KIRTIKA MOBILE</h2><p class="text-[10px] text-slate-400">${brObj.name}</p></div><span class="px-2.5 py-1 bg-amber-400/10 text-amber-300 rounded-lg font-bold text-[10px]">${r.invId}</span></div><div class="p-4 space-y-3"><div class="flex justify-between text-[11px] text-slate-300"><span>Customer: <b class="text-white">${r.customerName}</b> ${r.customerAddress ? `<br>${r.customerAddress}` : ''}</span><span>${r.dateStr}</span></div><div class="divide-y divide-slate-800">${r.cart.map(c => `<div class="py-2 flex justify-between"><span>${c.name} ×${c.qty} ${(c.mrp && c.mrp > c.price) ? `<span class="text-slate-400 text-[10px]">(MRP ₹${c.mrp})</span>` : ''}</span><b class="text-amber-300">₹${c.price * c.qty}</b></div>`).join('')}</div>${(totalSavings > 0 || extraDisc > 0) ? `<div class="bg-white/5 p-2 rounded-lg text-[10px] space-y-0.5"><div class="flex justify-between"><span>Total MRP: ₹${mrpTotal}</span><span>Rate Disc: -₹${rateDisc}</span></div><div class="flex justify-between text-rose-300 font-bold"><span>Extra Discount: -₹${extraDisc}</span><span>Total Bachat: -₹${totalSavings}</span></div></div>` : ''}<div class="pt-2 border-t border-slate-800 flex justify-between items-center"><span class="text-slate-400">${r.paymentMode}</span><span class="text-lg font-black text-emerald-400">₹${r.total}</span></div></div></div>`;
+      else if (currentBillTheme === 'wholesale') box.innerHTML = `<div class="border border-slate-400 p-3 bg-white text-slate-900 text-[11px] space-y-2"><div class="flex justify-between items-center border-b border-slate-400 pb-1.5"><div><h2 class="font-black text-sm">KIRTIKA MOBILE (B2B CHALLAN)</h2><p class="text-[10px]">${brObj.name}</p></div><div class="text-right font-mono"><b>${r.invId}</b><br>${r.dateStr}</div></div><div><b>Party:</b> ${r.customerName} ${r.customerAddress ? `• ${r.customerAddress}` : ''}</div><table class="w-full border-collapse border border-slate-300 text-left"><thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1">#</th><th class="border border-slate-300 p-1">Particulars</th><th class="border border-slate-300 p-1 text-center">MRP</th><th class="border border-slate-300 p-1 text-center">Qty</th><th class="border border-slate-300 p-1 text-right">Rate</th><th class="border border-slate-300 p-1 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, i) => `<tr><td class="border border-slate-300 p-1">${i + 1}</td><td class="border border-slate-300 p-1 font-semibold">${c.name}</td><td class="border border-slate-300 p-1 text-center text-slate-500">₹${c.mrp || c.price}</td><td class="border border-slate-300 p-1 text-center">${c.qty}</td><td class="border border-slate-300 p-1 text-right">${c.price}</td><td class="border border-slate-300 p-1 text-right font-bold">${c.price * c.qty}</td></tr>`).join('')}</tbody></table>${discBoxHtml}${splitInfo}<div class="flex justify-between font-black text-xs pt-1"><span>Payment: ${r.paymentMode}</span><span>Total: ₹${r.total}/-</span></div></div>`;
+      else if (currentBillTheme === 'minimal') box.innerHTML = `<div class="max-w-[240px] mx-auto p-3 border border-slate-300 rounded-lg bg-white text-slate-900 font-sans text-[11px] space-y-1.5"><div class="font-black text-center text-xs">KIRTIKA MOBILE</div><div class="text-center text-[9px] text-slate-500">${r.invId} • ${r.dateStr}</div><div class="border-t border-b py-1.5 space-y-1">${r.cart.map(c => `<div class="flex justify-between"><span>${c.name} (${c.qty})</span><b>₹${c.price * c.qty}</b></div>`).join('')}</div>${extraDisc > 0 ? `<div class="flex justify-between text-[10px] text-rose-700 font-bold"><span>Extra Discount:</span><span>- ₹${extraDisc}</span></div>` : ''}${totalSavings > 0 ? `<div class="flex justify-between text-[10px] text-emerald-700 font-bold"><span>Total Bachat:</span><span>- ₹${totalSavings}</span></div>` : ''}<div class="flex justify-between font-black text-xs"><span>Paid (${r.paymentMode})</span><span>₹${r.total}</span></div></div>`;
+      else if (currentBillTheme === 'a4_pro') box.innerHTML = `<div class="w-full min-h-[520px] p-6 border-2 border-slate-800 bg-white text-slate-900 text-xs flex flex-col justify-between"><div class="space-y-4"><div class="flex justify-between items-start border-b-2 border-slate-900 pb-4"><div><h1 class="text-2xl font-black tracking-tight text-indigo-900">KIRTIKA MOBILE</h1><p class="font-bold text-slate-600">The TB Store • ${brObj.name}</p><p class="text-[11px] text-slate-500">${brObj.address || 'Madhuban, Jodhpur, Rajasthan'} • Mob: ${brObj.phone || '8209618586'}</p></div><div class="text-right"><span class="px-3 py-1 bg-slate-900 text-white font-black uppercase text-[11px] rounded">INVOICE</span><p class="mt-2 font-mono font-bold">No: ${r.invId}</p><p class="text-[11px]">Date: ${r.dateStr}</p></div></div><div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-xl border"><div><p class="text-[10px] font-bold text-slate-400 uppercase">Billed To:</p><p class="font-extrabold text-sm">${r.customerName}</p><p class="text-slate-600">${r.customerPhone || 'Walk-in Customer'}</p>${r.customerAddress ? `<p class="text-slate-600 text-[11px]">${r.customerAddress}</p>` : ''}</div><div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Payment Details:</p><p class="font-bold">Mode: ${r.paymentMode} (${r.priceMode || 'Retail'})</p><p class="text-slate-600">Cash: ₹${r.cashPaid || 0} | UPI: ₹${r.upiPaid || 0} | Due: ₹${r.udharDue || 0}</p></div></div><table class="w-full border-collapse border border-slate-300"><thead><tr class="bg-slate-900 text-white"><th class="p-2 text-left">S.No</th><th class="p-2 text-left">Product / Description</th><th class="p-2 text-center">MRP</th><th class="p-2 text-center">Qty</th><th class="p-2 text-right">Unit Price</th><th class="p-2 text-right">Amount</th></tr></thead><tbody>${r.cart.map((c, idx) => `<tr class="border-b"><td class="p-2">${idx + 1}</td><td class="p-2 font-bold">${c.name}</td><td class="p-2 text-center text-slate-400">₹${c.mrp || c.price}</td><td class="p-2 text-center font-bold">${c.qty}</td><td class="p-2 text-right">₹${c.price}</td><td class="p-2 text-right font-black">₹${c.price * c.qty}</td></tr>`).join('')}</tbody></table></div><div class="space-y-4 pt-4"><div class="flex justify-end"><div class="w-64 space-y-1 text-right"><div class="flex justify-between"><span>Total MRP:</span><span>₹${mrpTotal}</span></div>${rateDisc > 0 ? `<div class="flex justify-between text-indigo-700"><span>Item / Rate Disc:</span><span>- ₹${rateDisc}</span></div>` : ''}<div class="flex justify-between text-rose-700 font-bold"><span>Extra Discount:</span><span>- ₹${extraDisc}</span></div><div class="flex justify-between text-emerald-700 font-extrabold border-t pt-0.5"><span>Total Bachat:</span><span>- ₹${totalSavings}</span></div><div class="flex justify-between text-base font-black border-t-2 border-slate-900 pt-1"><span>GRAND TOTAL:</span><span>₹${r.total}/-</span></div></div></div><div class="flex justify-between items-end border-t pt-4 text-[10px] text-slate-500"><div><b>Terms & Conditions:</b><br>1. Goods once sold will not be returned for cash.<br>2. Replacement within 7 days only with original box & bill.<br>3. Physical / liquid damage not covered under warranty.</div><div class="text-right font-bold text-slate-800">For Kirtika Mobile<br><br>Authorized Signatory</div></div></div></div>`;
+      else {
+        const taxable = (r.total / 1.18).toFixed(2), gstAmt = (r.total - taxable).toFixed(2);
+        box.innerHTML = `<div class="w-full min-h-[520px] p-5 border-2 border-emerald-900 bg-white text-slate-900 text-xs flex flex-col justify-between"><div class="space-y-3"><div class="text-center border-b-2 border-emerald-900 pb-2"><p class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">TAX INVOICE / BILL OF SUPPLY</p><h1 class="text-xl font-black">KIRTIKA MOBILE - THE TB STORE</h1><p class="text-[11px]">${brObj.address || 'Madhuban, Jodhpur'} • Contact: ${brObj.phone || '8209618586'}</p></div><div class="grid grid-cols-2 border border-slate-400"><div class="p-2.5 border-r border-slate-400"><b>Party Name:</b> ${r.customerName}<br><b>Mobile:</b> ${r.customerPhone || '--'}<br><b>Address:</b> ${r.customerAddress || '--'}</div><div class="p-2.5"><b>Invoice No:</b> ${r.invId}<br><b>Date:</b> ${r.dateStr}<br><b>Payment:</b> ${r.paymentMode}</div></div><table class="w-full border-collapse border border-slate-400"><thead><tr class="bg-emerald-50"><th class="border border-slate-400 p-1.5">#</th><th class="border border-slate-400 p-1.5 text-left">Item Description</th><th class="border border-slate-400 p-1.5">HSN</th><th class="border border-slate-400 p-1.5">Qty</th><th class="border border-slate-400 p-1.5 text-right">Rate</th><th class="border border-slate-400 p-1.5 text-right">Total</th></tr></thead><tbody>${r.cart.map((c, idx) => `<tr><td class="border border-slate-400 p-1.5 text-center">${idx + 1}</td><td class="border border-slate-400 p-1.5 font-bold">${c.name}</td><td class="border border-slate-400 p-1.5 text-center">8517</td><td class="border border-slate-400 p-1.5 text-center">${c.qty}</td><td class="border border-slate-400 p-1.5 text-right">${c.price}</td><td class="border border-slate-400 p-1.5 text-right font-bold">${c.price * c.qty}</td></tr>`).join('')}</tbody></table></div><div class="space-y-3 pt-4"><div class="grid grid-cols-2 border border-slate-400 p-2.5 bg-slate-50"><div class="text-[10px]"><b>Tax Breakup (Inclusive):</b><br>MRP: ₹${mrpTotal} | Extra Disc: -₹${extraDisc} | Bachat: -₹${totalSavings}<br>Taxable: ₹${taxable} | CGST+SGST: ₹${gstAmt}</div><div class="text-right font-black text-base self-center text-emerald-900">NET PAYABLE: ₹${r.total}/-</div></div><div class="flex justify-between text-[10px] pt-2"><span>Customer Signature</span><span class="font-bold">For Kirtika Mobile (Authorized Stamp)</span></div></div></div>`;
+      }
+    }
+
+    async function shareBillImage(btn) { const area = document.getElementById('receipt-print-area'), targetEl = area?.firstElementChild || area; if (!targetEl || !lastReceipt) return; const origHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`; try { const canvas = await html2canvas(targetEl, { scale: 2, useCORS: true }), fileName = `${lastReceipt.invId}_${lastReceipt.customerName.replace(/\s+/g, '_')}.png`; canvas.toBlob(async (blob) => { const file = new File([blob], fileName, { type: "image/png" }); if (isMobileDevice() && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: `Bill ${lastReceipt.invId}`, text: `Kirtika Mobile Bill - ${lastReceipt.invId}` }); return; } catch (e) {} } const link = document.createElement('a'); link.download = fileName; link.href = canvas.toDataURL("image/png"); link.click(); }, "image/png"); } finally { btn.disabled = false; btn.innerHTML = origHtml; } }
+    async function shareBillPDF(btn) { const area = document.getElementById('receipt-print-area'), targetEl = area?.firstElementChild || area; if (!targetEl || !lastReceipt) return; const origHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`; try { const canvas = await html2canvas(targetEl, { scale: 2, useCORS: true }), imgData = canvas.toDataURL('image/png'), { jsPDF } = window.jspdf, pdfW = 210, pdfH = Math.max(120, Math.round((canvas.height * pdfW) / canvas.width)), doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [pdfW, pdfH] }); doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH); const fileName = `${lastReceipt.invId}_${lastReceipt.customerName.replace(/\s+/g, '_')}.pdf`, pdfBlob = doc.output('blob'), pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" }); if (isMobileDevice() && navigator.canShare && navigator.canShare({ files: [pdfFile] })) { try { await navigator.share({ files: [pdfFile], title: `Invoice ${lastReceipt.invId}`, text: `Kirtika Mobile Invoice - ${lastReceipt.invId}` }); return; } catch (e) {} } doc.save(fileName); } finally { btn.disabled = false; btn.innerHTML = origHtml; } }
+    function reprintSavedInvoice(id) { const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; showReceiptModal(inv.id, inv.date, { customerName: inv.customer, customerPhone: inv.phone, priceMode: inv.priceMode, paymentMode: inv.paymentMode, cashPaid: inv.cashPaid, upiPaid: inv.upiPaid, udharDue: inv.udharDue, mrpTotal: inv.mrpTotal, discount: inv.discount, totalSavings: inv.totalSavings, note: inv.note, total: inv.total, branch: inv.branch, cart: (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, mrp: inv.total, price: inv.total, qty: 1 }] }); }
+    function shareWhatsAppReceipt() { if (!lastReceipt) return; const r = lastReceipt, { mrpTotal, rateDisc, extraDisc, totalSavings } = getBillDiscountMeta(r), itemsText = r.cart.map(c => `• ${c.name} (x${c.qty}) - ₹${c.price * c.qty}`).join('%0A'), discLines = (totalSavings > 0 || extraDisc > 0) ? `%0A*Total MRP:* ₹${mrpTotal}${rateDisc > 0 ? `%0A*Rate Discount:* -₹${rateDisc}` : ''}${extraDisc > 0 ? `%0A*Extra Discount:* -₹${extraDisc}` : ''}%0A*Total Bachat:* -₹${totalSavings}` : '', dueLine = r.udharDue > 0 ? `%0A*Baaki Udhar:* ₹${r.udharDue}` : '', phone = r.customerPhone ? '91' + r.customerPhone.replace(/\D/g, '').slice(-10) : ''; window.open(`https://wa.me/${phone}?text=*KIRTIKA MOBILE (${activeBranch})*%0A*Bill No:* ${r.invId} (${r.dateStr})%0A*Customer:* ${r.customerName}%0A${itemsText}${discLines}%0A*Total (${r.paymentMode}): ₹${r.total}*${dueLine}`, '_blank'); }
+
+    function openExchangeModal(invId) {
+      const inv = storeData.invoices.find(x => String(x.id) === String(invId)); if (!inv) return;
+      const items = (inv.cart && inv.cart.length) ? inv.cart : [{ name: inv.items, price: inv.total, qty: 1, isCustom: true }];
+      document.getElementById('ex-inv-id').value = inv.id; document.getElementById('ex-inv-label').innerText = `${inv.customer} • ${inv.id} (Total: ₹${inv.total})`;
+      document.getElementById('ex-ret-idx').innerHTML = items.map((it, idx) => `<option value="${idx}">${it.name} (₹${it.price} × ${it.qty})</option>`).join('');
+      document.getElementById('ex-ret-qty').value = 1;
+      const prods = branchProducts();
+      document.getElementById('ex-new-prod').innerHTML = `<option value="">-- Koi Naya Item Nahi (Sirf Return) --</option>` + prods.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name} (₹${p.price} • Stock: ${p.stock})</option>`).join('');
+      document.getElementById('ex-new-prod').onchange = function() { const opt = this.options[this.selectedIndex]; if (opt && opt.dataset.price) document.getElementById('ex-new-price').value = opt.dataset.price; };
+      document.getElementById('ex-new-qty').value = 1; document.getElementById('ex-new-price').value = ''; document.getElementById('ex-diff-paid').value = '';
+      document.getElementById('exchange-bill-modal').classList.remove('hidden'); document.getElementById('exchange-bill-modal').classList.add('flex');
+    }
+
+    async function submitExchangeInvoice(btn) {
+      const res = await callSheetAPI("exchangeInvoiceItems", { invoiceId: document.getElementById('ex-inv-id').value, returnItemIndex: Number(document.getElementById('ex-ret-idx').value || 0), returnQty: Number(document.getElementById('ex-ret-qty').value || 1), newProductId: document.getElementById('ex-new-prod').value, newQty: Number(document.getElementById('ex-new-qty').value || 1), newPrice: Number(document.getElementById('ex-new-price').value || 0), diffPaid: Number(document.getElementById('ex-diff-paid').value || 0), diffMode: document.getElementById('ex-diff-mode').value }, "Processing Exchange...", btn);
+      if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('exchange-bill-modal'); renderAllViews(); alert("✅ Return / Exchange Update Ho Gaya!");
+    }
+
+    function toggleStockViewMode(mode) {
+      stockViewMode = mode;
+      ['list', 'history', 'receiving', 'dead'].forEach(m => {
+        const b = document.getElementById('stk-mode-' + m);
+        if (b) b.className = mode === m ? "px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[11px] font-bold" : "px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[11px] font-bold";
+      });
+      document.getElementById('inventory-list').classList.toggle('hidden', mode !== 'list');
+      document.getElementById('inv-load-more-wrap').classList.toggle('hidden', mode !== 'list');
+      document.getElementById('stock-history-list').classList.toggle('hidden', mode !== 'history');
+      document.getElementById('stock-receiving-box').classList.toggle('hidden', mode !== 'receiving');
+      document.getElementById('stock-dead-box').classList.toggle('hidden', mode !== 'dead');
+      if (mode === 'list') renderInventoryList();
+      else if (mode === 'history') renderStockHistoryList();
+      else if (mode === 'receiving') renderPurchaseReceiptsList();
+      else if (mode === 'dead') renderDeadStockList();
+    }
+
+    function openAddStockInwardModal(prodId) {
+      if (!isAdminUser()) return;
+      const p = branchProducts().find(x => String(x.id) === String(prodId)); if (!p) return;
+      document.getElementById('inward-prod-id').value = p.id; document.getElementById('inward-prod-title').innerText = p.name; document.getElementById('inward-curr-stock').innerText = p.stock;
+      document.getElementById('inward-add-qty').value = ''; document.getElementById('inward-cost').value = p.costPrice || 0; document.getElementById('inward-mrp').value = p.mrp || p.price; document.getElementById('inward-price').value = p.price; document.getElementById('inward-whl').value = p.wholesalePrice || p.price; document.getElementById('inward-note').value = '';
+      document.getElementById('add-stock-inward-modal').classList.remove('hidden'); document.getElementById('add-stock-inward-modal').classList.add('flex');
+    }
+
+    async function submitStockInward(btn) {
+      if (!isAdminUser()) return;
+      const id = document.getElementById('inward-prod-id').value, addQty = Number(document.getElementById('inward-add-qty').value || 0);
+      if (addQty <= 0) { alert("Add karne ke liye Qty daalein!"); return; }
+      const res = await callSheetAPI("addStockInward", { id, addQty, costPrice: Number(document.getElementById('inward-cost').value || 0), mrp: Number(document.getElementById('inward-mrp').value || 0), price: Number(document.getElementById('inward-price').value || 0), wholesalePrice: Number(document.getElementById('inward-whl').value || 0), note: document.getElementById('inward-note').value.trim(), staff: currentUser ? currentUser.name : "Admin" }, "Adding Stock...", btn);
+      if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('add-stock-inward-modal'); renderAllViews(); alert(`✅ +${addQty} Stock Add Ho Gaya!`);
+    }
+
+    function renderStockHistoryList() { const logs = branchStockLogs(); document.getElementById('stock-history-list').innerHTML = logs.length ? logs.map(l => `<div class="py-2.5 flex justify-between items-center gap-2"><div><p class="font-bold text-slate-800">${l.productName} <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-black text-[10px]">+${l.addedQty} Qty</span></p><p class="text-[10px] text-slate-500">${l.date} • Stock: <b>${l.oldStock} → ${l.newStock}</b> • Cost: ₹${l.costPrice} • By ${l.staff}</p>${l.note ? `<p class="text-[10px] text-indigo-700">${l.note}</p>` : ''}</div><span class="text-[10px] font-mono text-slate-400">${l.id}</span></div>`).join('') : `<p class="text-center text-slate-400 py-5">Abhi koi stock inward history nahi hai.</p>`; }
+    function generateRandomBarcode(inputId) { document.getElementById(inputId).value = '890' + Math.floor(100000000 + Math.random() * 900000000); }
+    function openBarcodeGenModal(prodId) { currentBarcodeProd = branchProducts().find(p => String(p.id) === String(prodId)); if (!currentBarcodeProd) return; document.getElementById('barcode-gen-modal').classList.remove('hidden'); document.getElementById('barcode-gen-modal').classList.add('flex'); renderBarcodeStickers(); }
+    function closeBarcodeGenModal() { closeModalById('barcode-gen-modal'); }
+    function renderBarcodeStickers() { if (!currentBarcodeProd) return; const qty = Number(document.getElementById('barcode-qty-select').value || 4), area = document.getElementById('barcode-print-area'), codeVal = currentBarcodeProd.barcode || '890123456789'; area.className = hwPrefs.barcodeSize === 'thermal_50x25' ? "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-1 gap-2 text-center" : "max-h-72 overflow-y-auto p-3 border border-dashed rounded-xl bg-white grid grid-cols-2 gap-3 text-center"; let html = ''; for (let i = 0; i < qty; i++) html += `<div class="border border-slate-300 rounded-lg p-2 flex flex-col items-center bg-white"><p class="text-[9px] font-black uppercase">KIRTIKA MOBILE</p><p class="text-[10px] font-bold truncate max-w-[160px]">${currentBarcodeProd.name}</p><svg class="barcode-svg-${i} my-0.5"></svg><p class="text-[10px] font-black">MRP ₹${currentBarcodeProd.mrp || currentBarcodeProd.price} | Offer ₹${currentBarcodeProd.price}</p></div>`; area.innerHTML = html; for (let i = 0; i < qty; i++) { try { JsBarcode(`.barcode-svg-${i}`, String(codeVal), { format: "CODE128", width: 1.4, height: 34, fontSize: 10, margin: 2 }); } catch (e) {} } }
+
+    async function addNewProduct() {
+      if (!isAdminUser()) return;
+      const name = document.getElementById('prod-name').value.trim(), price = Number(document.getElementById('prod-price').value);
+      if (!name || !price) { alert("Name aur Retail Price daalein!"); return; }
+      const btn = document.getElementById('add-prod-btn');
+      const res = await callSheetAPI("saveProduct", { name, category: document.getElementById('prod-cat').value.trim() || 'General', barcode: document.getElementById('prod-barcode').value.trim() || ('890' + Math.floor(100000000 + Math.random() * 900000000)), costPrice: Number(document.getElementById('prod-cost').value) || 0, mrp: Number(document.getElementById('prod-mrp').value) || price, price, wholesalePrice: Number(document.getElementById('prod-wholesale').value) || price, stock: Number(document.getElementById('prod-stock').value) || 1, image: document.getElementById('prod-image-data').value, branch: activeBranch, staff: currentUser ? currentUser.name : "Admin" }, "Saving Product...", btn);
+      if (!res) return; storeData = res; saveLocalStoreCache(storeData);
+      ['prod-name', 'prod-cat', 'prod-barcode', 'prod-cost', 'prod-mrp', 'prod-price', 'prod-wholesale', 'prod-stock', 'prod-image-data'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('prod-photo-label').innerText = "Camera / Gallery Photo"; document.getElementById('prod-preview-thumb').classList.add('hidden'); document.getElementById('prod-barcode-warn').classList.add('hidden');
+      renderAllViews(); alert("✅ Product Saved!");
+    }
+
+    function toggleLowStockFilter() { showLowStockOnly = !showLowStockOnly; invPageLimit = 30; renderInventoryList(); }
+    function openEditProdModal(id) {
+      if (!isAdminUser()) return; const p = branchProducts().find(x => String(x.id) === String(id)); if (!p) return;
+      document.getElementById('edit-prod-id').value = p.id; document.getElementById('edit-prod-name').value = p.name; document.getElementById('edit-prod-cat').value = p.category; document.getElementById('edit-prod-barcode').value = p.barcode; document.getElementById('edit-prod-cost').value = p.costPrice || 0; document.getElementById('edit-prod-mrp').value = p.mrp || p.price; document.getElementById('edit-prod-price').value = p.price; document.getElementById('edit-prod-wholesale').value = p.wholesalePrice || p.price; document.getElementById('edit-prod-stock').value = p.stock; document.getElementById('edit-prod-image').value = p.image || '';
+      const prev = document.getElementById('edit-prod-preview'); if (p.image) { prev.src = p.image; prev.classList.remove('hidden'); } else prev.classList.add('hidden');
+      document.getElementById('edit-prod-photo-lbl').innerText = "Photo Badlein / Lagayein"; document.getElementById('edit-prod-modal').classList.remove('hidden'); document.getElementById('edit-prod-modal').classList.add('flex');
+    }
+    async function saveEditedProduct(btn) { if (!isAdminUser()) return; const res = await callSheetAPI("updateExistingProduct", { id: document.getElementById('edit-prod-id').value, name: document.getElementById('edit-prod-name').value, category: document.getElementById('edit-prod-cat').value, barcode: document.getElementById('edit-prod-barcode').value, costPrice: Number(document.getElementById('edit-prod-cost').value), mrp: Number(document.getElementById('edit-prod-mrp').value), price: Number(document.getElementById('edit-prod-price').value), wholesalePrice: Number(document.getElementById('edit-prod-wholesale').value), stock: Number(document.getElementById('edit-prod-stock').value), image: document.getElementById('edit-prod-image').value }, "Updating Product...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('edit-prod-modal'); renderAllViews(); }
+
+    function renderInventoryList() {
+      const admin = isAdminUser(), allBranch = branchProducts();
+      document.getElementById('stk-stat-items').innerText = allBranch.length;
+      document.getElementById('stk-stat-qty').innerText = allBranch.reduce((s, p) => s + Number(p.stock || 0), 0);
+      document.getElementById('stk-stat-cost').innerText = allBranch.reduce((s, p) => s + (Number(p.costPrice || 0) * Number(p.stock || 0)), 0);
+      document.getElementById('stk-stat-retail').innerText = allBranch.reduce((s, p) => s + (Number(p.price || 0) * Number(p.stock || 0)), 0);
+      const q = document.getElementById('inv-search').value.toLowerCase().trim(), list = allBranch.filter(p => (p.name.toLowerCase().includes(q) || String(p.barcode).includes(q)) && (!showLowStockOnly || p.stock <= 2));
+      document.getElementById('total-prod-count').innerText = list.length; document.getElementById('select-all-stock-chk').checked = false;
+      const visible = list.slice(0, invPageLimit); document.getElementById('inv-load-more-wrap').classList.toggle('hidden', stockViewMode !== 'list' || list.length <= invPageLimit);
+      document.getElementById('inventory-list').innerHTML = visible.map(p => `<div class="py-2.5 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0">${admin ? `<input type="checkbox" value="${p.id}" onchange="updateBulkDeleteUI()" class="stock-row-chk w-4 h-4 accent-red-600 shrink-0">` : ''}${p.image ? `<img loading="lazy" src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0">` : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fas fa-box"></i></div>`}<div class="truncate"><p class="font-bold text-slate-800 truncate">${p.name}</p><p class="text-[10px] text-slate-400">MRP: ₹${p.mrp || p.price} • <span class="font-mono text-slate-600">${p.barcode}</span>${admin ? ` • <span class="text-amber-700 font-bold">Cost: ₹${p.costPrice}</span>` : ''}</p></div></div><div class="flex items-center gap-1.5 shrink-0">${admin ? `<button onclick="openAddStockInwardModal('${p.id}')" class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-extrabold text-[10px]">+ Stock</button>` : ''}<button onclick="openBarcodeGenModal('${p.id}')" class="px-2 py-1.5 bg-slate-100 border rounded-lg text-slate-700"><i class="fas fa-barcode"></i></button><div class="text-right"><p class="font-black text-indigo-600">₹${p.price}</p><p class="text-[10px] font-bold ${p.stock > 2 ? 'text-emerald-600' : 'text-red-500'}">Qty: ${p.stock}</p></div>${admin ? `<button onclick="openEditProdModal('${p.id}')" class="text-indigo-500 p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProd('${p.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`).join('');
+      updateBulkDeleteUI();
+    }
+    async function deleteProd(id) { if (isAdminUser() && confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExistingProduct", id, "Deleting..."); saveLocalStoreCache(storeData); renderAllViews(); } }
+
+    function parseIndianInvoiceDate(dateStr) { if (!dateStr) return null; const norm = normalizeClientDate(dateStr); const parts = norm.split('/'); if (parts.length === 3) { const parsed = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)); if (!isNaN(parsed.getTime())) return parsed; } const fallback = new Date(dateStr); return isNaN(fallback.getTime()) ? null : fallback; }
+    function setSalesPeriodFilter(period) { salesPeriodFilter = period; exactSalesDate = ''; const dp = document.getElementById('sales-exact-date-picker'); if (dp) dp.value = ''; invPageLimit = 30; ['all', 'today', '7days', '30days'].forEach(p => { document.getElementById('period-btn-' + p).className = (p === period) ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white" : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600"; }); renderInvoicesList(); }
+    function toggleStaffSalesFilter(staffName) { staffSalesFilter = (staffSalesFilter === staffName) ? 'All' : staffName; invPageLimit = 30; renderInvoicesList(); }
+    function openEditInvModal(id) { if (!isAdminUser()) return; const inv = storeData.invoices.find(x => String(x.id) === String(id)); if (!inv) return; document.getElementById('edit-inv-id').value = inv.id; document.getElementById('edit-inv-date').value = inv.date; document.getElementById('edit-inv-cust').value = inv.customer; document.getElementById('edit-inv-phone').value = inv.phone; document.getElementById('edit-inv-total').value = inv.total; document.getElementById('edit-inv-disc').value = inv.discount; document.getElementById('edit-inv-mode').value = inv.paymentMode; document.getElementById('edit-inv-note').value = inv.note; document.getElementById('edit-inv-modal').classList.remove('hidden'); document.getElementById('edit-inv-modal').classList.add('flex'); }
+    async function saveEditedInvoice(btn) { if (!isAdminUser()) return; const res = await callSheetAPI("updateExistingInvoice", { id: document.getElementById('edit-inv-id').value, date: document.getElementById('edit-inv-date').value.trim(), customer: document.getElementById('edit-inv-cust').value, phone: document.getElementById('edit-inv-phone').value, total: Number(document.getElementById('edit-inv-total').value), discount: Number(document.getElementById('edit-inv-disc').value), paymentMode: document.getElementById('edit-inv-mode').value, note: document.getElementById('edit-inv-note').value }, "Updating Bill...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('edit-inv-modal'); renderAllViews(); }
+    async function returnOrDeleteBill(id, mode) { if (mode === 'delete' && !isAdminUser()) return; if (confirm(mode === 'return' ? "Customer Return mark karein?" : "Bill delete karein?")) { storeData = await callSheetAPI("returnOrDeleteInvoice", { id, mode }, mode === 'return' ? "Processing Return..." : "Deleting Bill..."); saveLocalStoreCache(storeData); renderAllViews(); } }
+
+    let todayCashInCache = 0, todayExpOutCache = 0;
+    function updateGallaTally() { const opening = Number(document.getElementById('galla-opening').value || 0); document.getElementById('galla-expected').innerText = opening + todayCashInCache - todayExpOutCache; }
+    function isRepairInvoice(inv) { return inv.priceMode === 'Repair' || String(inv.id || '').startsWith('RPR-') || String(inv.items || '').startsWith('[Repair '); }
+
+    function renderInvoicesList() {
+      const admin = isAdminUser(), invs = branchInvoices(), now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()), sevenDaysAgo = new Date(todayStart.getTime() - 6 * 86400000), thirtyDaysAgo = new Date(todayStart.getTime() - 29 * 86400000);
+      let todaySales = 0, todayBills = 0, d7Sales = 0, d7Bills = 0, d30Sales = 0, d30Bills = 0; todayCashInCache = 0; const staffMap = {};
+      invs.forEach(inv => {
+        if (inv.status === 'Returned') return; const amt = Number(inv.total || 0), stf = inv.staff || "Staff";
+        if (!staffMap[stf]) staffMap[stf] = { bills: 0, sales: 0 }; staffMap[stf].bills++; staffMap[stf].sales += amt;
+        const invDate = parseIndianInvoiceDate(inv.date);
+        if (invDate) {
+          const invDay = new Date(invDate.getFullYear(), invDate.getMonth(), invDate.getDate());
+          if (invDay.getTime() === todayStart.getTime()) { todaySales += amt; todayBills++; todayCashInCache += Number(inv.cashPaid || 0); }
+          if (invDay >= sevenDaysAgo) { d7Sales += amt; d7Bills++; }
+          if (invDay >= thirtyDaysAgo) { d30Sales += amt; d30Bills++; }
+        }
+      });
+
+      branchCounterServices().forEach(cs => {
+        const amt = Number(cs.amount || 0), csDate = parseIndianInvoiceDate(cs.date);
+        if (csDate) { const csDay = new Date(csDate.getFullYear(), csDate.getMonth(), csDate.getDate()); if (csDay.getTime() === todayStart.getTime()) { todaySales += amt; if (cs.paymentMode === 'Cash') todayCashInCache += amt; } if (csDay >= sevenDaysAgo) d7Sales += amt; if (csDay >= thirtyDaysAgo) d30Sales += amt; }
+      });
+
+      todayExpOutCache = 0; branchExpenses().forEach(e => { const d = parseIndianInvoiceDate(e.date); if (d && new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayStart.getTime()) todayExpOutCache += Number(e.amount || 0); });
+      document.getElementById('galla-cash-in').innerText = todayCashInCache; document.getElementById('galla-exp-out').innerText = todayExpOutCache; updateGallaTally();
+
+      const staffKeys = Object.keys(staffMap);
+      document.getElementById('active-staff-filter-badge').classList.toggle('hidden', staffSalesFilter === 'All');
+      document.getElementById('active-staff-filter-badge').innerText = `Showing: ${staffSalesFilter}`;
+      document.getElementById('staff-sales-breakdown').innerHTML = staffKeys.length ? (`<button onclick="toggleStaffSalesFilter('All')" class="px-3 py-1.5 rounded-xl font-bold ${staffSalesFilter === 'All' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}">All (${invs.length})</button>` + staffKeys.map(s => `<button onclick="toggleStaffSalesFilter('${s.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl font-bold transition ${staffSalesFilter === s ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 text-slate-700 hover:bg-indigo-50'}">${s}: <span class="${staffSalesFilter === s ? 'text-amber-300' : 'text-indigo-600'}">₹${staffMap[s].sales}</span> (${staffMap[s].bills})</button>`).join('')) : `<span class="text-slate-400">No sales yet</span>`;
+
+      document.getElementById('stat-today-sales').innerText = todaySales; document.getElementById('stat-today-bills').innerText = todayBills; document.getElementById('stat-7d-sales').innerText = d7Sales; document.getElementById('stat-7d-bills').innerText = d7Bills; document.getElementById('stat-30d-sales').innerText = d30Sales; document.getElementById('stat-30d-bills').innerText = d30Bills;
+
+      const modeFilter = document.getElementById('inv-mode-filter').value, q = document.getElementById('inv-list-search').value.toLowerCase().trim();
+      const filtered = invs.filter(inv => {
+        if (staffSalesFilter !== 'All' && (inv.staff || "Staff") !== staffSalesFilter) return false;
+        const matchMode = modeFilter === 'All'
+          || (modeFilter === 'RepairOnly' ? isRepairInvoice(inv) : false)
+          || (modeFilter === 'DueOnly' ? Number(inv.udharDue || 0) > 0 : false)
+          || (modeFilter === 'ReturnOnly' ? isCustomerReturnBill(inv) : false)
+          || (modeFilter === 'ExchangeOnly' ? isExchangeBill(inv) : false)
+          || (inv.paymentMode === modeFilter);
+        const matchQ = inv.customer.toLowerCase().includes(q) || inv.id.toLowerCase().includes(q) || String(inv.phone).includes(q);
+        if (!matchMode || !matchQ) return false;
+        if (exactSalesDate) return normalizeClientDate(inv.date) === exactSalesDate;
+        if (salesPeriodFilter === 'all') return true;
+        const invDate = parseIndianInvoiceDate(inv.date); if (!invDate) return false;
+        const invDay = new Date(invDate.getFullYear(), invDate.getMonth(), invDate.getDate());
+        if (salesPeriodFilter === 'today') return invDay.getTime() === todayStart.getTime();
+        if (salesPeriodFilter === '7days') return invDay >= sevenDaysAgo;
+        if (salesPeriodFilter === '30days') return invDay >= thirtyDaysAgo;
+        return true;
+      });
+
+      let totalSales = 0, totalUpi = 0, totalCash = 0, totalUdhar = 0, grossProfit = 0;
+      filtered.forEach(inv => { if (inv.status === 'Returned') return; totalSales += Number(inv.total || 0); totalUpi += Number(inv.upiPaid || 0); totalCash += Number(inv.cashPaid || 0); totalUdhar += Number(inv.udharDue || 0); grossProfit += Number(inv.profit || 0); });
+      const totalExp = branchExpenses().reduce((s, e) => s + Number(e.amount || 0), 0);
+      document.getElementById('stat-total-sales').innerText = totalSales; document.getElementById('stat-total-upi').innerText = totalUpi; document.getElementById('stat-total-cash').innerText = totalCash; document.getElementById('stat-total-udhar').innerText = totalUdhar; document.getElementById('stat-net-profit').innerText = grossProfit - (salesPeriodFilter === 'all' && !exactSalesDate ? totalExp : 0); document.getElementById('stat-total-bills').innerText = filtered.length;
+
+      const visible = filtered.slice(0, invPageLimit);
+      document.getElementById('inv-load-more-wrap').classList.toggle('hidden', filtered.length <= invPageLimit);
+
+      document.getElementById('invoices-list').innerHTML = visible.map(inv => {
+        const hasPhoto = (inv.cart || []).some(c => c.image), due = Number(inv.udharDue || 0), extraDisc = Number(inv.discount || 0);
+        const splitTags = (inv.paymentMode === 'Split' || due > 0) ? `<div class="text-[10px] text-slate-600 mt-0.5">Cash: ₹${inv.cashPaid} | UPI: ₹${inv.upiPaid} ${due > 0 ? `| <b class="text-red-600">Baaki: ₹${due}</b>` : ''}</div>` : '';
+        const extraDiscTag = extraDisc > 0 ? `<span class="text-[10px] text-rose-700 font-bold ml-1">(Extra Disc: -₹${extraDisc})</span>` : '';
+        const repairBadge = isRepairInvoice(inv) ? `<span class="text-[9px] px-1.5 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold ml-1">Repair</span>` : '';
+        const exBadge = isExchangeBill(inv) ? `<span class="text-[9px] px-1.5 py-0.5 bg-amber-100 text-amber-900 rounded font-bold ml-1">Exchange</span>` : '';
+        return `<div class="p-3 bg-slate-50 rounded-xl border ${due > 0 ? 'border-red-200 bg-red-50/30' : 'border-slate-100'} flex justify-between items-center gap-2 ${inv.status === 'Returned' ? 'opacity-60' : ''}"><div><p class="font-bold text-slate-800">${inv.customer} <span class="text-[10px] text-slate-400">(${inv.id} • By ${inv.staff})</span>${repairBadge}${exBadge}${extraDiscTag}</p><p class="text-[11px] text-slate-500 mt-0.5">${inv.items}</p>${splitTags}<p class="text-[10px] text-slate-400 mt-0.5">${inv.date} ${hasPhoto ? `<button onclick="viewSoldBillPhotos('${inv.id}')" class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"><i class="fas fa-camera mr-0.5"></i>Photo</button>` : ''}</p></div><div class="flex items-center gap-1.5 shrink-0"><div class="text-right"><p class="font-black text-sm text-slate-900">₹${inv.total}</p>${due > 0 && inv.status !== 'Returned' ? `<div class="flex gap-1 mt-0.5 justify-end"><button onclick="openUdharJamaModal('${inv.id}')" class="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-extrabold shadow-sm">+ Jama</button><button onclick="sendUdharReminderWhatsApp('${inv.id}')" class="px-1.5 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold" title="Udhar Reminder"><i class="fab fa-whatsapp"></i></button></div>` : `<span class="text-[10px] font-bold px-2 py-0.5 rounded ${inv.status === 'Returned' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}">${inv.status === 'Returned' ? 'Returned' : inv.paymentMode}</span>`}</div><button onclick="reprintSavedInvoice('${inv.id}')" class="text-slate-600 p-1" title="Print/Bill"><i class="fas fa-receipt"></i></button>${inv.status !== 'Returned' && !isRepairInvoice(inv) ? `<button onclick="openExchangeModal('${inv.id}')" class="text-indigo-600 p-1" title="Return/Exchange"><i class="fas fa-exchange-alt"></i></button>` : ''}${admin ? `<button onclick="openEditInvModal('${inv.id}')" class="text-slate-600 p-1"><i class="fas fa-edit"></i></button>` : ''}${inv.status !== 'Returned' ? `<button onclick="returnOrDeleteBill('${inv.id}', 'return')" class="text-amber-600 p-1"><i class="fas fa-undo"></i></button>` : ''}${admin ? `<button onclick="returnOrDeleteBill('${inv.id}', 'delete')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+      }).join('');
+      renderUdharKhataList();
+    }
+
+    async function addRepairJob(btn) {
+      const customer = document.getElementById('rep-cust').value.trim(), deviceModel = document.getElementById('rep-model').value.trim(), fault = document.getElementById('rep-fault').value.trim();
+      if (!customer || !deviceModel || !fault) { alert("Customer, Model aur Fault zaroori hai!"); return; }
+      const estimate = Number(document.getElementById('rep-estimate').value || 0), advance = Number(document.getElementById('rep-advance').value || 0), repairCost = Number(document.getElementById('rep-cost')?.value || 0), recvInput = document.getElementById('rep-received')?.value, receivedAmount = (recvInput !== undefined && recvInput !== "") ? Number(recvInput) : advance, payMode = document.getElementById('rep-paymode')?.value || "Cash", customDate = document.getElementById('rep-date')?.value.trim() || "", note = document.getElementById('rep-note')?.value.trim() || "";
+      const payload = { customer, phone: document.getElementById('rep-phone').value.trim(), deviceModel, fault, estimate, advance, repairCost, receivedAmount, payMode, customDate, note, branch: activeBranch, staff: currentUser ? currentUser.name : "Staff" };
+      const res = await callSheetAPI("saveRepair", payload, "Saving Job Card...", btn); if (!res) return;
+      if (res.queuedOffline) { storeData.repairs.unshift({ id: "OFF-JOB", date: customDate || normalizeClientDate(new Date().toISOString()), status: "Pending", ...payload }); saveLocalStoreCache(storeData); } else { storeData = res; saveLocalStoreCache(storeData); }
+      ['rep-cust', 'rep-phone', 'rep-model', 'rep-fault', 'rep-estimate', 'rep-advance', 'rep-cost', 'rep-received', 'rep-date', 'rep-note'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      renderAllViews();
+    }
+
+    function openEditRepairModal(id) {
+      const r = storeData.repairs.find(x => String(x.id) === String(id)); if (!r) return;
+      document.getElementById('er-id').value = r.id; document.getElementById('er-title').innerText = `${r.id} • ${r.customer} (${r.deviceModel})`; document.getElementById('er-est').value = r.estimate || 0; document.getElementById('er-adv').value = r.advance || 0; document.getElementById('er-cost').value = r.repairCost || 0; document.getElementById('er-cost-wrap').classList.toggle('hidden', !canSeeRepairCost()); document.getElementById('er-recv').value = r.receivedAmount !== undefined ? r.receivedAmount : (r.advance || 0); document.getElementById('er-status').value = r.status || 'Pending'; document.getElementById('er-mode').value = r.payMode || 'Cash';
+      document.getElementById('edit-repair-modal').classList.remove('hidden'); document.getElementById('edit-repair-modal').classList.add('flex');
+    }
+
+    async function saveEditedRepair(btn) {
+      const res = await callSheetAPI("updateRepairFull", { id: document.getElementById('er-id').value, estimate: Number(document.getElementById('er-est').value || 0), advance: Number(document.getElementById('er-adv').value || 0), repairCost: Number(document.getElementById('er-cost').value || 0), receivedAmount: Number(document.getElementById('er-recv').value || 0), status: document.getElementById('er-status').value, payMode: document.getElementById('er-mode').value, staff: currentUser ? currentUser.name : "Staff" }, "Saving Repair...", btn);
+      if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('edit-repair-modal'); renderAllViews();
+    }
+
+    async function changeRepairStatus(id, status) { storeData = await callSheetAPI("updateRepairStatus", { id, status, staff: currentUser ? currentUser.name : "Staff" }, "Updating Status..."); saveLocalStoreCache(storeData); renderAllViews(); }
+
+    function sendRepairWhatsApp(id) {
+      const r = storeData.repairs.find(x => String(x.id) === String(id)); if (!r) return;
+      const recv = Number(r.receivedAmount !== undefined ? r.receivedAmount : (r.advance || 0)), due = Math.max(0, Number(r.estimate || 0) - recv), phone = r.phone ? '91' + r.phone.replace(/\D/g, '').slice(-10) : '';
+      window.open(`https://wa.me/${phone}?text=*KIRTIKA MOBILE - REPAIR UPDATE*%0AJob: ${r.id} | Model: ${r.deviceModel}%0AStatus: *${r.status}* | Total: ₹${r.estimate || 0} | Received: ₹${recv} | Balance Due: *₹${due}*`, '_blank');
+    }
+
+    function renderRepairsList() {
+      const showCost = canSeeRepairCost(), list = branchRepairs(), visible = list.slice(0, repPageLimit);
+      document.getElementById('rep-load-more-wrap').classList.toggle('hidden', list.length <= repPageLimit);
+      document.getElementById('repairs-list').innerHTML = visible.map(r => {
+        const est = Number(r.estimate || 0), recv = Number(r.receivedAmount !== undefined ? r.receivedAmount : (r.advance || 0)), due = Math.max(0, est - recv), cost = Number(r.repairCost || 0), netRepProfit = recv - cost;
+        const costInfo = showCost ? ` • <span class="text-amber-800 font-bold">Apna Kharcha: ₹${cost}</span> • <span class="text-indigo-700 font-bold">Profit: ₹${netRepProfit}</span>` : '';
+        return `<div class="p-3 bg-slate-50 rounded-xl border flex flex-wrap justify-between items-center gap-2"><div><p class="font-bold">${r.deviceModel} — <span class="text-indigo-600">${r.fault}</span> <span class="text-[10px] text-slate-400">(${r.date})</span></p><p class="text-[11px] text-slate-600">${r.customer} (${r.phone}) • Charge: <b>₹${est}</b> • Mila: <b class="text-emerald-700">₹${recv}</b> • Baaki: <b class="text-red-600">₹${due}</b>${costInfo}</p></div><div class="flex items-center gap-1.5"><button onclick="openEditRepairModal('${r.id}')" class="px-2.5 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg font-bold text-[11px]">₹ Pay / Edit</button><select onchange="changeRepairStatus('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="Ready" ${r.status === 'Ready' ? 'selected' : ''}>Ready</option><option value="Delivered" ${r.status === 'Delivered' ? 'selected' : ''}>Delivered</option></select><button onclick="sendRepairWhatsApp('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg"><i class="fab fa-whatsapp"></i></button></div></div>`;
+      }).join('');
+    }
+
+    async function addSupplierReturn(btn) {
+      const customer = document.getElementById('ret-cust').value.trim(), productName = document.getElementById('ret-prod').value.trim(), customDate = document.getElementById('ret-date')?.value.trim() || "", trackingStage = document.getElementById('ret-stage')?.value || "Sent to Supplier", creditNoteAmt = Number(document.getElementById('ret-credit')?.value || 0);
+      if (!productName) { alert("Defective Item naam zaroori hai!"); return; }
+      const payload = { customer: customer || "Shop Stock", phone: document.getElementById('ret-phone').value.trim(), productName, supplier: document.getElementById('ret-supplier').value.trim(), issue: document.getElementById('ret-issue').value.trim(), trackingStage, creditNoteAmt, customDate, branch: activeBranch };
+      const res = await callSheetAPI("saveSupplierReturn", payload, "Saving Supplier Return...", btn); if (!res) return;
+      if (res.queuedOffline) { storeData.returnsBox.unshift({ id: "OFF-RET", date: customDate || normalizeClientDate(new Date().toISOString()), status: "Pending", ...payload }); saveLocalStoreCache(storeData); } else { storeData = res; saveLocalStoreCache(storeData); }
+      ['ret-cust', 'ret-phone', 'ret-prod', 'ret-supplier', 'ret-issue', 'ret-credit', 'ret-date'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      renderReturnsBoxList();
+    }
+    async function changeReturnStage(id, trackingStage) { const status = trackingStage === "Settled / Replaced" ? "Replaced" : "Pending"; storeData = await callSheetAPI("updateSupplierReturnStatus", { id, status, trackingStage }, "Updating Stage..."); saveLocalStoreCache(storeData); renderReturnsBoxList(); }
+    function renderReturnsBoxList() { document.getElementById('returns-box-list').innerHTML = branchReturns().map(r => `<div class="p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl flex flex-wrap justify-between items-center gap-2"><div><p class="font-bold">${r.productName} <span class="text-amber-800">(Supplier: ${r.supplier || '--'})</span> ${r.creditNoteAmt ? `<span class="text-emerald-700 font-black">• Credit: ₹${r.creditNoteAmt}</span>` : ''}</p><p class="text-[11px] text-slate-500">${r.customer} • ${r.issue || '--'} • ${r.date}</p></div><select onchange="changeReturnStage('${r.id}', this.value)" class="p-1.5 rounded-lg text-[11px] font-bold border bg-white"><option value="Sent to Supplier" ${r.trackingStage === 'Sent to Supplier' ? 'selected' : ''}>Sent to Supplier</option><option value="Replacement Pending" ${r.trackingStage === 'Replacement Pending' ? 'selected' : ''}>Replacement Pending</option><option value="Credit Note Pending" ${r.trackingStage === 'Credit Note Pending' ? 'selected' : ''}>Credit Note Pending</option><option value="Settled / Replaced" ${r.trackingStage === 'Settled / Replaced' ? 'selected' : ''}>Settled / Replaced</option></select></div>`).join(''); }
+
+    async function addUsedPhone(btn) { const model = document.getElementById('used-model').value.trim(), imei1 = document.getElementById('used-imei1').value.trim(), buyPrice = Number(document.getElementById('used-buy-price').value || 0), customDate = document.getElementById('used-date')?.value.trim() || ""; if (!model || !imei1 || !buyPrice) return; const payload = { model, imei1, imei2: document.getElementById('used-imei2').value.trim(), buyPrice, sellerName: document.getElementById('used-seller').value.trim(), sellerPhone: document.getElementById('used-seller-phone').value.trim(), sellerIDProof: document.getElementById('used-id-proof').value.trim(), customDate, branch: activeBranch }; const res = await callSheetAPI("saveUsedPhone", payload, "Saving Used Phone...", btn); if (!res) return; if (res.queuedOffline) { storeData.usedPhones.unshift({ id: "OFF-USED", buyDate: customDate || normalizeClientDate(new Date().toISOString()), status: "In Stock", ...payload }); saveLocalStoreCache(storeData); } else { storeData = res; saveLocalStoreCache(storeData); } ['used-model', 'used-imei1', 'used-imei2', 'used-buy-price', 'used-seller', 'used-seller-phone', 'used-id-proof', 'used-date'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); renderUsedPhonesList(); }
+    async function markUsedPhoneSold(id) { const sellPrice = prompt("Kitne rupaye (₹) mein becha?"); if (!sellPrice) return; const buyerName = prompt("Buyer ka naam:") || "Walk-in Customer"; storeData = await callSheetAPI("sellUsedPhone", { id, sellPrice: Number(sellPrice), buyerName }, "Updating Sale..."); saveLocalStoreCache(storeData); renderUsedPhonesList(); }
+    function renderUsedPhonesList() { const list = branchUsed(); document.getElementById('used-count').innerText = list.length; document.getElementById('used-phones-list').innerHTML = list.map(u => `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center"><div><p class="font-bold">${u.model} (IMEI: ${u.imei1})</p><p class="text-[11px] text-slate-500">${u.buyDate} • Seller: ${u.sellerName} • ID: ${u.sellerIDProof} • Buy: ₹${u.buyPrice}</p></div>${u.status === 'In Stock' ? `<button onclick="markUsedPhoneSold('${u.id}')" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px]">Sell</button>` : `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-[10px]">Sold ₹${u.sellPrice}</span>`}</div>`).join(''); }
+
+    async function addExpenseEntry() { const amount = Number(document.getElementById('exp-amount').value || 0); if (!amount) return; const customDate = document.getElementById('exp-date')?.value.trim() || "", btn = document.getElementById('add-exp-btn'), payload = { category: document.getElementById('exp-cat').value, amount, note: document.getElementById('exp-note').value.trim(), customDate, staff: currentUser ? currentUser.name : 'Staff', branch: activeBranch }; const res = await callSheetAPI("saveExpense", payload, "Saving Expense...", btn); if (!res) return; if (res.queuedOffline) { storeData.expenses.unshift({ id: "OFF-EXP", date: customDate || normalizeClientDate(new Date().toISOString()), ...payload }); saveLocalStoreCache(storeData); } else { storeData = res; saveLocalStoreCache(storeData); } ['exp-amount', 'exp-note', 'exp-date'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); renderExpensesList(); renderInvoicesList(); }
+    async function deleteExpenseEntry(id) { if (isAdminUser() && confirm("Delete karein?")) { storeData = await callSheetAPI("deleteExpense", id, "Deleting Expense..."); saveLocalStoreCache(storeData); renderExpensesList(); renderInvoicesList(); } }
+    function renderExpensesList() { renderExpenseCategoryOptions(); const admin = isAdminUser(), list = branchExpenses(); document.getElementById('stat-total-expenses').innerText = list.reduce((s, e) => s + Number(e.amount || 0), 0); document.getElementById('expenses-list').innerHTML = list.map(e => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold">${e.category} ${e.note ? `- ${e.note}` : ''}</p><p class="text-[10px] text-slate-400">${e.date} • ${e.staff}</p></div><div class="flex items-center gap-2"><span class="font-black text-red-600">₹${e.amount}</span>${admin ? `<button onclick="deleteExpenseEntry('${e.id}')" class="text-slate-400 p-1"><i class="fas fa-trash"></i></button>` : ''}</div></div>`).join(''); }
+
+    async function addStaffMember(btn) { if (!isAdminUser()) return; const name = document.getElementById('stf-name').value.trim(), pin = document.getElementById('stf-pin').value.trim(); if (!name || pin.length !== 4) { alert("Naam aur 4-digit PIN daalein!"); return; } const res = await callSheetAPI("saveStaffMember", { name, pin, role: document.getElementById('stf-role').value, salary: Number(document.getElementById('stf-salary').value || 0) }, "Adding Staff...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); ['stf-name', 'stf-pin', 'stf-salary'].forEach(id => document.getElementById(id).value = ''); renderStaffList(); }
+    function openEditStaffModal(id) { if (!isAdminUser()) return; const s = storeData.staff.find(x => String(x.id) === String(id)); if (!s) return; document.getElementById('edit-stf-id').value = s.id; document.getElementById('edit-stf-name').value = s.name; document.getElementById('edit-stf-pin').value = s.pin; document.getElementById('edit-stf-role').value = s.role; document.getElementById('edit-stf-salary').value = s.salary || 0; document.getElementById('edit-staff-modal').classList.remove('hidden'); document.getElementById('edit-staff-modal').classList.add('flex'); }
+    async function saveEditedStaff(btn) { if (!isAdminUser()) return; const id = document.getElementById('edit-stf-id').value, name = document.getElementById('edit-stf-name').value.trim(), pin = document.getElementById('edit-stf-pin').value.trim(), role = document.getElementById('edit-stf-role').value, salary = Number(document.getElementById('edit-stf-salary').value || 0); if (!name || pin.length !== 4) return; const res = await callSheetAPI("updateStaffMember", { id, name, pin, role, salary }, "Updating Staff...", btn); if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('edit-staff-modal'); renderStaffList(); alert("✅ Staff / Admin details updated!"); }
+    async function deleteStaff(id) { if (isAdminUser() && confirm("Delete staff?")) { try { storeData = await callSheetAPI("deleteStaffMember", id, "Deleting Staff..."); saveLocalStoreCache(storeData); renderStaffList(); } catch (e) { alert(e.message); } } }
+    function renderStaffList() { document.getElementById('staff-list-box').innerHTML = storeData.staff.map(s => `<div class="py-2.5 flex justify-between items-center"><div><p class="font-bold text-slate-800">${s.name} <span class="text-[10px] px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded">${s.role}</span></p><p class="text-[10px] text-slate-400 font-mono">PIN: ${s.pin} ${s.salary ? `• Salary: ₹${s.salary}/mo` : ''}</p></div><div class="flex items-center gap-2"><button onclick="openEditStaffModal('${s.id}')" class="px-2.5 py-1 bg-slate-100 text-indigo-700 rounded-lg font-bold text-[11px]"><i class="fas fa-edit mr-1"></i>Edit</button><button onclick="deleteStaff('${s.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
+
+    function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); document.getElementById('backup-modal').classList.add('flex'); }
+    function getFilteredBackupData() {
+      const period = document.getElementById('backup-period-select').value, now = new Date(); let cutoff = null, label = "Lifetime";
+      if (period === '1m') { cutoff = new Date(now.getTime() - 30 * 86400000); label = "Last_1_Month"; } else if (period === '6m') { cutoff = new Date(now.getTime() - 182 * 86400000); label = "Last_6_Months"; } else if (period === '1y') { cutoff = new Date(now.getTime() - 365 * 86400000); label = "Last_1_Year"; }
+      const filterByDate = (arr, field) => !cutoff ? arr : arr.filter(item => { const d = parseIndianInvoiceDate(item[field]); return d && d >= cutoff; });
+      return { label, products: branchProducts(), invoices: filterByDate(branchInvoices(), 'date'), expenses: filterByDate(branchExpenses(), 'date'), cashTransfers: filterByDate(branchCashTransfers(), 'date'), repairs: filterByDate(branchRepairs(), 'date'), counterServices: filterByDate(branchCounterServices(), 'date'), onlineOrders: filterByDate(branchOnlineOrders(), 'date'), purchaseBills: filterByDate(branchPurchaseBills(), 'date'), customers: getUniqueCustomersList() };
+    }
+    function exportFullJSONBackup() { const data = getFilteredBackupData(), payload = { app: "Kirtika_Mobile_ERP", exportedAt: new Date().toISOString(), branch: activeBranch, ...data }, blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `Kirtika_Full_Backup_${activeBranch.replace(/\s+/g, '_')}_${data.label}.json`; a.click(); URL.revokeObjectURL(url); closeModalById('backup-modal'); }
+    function handleRestoreBackupFile(event) { if (!isAdminUser()) { alert("Sirf Admin backup restore kar sakta hai!"); return; } const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { try { const parsed = JSON.parse(e.target.result); if (!confirm("Kya aap is backup file se data restore karna chahte hain?")) return; const res = await callSheetAPI("restoreFullBackup", parsed, "Restoring Backup..."); if (!res) return; storeData = res; saveLocalStoreCache(storeData); closeModalById('backup-modal'); renderAllViews(); alert("✅ Full Backup Restore Ho Gaya!"); } catch (err) { alert("Invalid Backup File: " + err.message); } }; reader.readAsText(file); event.target.value = ""; }
+    function exportExcelBackup() { const data = getFilteredBackupData(), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.invoices.length ? data.invoices.map(i => ({ ...i, cart: "" })) : [{ Note: "No bills" }]), "Sales"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.products.length ? data.products.map(p => ({ ...p, image: "" })) : [{ Note: "No stock" }]), "Stock"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.customers.length ? data.customers : [{ Note: "No customers" }]), "Customers"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.expenses.length ? data.expenses : [{ Note: "No expenses" }]), "Expenses"); XLSX.writeFile(wb, `Kirtika_${activeBranch.replace(/\s+/g, '_')}_${data.label}.xlsx`); closeModalById('backup-modal'); }
+    function exportPDFBackup() { const data = getFilteredBackupData(), { jsPDF } = window.jspdf, doc = new jsPDF(); doc.setFontSize(15); doc.text(`KIRTIKA MOBILE - ${activeBranch}`, 14, 16); doc.setFontSize(10); doc.text(`Report: ${data.label.replace(/_/g, ' ')} | Bills: ${data.invoices.length}`, 14, 22); doc.autoTable({ startY: 28, head: [['Bill ID', 'Date', 'Customer', 'Items', 'Mode', 'Total']], body: data.invoices.map(i => [i.id, i.date, i.customer, i.items, i.paymentMode, i.total]), styles: { fontSize: 8 } }); doc.save(`Kirtika_${activeBranch.replace(/\s+/g, '_')}_${data.label}.pdf`); closeModalById('backup-modal'); }
+
     function normalizeClientDate(dStr) {
       if (!dStr) return "";
       const s = String(dStr).trim();
@@ -1994,13 +2561,8 @@
       }
     }
 
-    // Customer Returns & Exchanges Tracker
-    function isCustomerReturnBill(inv) {
-      return inv.status === 'Returned' || inv.activityType === 'Customer Return';
-    }
-    function isExchangeBill(inv) {
-      return inv.status === 'Exchanged' || inv.activityType === 'Exchange' || String(inv.note || '').includes('Exchange:');
-    }
+    function isCustomerReturnBill(inv) { return inv.status === 'Returned' || inv.activityType === 'Customer Return'; }
+    function isExchangeBill(inv) { return inv.status === 'Exchanged' || inv.activityType === 'Exchange' || String(inv.note || '').includes('Exchange:'); }
 
     function renderReturnsAndExchangesTracker() {
       const invs = branchInvoices();
@@ -2032,7 +2594,6 @@
       }).join('') : `<p class="text-center text-slate-400 py-3">Abhi koi Customer Return ya Exchange record nahi hai.</p>`;
     }
 
-    // 3M / 6M Top Selling & Highest Margin Report
     function setAnalyticsWindow(win) {
       analyticsWindow = win;
       ['3m', '6m', 'all'].forEach(w => {
@@ -2096,7 +2657,6 @@
       `).join('') : `<p class="text-slate-400 py-3 text-center">Is period mein margin data nahi hai.</p>`;
     }
 
-    // Udhar Khata
     function toggleUdharKhataView() {
       const listEl = document.getElementById('udhar-khata-list'), btn = document.getElementById('khata-toggle-btn');
       const willShow = listEl.classList.contains('hidden');
@@ -2135,7 +2695,6 @@
       `).join('') : `<p class="text-center text-slate-400 py-4">Koi baaki udhar nahi hai.</p>`;
     }
 
-    // Cash Flow, Counter Services & Online Orders
     async function saveCashTransferEntry(btn) {
       const amount = Number(document.getElementById('cf-amount').value || 0);
       if (amount <= 0) { alert("Amount daalein!"); return; }
@@ -2223,7 +2782,6 @@
       `).join('') : `<p class="text-center text-slate-400 py-4">No online orders yet.</p>`;
     }
 
-    // Manual Customers + Notes + Unique Directory + Full Export
     async function saveManualCustomerEntry(btn) {
       const name = document.getElementById('mc-name').value.trim();
       const phone = document.getElementById('mc-phone').value.trim();
@@ -2311,7 +2869,6 @@
       }).join('') : `<p class="text-center text-slate-400 py-5">Koi customer nahi mila.</p>`;
     }
 
-    // Customer Feedback System
     async function saveCustomerFeedbackEntry(btn) {
       const customer = document.getElementById('fb-cust').value.trim();
       const phone = document.getElementById('fb-phone').value.trim();
@@ -2354,7 +2911,6 @@
       }).join('') : `<p class="text-center text-slate-400 py-4">Abhi koi feedback nahi hai.</p>`;
     }
 
-    // Customer Complaint Tickets
     async function saveCounterComplaintEntry(btn) {
       const customer = document.getElementById('cmp-cust').value.trim();
       const phone = document.getElementById('cmp-phone').value.trim();
@@ -2405,7 +2961,6 @@
       }).join('') : `<p class="text-center text-slate-400 py-4">Koi complaint ticket nahi hai.</p>`;
     }
 
-    // Customer Follow-up Board
     async function saveFollowUpEntry(btn) {
       const customer = document.getElementById('fu-cust').value.trim();
       const phone = document.getElementById('fu-phone').value.trim();
@@ -2462,7 +3017,6 @@
       `).join('') : `<p class="text-center text-slate-400 py-4">Koi pending follow-up nahi hai.</p>`;
     }
 
-    // Product Reservation
     async function saveReservationEntry(btn) {
       const customer = document.getElementById('rsv-cust').value.trim();
       const phone = document.getElementById('rsv-phone').value.trim();
@@ -2508,7 +3062,6 @@
       `).join('') : `<p class="text-center text-slate-400 py-4">Koi reservation nahi hai.</p>`;
     }
 
-    // Supplier Payment Calendar
     async function saveSupplierPaymentEntry(btn) {
       const supplierName = document.getElementById('sp-supplier').value.trim();
       const totalDue = Number(document.getElementById('sp-total').value || 0);
@@ -2550,7 +3103,6 @@
       }).join('') : `<p class="text-center text-slate-400 py-4">Koi supplier payment schedule nahi hai.</p>`;
     }
 
-    // Attendance Calendar
     function getActiveBranchGPS() { const brObj = storeData.branches.find(b => b.name === activeBranch); if (brObj && brObj.lat && brObj.lng) return { lat: Number(brObj.lat), lng: Number(brObj.lng) }; const saved = localStorage.getItem('km_shop_gps_' + activeBranch); return saved ? JSON.parse(saved) : null; }
     function getDistanceMeters(lat1, lon1, lat2, lon2) { const R = 6371e3, φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180, Δφ = (lat2 - lat1) * Math.PI / 180, Δλ = (lon2 - lon1) * Math.PI / 180, a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2); return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
     function captureAndSaveShopGPS(btn) { if (!isAdminUser() || !navigator.geolocation) return; const origHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Fetching GPS...`; navigator.geolocation.getCurrentPosition(async (pos) => { const lat = pos.coords.latitude, lng = pos.coords.longitude; localStorage.setItem('km_shop_gps_' + activeBranch, JSON.stringify({ lat, lng })); await callSheetAPI("saveBranchLocation", { branch: activeBranch, lat, lng }, "Saving Shop GPS..."); storeData = await (await fetch(GOOGLE_API_URL)).json(); saveLocalStoreCache(storeData); renderAttendanceView(); btn.disabled = false; btn.innerHTML = origHtml; alert(`✅ Shop GPS Saved!`); }, () => { btn.disabled = false; btn.innerHTML = origHtml; alert("Location permission allow karein!"); }, { enableHighAccuracy: true, timeout: 10000 }); }
@@ -2635,7 +3187,6 @@
     async function deleteAttRecord(id) { if (!isAdminUser() || !confirm("Delete attendance record?")) return; storeData = await callSheetAPI("deleteAttendanceRecord", id, "Deleting..."); saveLocalStoreCache(storeData); renderAttendanceView(); }
     async function adminMarkManualAttendance(btn) { if (!isAdminUser()) return; const staffId = document.getElementById('admin-att-staff').value, stObj = storeData.staff.find(s => String(s.id) === String(staffId)), status = document.getElementById('admin-att-status').value, chosenDate = document.getElementById('att-calendar-date').value.trim() || normalizeClientDate(new Date().toISOString()); await callSheetAPI("markStaffAttendance", { staffId, staffName: stObj ? stObj.name : "Staff", status, distance: "Manual", selfie: "", branch: activeBranch, date: chosenDate }, "Saving Attendance...", btn); storeData = await (await fetch(GOOGLE_API_URL)).json(); saveLocalStoreCache(storeData); renderAttendanceView(); alert(`✅ Saved for ${chosenDate}!`); }
 
-    // VIP Loyalty Cards
     function saveLoyaltyOverlapPref() { loyaltyOverlapEnabled = document.getElementById('loy-overlap-toggle')?.checked !== false; localStorage.setItem('km_loy_overlap', loyaltyOverlapEnabled ? 'true' : 'false'); }
     function getCustomerAllLoyaltyCards(phone, customerName = "Customer") {
       const cleanPhone = String(phone || "").replace(/\D/g, '').slice(-10), rules = storeData.loyaltyRules.length ? storeData.loyaltyRules : [{ id: "RULE-1", title: "Silver Card (₹500 × 3)", minSpend: 500, targetVisits: 3, giftName: "Free Gift" }];
